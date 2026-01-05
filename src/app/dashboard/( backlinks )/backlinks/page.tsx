@@ -1,5 +1,6 @@
 'use client'
 
+import { ClientPageHeader } from '@/components/dashboard/client-page-header'
 import { AlertCircle, Link as LinkIcon, Loader2, Search } from 'lucide-react'
 import { useState } from 'react'
 import { getBacklinks, type BacklinksResponse } from './action'
@@ -51,38 +52,35 @@ export default function BacklinksAnalyzerPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6">
+    <div className="min-h-screen p-6">
       <div className="mx-auto max-w-7xl">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900">
-            Analyseur de Backlinks
-          </h1>
-          <p className="mt-2 text-lg text-gray-600">
-            Analysez le profil de backlinks d&apos;un domaine avec DataForSEO
-          </p>
-        </div>
+        <ClientPageHeader
+          title="Analyseur de Backlinks"
+          description="Analysez le profil de backlinks d'un domaine avec DataForSEO"
+          icon={LinkIcon}
+          iconClassName="border-blue-500/20 bg-gradient-to-br from-blue-500/10 to-indigo-500/10 text-blue-500"
+        />
 
         {/* Formulaire */}
-        <div className="mb-8 rounded-2xl border border-gray-200 bg-white p-8 shadow-lg">
+        <div className="mb-8 rounded-2xl border bg-card p-8 shadow-lg">
           <form onSubmit={handleSearch} className="space-y-6">
             {/* Target */}
             <div>
-              <label className="mb-2 block text-sm font-semibold text-gray-700">
+              <label className="mb-2 block text-sm font-semibold">
                 Domaine ou URL à analyser
               </label>
               <div className="relative">
-                <LinkIcon className="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400" />
+                <LinkIcon className="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
                 <input
                   type="text"
                   value={target}
                   onChange={(e) => setTarget(e.target.value)}
                   placeholder="exemple.com ou https://exemple.com/page"
-                  className="w-full rounded-xl border-2 border-gray-200 py-3 pr-4 pl-12 text-lg focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20"
+                  className="w-full rounded-xl border-2 border-input bg-background py-3 pr-4 pl-12 text-lg focus:border-ring focus:ring-4 focus:ring-ring/20"
                   disabled={loading}
                 />
               </div>
-              <p className="mt-2 text-sm text-gray-500">
+              <p className="mt-2 text-sm text-muted-foreground">
                 Pour un domaine, tapez sans https:// ni www. Pour une page,
                 utilisez l&apos;URL complète.
               </p>
@@ -92,7 +90,7 @@ export default function BacklinksAnalyzerPage() {
             <button
               type="submit"
               disabled={loading || !target.trim()}
-              className="flex w-full items-center justify-center gap-3 rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 py-4 text-lg font-semibold text-white shadow-lg hover:from-blue-700 hover:to-blue-800 hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-50"
+              className="flex w-full items-center justify-center gap-3 rounded-xl bg-primary py-4 text-lg font-semibold text-primary-foreground shadow-lg hover:bg-primary/90 hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-50"
             >
               {loading ? (
                 <>
@@ -109,11 +107,11 @@ export default function BacklinksAnalyzerPage() {
           </form>
 
           {error && (
-            <div className="mt-6 flex items-start gap-3 rounded-xl border-2 border-red-200 bg-red-50 p-4">
-              <AlertCircle className="h-5 w-5 flex-shrink-0 text-red-600" />
+            <div className="mt-6 flex items-start gap-3 rounded-xl border-2 border-destructive/50 bg-destructive/10 p-4">
+              <AlertCircle className="h-5 w-5 flex-shrink-0 text-destructive" />
               <div>
-                <p className="font-semibold text-red-900">Erreur</p>
-                <p className="text-sm text-red-700">{error}</p>
+                <p className="font-semibold text-destructive">Erreur</p>
+                <p className="text-sm text-destructive/90">{error}</p>
               </div>
             </div>
           )}
@@ -121,12 +119,12 @@ export default function BacklinksAnalyzerPage() {
 
         {/* Résultats */}
         {loading && (
-          <div className="flex flex-col items-center justify-center rounded-2xl border border-gray-200 bg-white p-16">
-            <Loader2 className="h-16 w-16 animate-spin text-blue-600" />
-            <p className="mt-4 text-lg font-medium text-gray-700">
+          <div className="flex flex-col items-center justify-center rounded-2xl border bg-card p-16">
+            <Loader2 className="h-16 w-16 animate-spin text-primary" />
+            <p className="mt-4 text-lg font-medium">
               Analyse des backlinks en cours...
             </p>
-            <p className="mt-2 text-sm text-gray-500">
+            <p className="mt-2 text-sm text-muted-foreground">
               Cela peut prendre quelques secondes
             </p>
           </div>
@@ -134,23 +132,23 @@ export default function BacklinksAnalyzerPage() {
 
         {!loading && backlinksData && (
           <div>
-            <div className="mb-6 flex items-center justify-between rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+            <div className="mb-6 flex items-center justify-between rounded-xl border bg-card p-6 shadow-sm">
               <div className="flex items-center gap-4">
-                <div className="rounded-lg bg-blue-100 p-3">
-                  <LinkIcon className="h-6 w-6 text-blue-600" />
+                <div className="rounded-lg bg-primary/10 p-3">
+                  <LinkIcon className="h-6 w-6 text-primary" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-bold text-gray-900">
+                  <h2 className="text-xl font-bold">
                     {backlinksData.target}
                   </h2>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-muted-foreground">
                     {backlinksData.total_count.toLocaleString()} backlinks
                     trouvés • {backlinksData.items_count} affichés
                   </p>
                 </div>
               </div>
-              <div className="rounded-lg bg-gray-100 px-4 py-2">
-                <span className="text-sm font-medium text-gray-700 capitalize">
+              <div className="rounded-lg bg-muted px-4 py-2">
+                <span className="text-sm font-medium capitalize">
                   Mode: {backlinksData.mode.replace(/_/g, ' ')}
                 </span>
               </div>
@@ -164,40 +162,40 @@ export default function BacklinksAnalyzerPage() {
         )}
 
         {!loading && !backlinksData && !error && (
-          <div className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-gray-300 bg-white p-16 text-center">
-            <div className="rounded-full bg-blue-100 p-6">
-              <LinkIcon className="h-12 w-12 text-blue-600" />
+          <div className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed bg-card/50 p-16 text-center">
+            <div className="rounded-full bg-primary/10 p-6">
+              <LinkIcon className="h-12 w-12 text-primary" />
             </div>
-            <h3 className="mt-6 text-xl font-semibold text-gray-900">
+            <h3 className="mt-6 text-xl font-semibold">
               Analysez votre profil de backlinks
             </h3>
-            <p className="mt-2 max-w-md text-gray-600">
+            <p className="mt-2 max-w-md text-muted-foreground">
               Découvrez qui pointe vers votre site, analysez la qualité des
               liens et identifiez les opportunités d&apos;amélioration
             </p>
             <div className="mt-8 grid grid-cols-3 gap-6 text-left">
-              <div className="rounded-xl border border-gray-200 bg-gray-50 p-4">
+              <div className="rounded-xl border bg-card p-4">
                 <div className="mb-2 text-2xl">🔗</div>
-                <h4 className="font-semibold text-gray-900">Profil complet</h4>
-                <p className="mt-1 text-sm text-gray-600">
+                <h4 className="font-semibold">Profil complet</h4>
+                <p className="mt-1 text-sm text-muted-foreground">
                   Tous les backlinks avec métadonnées détaillées
                 </p>
               </div>
-              <div className="rounded-xl border border-gray-200 bg-gray-50 p-4">
+              <div className="rounded-xl border bg-card p-4">
                 <div className="mb-2 text-2xl">📊</div>
-                <h4 className="font-semibold text-gray-900">
+                <h4 className="font-semibold">
                   Statistiques avancées
                 </h4>
-                <p className="mt-1 text-sm text-gray-600">
+                <p className="mt-1 text-sm text-muted-foreground">
                   Domain Rank, Spam Score, pays, TLD
                 </p>
               </div>
-              <div className="rounded-xl border border-gray-200 bg-gray-50 p-4">
+              <div className="rounded-xl border bg-card p-4">
                 <div className="mb-2 text-2xl">🎯</div>
-                <h4 className="font-semibold text-gray-900">
+                <h4 className="font-semibold">
                   Analyse des anchors
                 </h4>
-                <p className="mt-1 text-sm text-gray-600">
+                <p className="mt-1 text-sm text-muted-foreground">
                   Distribution et optimisation des textes d&apos;ancrage
                 </p>
               </div>

@@ -135,7 +135,7 @@ export default async function AuditDeSitePage({ params }: { params: { projectId:
     (summaryData?.page_metrics?.checks?.no_description ?? 0)
 
   return (
-    <main className="min-h-screen">
+    <main className="min-h-screen text-foreground">
       <div className="container mx-auto px-4 py-6 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-6">

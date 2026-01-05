@@ -2,6 +2,7 @@
 import { Divider } from '@/components/dashboard/divider'
 import { Dropdown, DropdownButton, DropdownItem, DropdownMenu } from '@/components/dashboard/dropdown'
 import { Heading } from '@/components/dashboard/heading'
+import { PageHeader } from '@/components/dashboard/page-header'
 import { OpenModal } from '@/components/open-modale-google'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
@@ -22,6 +23,7 @@ import {
   FileSearch,
   Folder,
   Globe,
+  LayoutDashboard,
   Link2,
   MousePointerClick,
   Search,
@@ -194,16 +196,15 @@ export default async function DashboardPage() {
   }
 
   return (
-    <main className="">
+    <main className="min-h-screen text-foreground">
       <div className="container mx-auto px-4 pt-6 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="mb-6 flex items-center justify-between">
-          <div>
-            <Heading className="text-2xl sm:text-3xl">Mes Projets</Heading>
-            <p className="text-muted-foreground mt-1 text-sm">Gérez et analysez vos sites web</p>
-          </div>
-          <OpenModal />
-        </div>
+        <PageHeader
+          title="Mes Projets"
+          description="Gérez et analysez vos sites web"
+          icon={LayoutDashboard}
+          iconClassName="border-blue-500/20 bg-gradient-to-br from-blue-500/10 to-cyan-500/10 text-blue-500"
+          actions={<OpenModal />}
+        />
         <Divider className="mb-6" />
 
         {projects.length > 0 ? (

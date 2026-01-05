@@ -3,7 +3,7 @@ import { BacklinksContent } from './backlinks-content'
 
 export default async function BacklinksPage() {
   return (
-    <main className="min-h-screen">
+    <main className="min-h-screen text-foreground">
       <BacklinksContent />
     </main>
   )

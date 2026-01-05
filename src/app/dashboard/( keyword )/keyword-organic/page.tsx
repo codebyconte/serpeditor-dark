@@ -9,7 +9,7 @@ export const metadata = {
 
 export default function OrganicKeywordsPage() {
   return (
-    <main>
+    <main className="min-h-screen text-foreground">
       <OrganicKeywordsContent />
     </main>
   )

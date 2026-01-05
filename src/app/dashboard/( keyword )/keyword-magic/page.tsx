@@ -1,4 +1,5 @@
 // 📁 app/dashboard/keyword-magic/page.tsx
+import { PageHeader } from '@/components/dashboard/page-header'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Sparkles } from 'lucide-react'
 import type { Metadata } from 'next'
@@ -17,26 +18,15 @@ export const metadata: Metadata = {
 
 export default function KeywordMagicPage() {
   return (
-    <main className="min-h-screen bg-background">
+    <main className="min-h-screen text-foreground">
       <div className="container mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-        {/* Header Hero */}
-        <div className="mb-8">
-          <div className="flex items-center gap-3">
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 shadow-lg">
-              <Sparkles className="h-7 w-7 text-white" />
-            </div>
-            <div>
-              <h1 className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-4xl font-bold text-transparent">
-                Keyword Magic Tool
-              </h1>
-              <p className="mt-1 text-sm text-muted-foreground">
-                Découvrez des milliers d'opportunités de mots-clés en un clic ✨
-              </p>
-            </div>
-          </div>
-        </div>
+        <PageHeader
+          title="Keyword Magic Tool"
+          description="Découvrez des milliers d'opportunités de mots-clés en un clic"
+          icon={Sparkles}
+          iconClassName="border-purple-500/20 bg-gradient-to-br from-purple-500/10 to-pink-500/10 text-purple-500"
+        />
 
-        {/* Content avec Suspense */}
         <Suspense fallback={<KeywordMagicSkeleton />}>
           <KeywordMagicContent />
         </Suspense>

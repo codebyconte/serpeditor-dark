@@ -9,7 +9,7 @@ export const metadata = {
 
 export default function AnchorsPage() {
   return (
-    <main>
+    <main className="min-h-screen text-foreground">
       <AnchorsContent />
     </main>
   )

@@ -1,5 +1,6 @@
 import { Divider } from '@/components/dashboard/divider'
 import { Heading } from '@/components/dashboard/heading'
+import { PageHeader } from '@/components/dashboard/page-header'
 import { OpenModal } from '@/components/open-modale-google'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
@@ -45,19 +46,14 @@ export default async function Page() {
   }
 
   return (
-    <main className="from-background to-muted/20 min-h-screen bg-gradient-to-b">
+    <main className="min-h-screen text-foreground">
       <div className="container mx-auto px-4 pt-6 sm:px-6 lg:px-8">
-        <div className="mb-6">
-          <div className="mb-2 flex items-center gap-3">
-            <div className="bg-primary/10 flex h-12 w-12 items-center justify-center rounded-xl">
-              <Search className="text-primary h-6 w-6" />
-            </div>
-            <div>
-              <Heading className="text-2xl sm:text-3xl">Audit SEO de votre site web</Heading>
-              <p className="text-muted-foreground mt-1 text-sm">Analysez la santé SEO de vos sites en un clic</p>
-            </div>
-          </div>
-        </div>
+        <PageHeader
+          title="Audit SEO de votre site web"
+          description="Analysez la santé SEO de vos sites en un clic"
+          icon={FileSearch}
+          iconClassName="border-cyan-500/20 bg-gradient-to-br from-cyan-500/10 to-blue-500/10 text-cyan-500"
+        />
 
         <div className="from-primary/5 via-primary/10 to-primary/5 mb-6 rounded-lg border bg-gradient-to-r p-6">
           <div className="flex items-start gap-4">
@@ -65,7 +61,7 @@ export default async function Page() {
               <Sparkles className="text-primary h-5 w-5" />
             </div>
             <div className="flex-1">
-              <h3 className="mb-1 font-semibold">Analyse complète de votre SEO</h3>
+              <h3 className="mb-1 font-semibold text-foreground">Analyse complète de votre SEO</h3>
               <p className="text-muted-foreground text-sm">
                 Identifiez vos forces, vos points à améliorer et suivez vos performances dans le temps. Notre outil
                 analyse automatiquement votre site et vous fournit un rapport détaillé.
@@ -79,7 +75,7 @@ export default async function Page() {
         {projects.length > 0 ? (
           <section className="space-y-4 pb-8">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold">Vos projets ({projects.length})</h2>
+              <h2 className="text-lg font-semibold text-foreground">Vos projets ({projects.length})</h2>
               <OpenModal />
             </div>
 

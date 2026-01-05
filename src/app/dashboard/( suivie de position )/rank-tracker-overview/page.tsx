@@ -8,7 +8,7 @@ export const metadata = {
 
 export default function RankOverviewPage() {
   return (
-    <main className="min-h-screen">
+    <main className="min-h-screen text-foreground">
       <div className="container mx-auto px-4 py-6 sm:px-6 lg:px-8">
         <RankOverviewContent />
       </div>

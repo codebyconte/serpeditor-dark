@@ -9,7 +9,7 @@ export const metadata = {
 
 export default function NewLostBacklinksPage() {
   return (
-    <main>
+    <main className="min-h-screen text-foreground">
       <NewLostBacklinksContent />
     </main>
   )
