@@ -1,0 +1,163 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime
+  user                  user      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model keyword {
+  id                       String                     @id
+  keyword                  String
+  projectId                String
+  locationCode             Int                        @default(2250)
+  languageCode             String                     @default("fr")
+  rankGroup                Int?
+  rankAbsolute             Int?
+  previousRank             Int?
+  createdAt                DateTime                   @default(now())
+  updatedAt                DateTime                   @default(now())
+  lastCheckedAt            DateTime?
+  project                  project                    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  keyword_group_assignment keyword_group_assignment[]
+  keyword_position_history keyword_position_history[]
+  keyword_tag_assignment   keyword_tag_assignment[]
+
+  @@unique([projectId, keyword, locationCode, languageCode])
+}
+
+model keyword_group {
+  id                       String                     @id
+  name                     String
+  description              String?
+  color                    String                     @default("#3B82F6")
+  projectId                String
+  createdAt                DateTime                   @default(now())
+  updatedAt                DateTime
+  project                  project                    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  keyword_group_assignment keyword_group_assignment[]
+
+  @@unique([projectId, name])
+}
+
+model keyword_group_assignment {
+  id            String        @id
+  keywordId     String
+  groupId       String
+  assignedAt    DateTime      @default(now())
+  keyword_group keyword_group @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  keyword       keyword       @relation(fields: [keywordId], references: [id], onDelete: Cascade)
+
+  @@unique([keywordId, groupId])
+}
+
+model keyword_position_history {
+  id           String   @id
+  keywordId    String
+  rankGroup    Int?
+  rankAbsolute Int?
+  url          String?
+  searchVolume Int?
+  checkedAt    DateTime @default(now())
+  createdAt    DateTime @default(now())
+  keyword      keyword  @relation(fields: [keywordId], references: [id], onDelete: Cascade)
+
+  @@index([keywordId, checkedAt])
+}
+
+model keyword_tag {
+  id                     String                   @id
+  name                   String
+  color                  String                   @default("#10B981")
+  projectId              String
+  createdAt              DateTime                 @default(now())
+  project                project                  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  keyword_tag_assignment keyword_tag_assignment[]
+
+  @@unique([projectId, name])
+}
+
+model keyword_tag_assignment {
+  id          String      @id
+  keywordId   String
+  tagId       String
+  assignedAt  DateTime    @default(now())
+  keyword     keyword     @relation(fields: [keywordId], references: [id], onDelete: Cascade)
+  keyword_tag keyword_tag @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@unique([keywordId, tagId])
+}
+
+model project {
+  id              String          @id
+  url             String          @unique
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @default(now())
+  userId          String
+  task_id         String?         @unique
+  task_created_at DateTime?
+  task_expires_at DateTime?
+  crawl_status    CrawlStatus?
+  keyword         keyword[]
+  keyword_group   keyword_group[]
+  keyword_tag     keyword_tag[]
+  user            user            @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model session {
+  id        String   @id
+  expiresAt DateTime
+  token     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      user     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model user {
+  id            String    @id
+  name          String
+  email         String    @unique
+  emailVerified Boolean   @default(false)
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @default(now())
+  account       account[]
+  project       project[]
+  session       session[]
+}
+
+model verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now())
+}
+
+enum CrawlStatus {
+  PENDING
+  READY
+  ERROR
+}
