@@ -4,667 +4,667 @@
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
+ Card,
+ CardContent,
+ CardDescription,
+ CardHeader,
+ CardTitle,
 } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Progress } from '@/components/ui/progress'
 import { SpinnerCustom } from '@/components/ui/spinner'
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+ Table,
+ TableBody,
+ TableCell,
+ TableHead,
+ TableHeader,
+ TableRow,
 } from '@/components/ui/table'
 import {
-  AlertTriangle,
-  Anchor,
-  ChevronLeft,
-  ChevronRight,
-  Link2,
-  Loader2,
-  Shield,
-  Tag,
-  TrendingUp,
+ AlertTriangle,
+ Anchor,
+ ChevronLeft,
+ ChevronRight,
+ Link2,
+ Loader2,
+ Shield,
+ Tag,
+ TrendingUp,
 } from 'lucide-react'
 import { useActionState, useMemo, useState, useTransition } from 'react'
 import { fetchAnchors, type AnchorsState } from './action'
 
 export function AnchorsContent() {
-  const initialState: AnchorsState = { success: false }
-  const [state, formAction, isPending] = useActionState(
-    fetchAnchors,
-    initialState,
-  )
-  const [isTransitionPending, startTransition] = useTransition()
+ const initialState: AnchorsState = { success: false }
+ const [state, formAction, isPending] = useActionState(
+ fetchAnchors,
+ initialState,
+ )
+ const [isTransitionPending, startTransition] = useTransition()
 
-  const [target, setTarget] = useState('')
-  const [currentPage, setCurrentPage] = useState(1)
-  const [searchTerm, setSearchTerm] = useState('')
-  const itemsPerPage = 50
+ const [target, setTarget] = useState('')
+ const [currentPage, setCurrentPage] = useState(1)
+ const [searchTerm, setSearchTerm] = useState('')
+ const itemsPerPage = 50
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    setCurrentPage(1)
-    setSearchTerm('')
-    const formData = new FormData()
-    formData.set('target', target.trim())
-    formData.set('offset', '0')
-    formData.set('limit', '100') // Valeur par défaut de 100
-    formData.set('backlinks_status_type', 'live') // Toujours "live" par défaut
-    startTransition(() => {
-      formAction(formData)
-    })
-  }
+ const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+ e.preventDefault()
+ setCurrentPage(1)
+ setSearchTerm('')
+ const formData = new FormData()
+ formData.set('target', target.trim())
+ formData.set('offset', '0')
+ formData.set('limit', '100') // Valeur par défaut de 100
+ formData.set('backlinks_status_type', 'live') // Toujours "live" par défaut
+ startTransition(() => {
+ formAction(formData)
+ })
+ }
 
-  // Classification des ancres
-  const classifyAnchor = (
-    anchor: string | null,
-    targetDomain: string,
-  ): string => {
-    if (!anchor || anchor.trim() === '') return 'Vide'
+ // Classification des ancres
+ const classifyAnchor = (
+ anchor: string | null,
+ targetDomain: string,
+ ): string => {
+ if (!anchor || anchor.trim() === '') return 'Vide'
 
-    const lowerAnchor = anchor.toLowerCase()
-    const cleanDomain = targetDomain.replace(/^www\./i, '').split('/')[0]
+ const lowerAnchor = anchor.toLowerCase()
+ const cleanDomain = targetDomain.replace(/^www\./i, '').split('/')[0]
 
-    // Branded
-    if (lowerAnchor.includes(cleanDomain.split('.')[0])) return 'Branded'
+ // Branded
+ if (lowerAnchor.includes(cleanDomain.split('.')[0])) return 'Branded'
 
-    // URL
-    if (lowerAnchor.includes('http') || lowerAnchor.includes('www.'))
-      return 'URL'
+ // URL
+ if (lowerAnchor.includes('http') || lowerAnchor.includes('www.'))
+ return 'URL'
 
-    // Generic
-    const genericTerms = [
-      'cliquez ici',
-      'click here',
-      'en savoir plus',
-      'read more',
-      'voir plus',
-      'here',
-      'ici',
-      'lien',
-      'link',
-      'site',
-      'website',
-      'page',
-    ]
-    if (genericTerms.some((term) => lowerAnchor.includes(term)))
-      return 'Générique'
+ // Generic
+ const genericTerms = [
+ 'cliquez ici',
+ 'click here',
+ 'en savoir plus',
+ 'read more',
+ 'voir plus',
+ 'here',
+ 'ici',
+ 'lien',
+ 'link',
+ 'site',
+ 'website',
+ 'page',
+ ]
+ if (genericTerms.some((term) => lowerAnchor.includes(term)))
+ return 'Générique'
 
-    // Image
-    if (
-      lowerAnchor.includes('jpg') ||
-      lowerAnchor.includes('png') ||
-      lowerAnchor.includes('image')
-    )
-      return 'Image'
+ // Image
+ if (
+ lowerAnchor.includes('jpg') ||
+ lowerAnchor.includes('png') ||
+ lowerAnchor.includes('image')
+ )
+ return 'Image'
 
-    // Long-tail (plus de 5 mots)
-    if (anchor.split(' ').length > 5) return 'Long-tail'
+ // Long-tail (plus de 5 mots)
+ if (anchor.split(' ').length > 5) return 'Long-tail'
 
-    // Exact/Partial match (supposé basé sur la présence de mots-clés)
-    return 'Exact/Partial'
-  }
+ // Exact/Partial match (supposé basé sur la présence de mots-clés)
+ return 'Exact/Partial'
+ }
 
-  // Filtrage par recherche
-  const filteredItems = useMemo(() => {
-    if (!state.result?.items) return []
-    if (!searchTerm) return state.result.items
+ // Filtrage par recherche
+ const filteredItems = useMemo(() => {
+ if (!state.result?.items) return []
+ if (!searchTerm) return state.result.items
 
-    return state.result.items.filter(
-      (item) =>
-        item.anchor?.toLowerCase().includes(searchTerm.toLowerCase()) ?? false,
-    )
-  }, [state.result?.items, searchTerm])
+ return state.result.items.filter(
+ (item) =>
+ item.anchor?.toLowerCase().includes(searchTerm.toLowerCase()) ?? false,
+ )
+ }, [state.result?.items, searchTerm])
 
-  // Pagination
-  const paginatedItems = filteredItems.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage,
-  )
-  const totalPages = Math.ceil(filteredItems.length / itemsPerPage)
+ // Pagination
+ const paginatedItems = filteredItems.slice(
+ (currentPage - 1) * itemsPerPage,
+ currentPage * itemsPerPage,
+ )
+ const totalPages = Math.ceil(filteredItems.length / itemsPerPage)
 
-  // Calculs agrégés
-  const aggregatedMetrics = useMemo(() => {
-    if (!state.result?.items) return null
+ // Calculs agrégés
+ const aggregatedMetrics = useMemo(() => {
+ if (!state.result?.items) return null
 
-    const totalBacklinks = state.result.items.reduce(
-      (sum, item) => sum + item.backlinks,
-      0,
-    )
-    const avgSpamScore =
-      state.result.items.reduce(
-        (sum, item) => sum + item.backlinks_spam_score,
-        0,
-      ) / state.result.items.length
+ const totalBacklinks = state.result.items.reduce(
+ (sum, item) => sum + item.backlinks,
+ 0,
+ )
+ const avgSpamScore =
+ state.result.items.reduce(
+ (sum, item) => sum + item.backlinks_spam_score,
+ 0,
+ ) / state.result.items.length
 
-    // Distribution des types d'ancres
-    const anchorTypes: Record<string, number> = {}
-    state.result.items.forEach((item) => {
-      const type = classifyAnchor(item.anchor ?? null, state.result!.target)
-      anchorTypes[type] = (anchorTypes[type] || 0) + item.backlinks
-    })
+ // Distribution des types d'ancres
+ const anchorTypes: Record<string, number> = {}
+ state.result.items.forEach((item) => {
+ const type = classifyAnchor(item.anchor ?? null, state.result!.target)
+ anchorTypes[type] = (anchorTypes[type] || 0) + item.backlinks
+ })
 
-    // Ancres avec le plus de backlinks
-    const topAnchors = [...state.result.items]
-      .sort((a, b) => b.backlinks - a.backlinks)
-      .slice(0, 10)
+ // Ancres avec le plus de backlinks
+ const topAnchors = [...state.result.items]
+ .sort((a, b) => b.backlinks - a.backlinks)
+ .slice(0, 10)
 
-    // Distribution dofollow/nofollow
-    const totalNofollow = state.result.items.reduce(
-      (sum, item) => sum + item.referring_pages_nofollow,
-      0,
-    )
-    const totalPages = state.result.items.reduce(
-      (sum, item) => sum + item.referring_pages,
-      0,
-    )
-    const dofollowPercent = ((totalPages - totalNofollow) / totalPages) * 100
+ // Distribution dofollow/nofollow
+ const totalNofollow = state.result.items.reduce(
+ (sum, item) => sum + item.referring_pages_nofollow,
+ 0,
+ )
+ const totalPages = state.result.items.reduce(
+ (sum, item) => sum + item.referring_pages,
+ 0,
+ )
+ const dofollowPercent = ((totalPages - totalNofollow) / totalPages) * 100
 
-    // Top types de liens
-    const linkTypes: Record<string, number> = {}
-    state.result.items.forEach((item) => {
-      Object.entries(item.referring_links_types || {}).forEach(
-        ([type, count]) => {
-          linkTypes[type] = (linkTypes[type] || 0) + count
-        },
-      )
-    })
-    const topLinkTypes = Object.entries(linkTypes)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 5)
+ // Top types de liens
+ const linkTypes: Record<string, number> = {}
+ state.result.items.forEach((item) => {
+ Object.entries(item.referring_links_types || {}).forEach(
+ ([type, count]) => {
+ linkTypes[type] = (linkTypes[type] || 0) + count
+ },
+ )
+ })
+ const topLinkTypes = Object.entries(linkTypes)
+ .sort((a, b) => b[1] - a[1])
+ .slice(0, 5)
 
-    // Ancres cassées
-    const brokenAnchors = state.result.items.filter(
-      (item) => item.broken_backlinks > 0,
-    ).length
+ // Ancres cassées
+ const brokenAnchors = state.result.items.filter(
+ (item) => item.broken_backlinks > 0,
+ ).length
 
-    return {
-      totalBacklinks,
-      avgSpamScore,
-      anchorTypes,
-      topAnchors,
-      dofollowPercent,
-      topLinkTypes,
-      brokenAnchors,
-    }
-  }, [state.result])
+ return {
+ totalBacklinks,
+ avgSpamScore,
+ anchorTypes,
+ topAnchors,
+ dofollowPercent,
+ topLinkTypes,
+ brokenAnchors,
+ }
+ }, [state.result])
 
-  // Helper pour les badges de spam score
-  const getSpamScoreBadge = (score: number): 'green' | 'yellow' | 'red' => {
-    if (score < 30) return 'green'
-    if (score < 60) return 'yellow'
-    return 'red'
-  }
+ // Helper pour les badges de spam score
+ const getSpamScoreBadge = (score: number): 'green' | 'yellow' | 'red' => {
+ if (score < 30) return 'green'
+ if (score < 60) return 'yellow'
+ return 'red'
+ }
 
-  // Helper pour les badges de type d'ancre
-  const getAnchorTypeBadge = (
-    type: string,
-  ): 'green' | 'blue' | 'zinc' | 'red' => {
-    const colors: Record<string, 'green' | 'blue' | 'zinc' | 'red'> = {
-      Branded: 'green',
-      'Exact/Partial': 'blue',
-      Générique: 'zinc',
-      URL: 'zinc',
-      'Long-tail': 'blue',
-      Image: 'zinc',
-      Vide: 'red',
-    }
-    return colors[type] || 'zinc'
-  }
+ // Helper pour les badges de type d'ancre
+ const getAnchorTypeBadge = (
+ type: string,
+ ): 'green' | 'blue' | 'zinc' | 'red' => {
+ const colors: Record<string, 'green' | 'blue' | 'zinc' | 'red'> = {
+ Branded: 'green',
+ 'Exact/Partial': 'blue',
+ Générique: 'zinc',
+ URL: 'zinc',
+ 'Long-tail': 'blue',
+ Image: 'zinc',
+ Vide: 'red',
+ }
+ return colors[type] || 'zinc'
+ }
 
-  // Helper pour formater les nombres
-  const formatNumber = (num: number) => {
-    return new Intl.NumberFormat('fr-FR').format(num)
-  }
+ // Helper pour formater les nombres
+ const formatNumber = (num: number) => {
+ return new Intl.NumberFormat('fr-FR').format(num)
+ }
 
-  // Helper pour formater les dates
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('fr-FR', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    })
-  }
+ // Helper pour formater les dates
+ const formatDate = (dateString: string) => {
+ return new Date(dateString).toLocaleDateString('fr-FR', {
+ year: 'numeric',
+ month: 'short',
+ day: 'numeric',
+ })
+ }
 
-  return (
-    <div className="container mx-auto px-4 py-6 sm:px-6 lg:px-8">
-      {/* Header */}
-      <div className="mb-6">
-        <div className="flex items-center gap-3">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
-            <Anchor className="h-6 w-6 text-primary" />
-          </div>
-          <div>
-            <h1 className="text-3xl font-bold">Analyse des Ancres</h1>
-            <p className="text-sm text-muted-foreground">
-              Découvrez les textes d&apos;ancre utilisés dans vos backlinks
-            </p>
-          </div>
-        </div>
-      </div>
+ return (
+ <div className="container mx-auto px-4 py-6 sm:px-6 lg:px-8">
+ {/* Header */}
+ <div className="mb-6">
+ <div className="flex items-center gap-3">
+ <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+ <Anchor className="h-6 w-6 text-primary" />
+ </div>
+ <div>
+ <h1 className="text-3xl font-bold">Analyse des Ancres</h1>
+ <p className="text-sm text-muted-foreground">
+ Découvrez les textes d&apos;ancre utilisés dans vos backlinks
+ </p>
+ </div>
+ </div>
+ </div>
 
-      {/* Formulaire */}
-      <Card className="mb-6">
-        <CardHeader>
-          <CardTitle>Analyser un domaine ou une URL</CardTitle>
-          <CardDescription>
-            Analysez la distribution des ancres de vos backlinks
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="target">Domaine ou URL cible</Label>
-              <Input
-                id="target"
-                name="target"
-                type="text"
-                value={target}
-                onChange={(e) => setTarget(e.target.value)}
-                placeholder="exemple.fr ou https://exemple.fr/page"
-                disabled={isPending}
-                required
-              />
-              <p className="text-xs text-muted-foreground">
-                Analyse des ancres avec backlinks actifs uniquement (live)
-              </p>
-            </div>
+ {/* Formulaire */}
+ <Card className="mb-6">
+ <CardHeader>
+ <CardTitle>Analyser un domaine ou une URL</CardTitle>
+ <CardDescription>
+ Analysez la distribution des ancres de vos backlinks
+ </CardDescription>
+ </CardHeader>
+ <CardContent>
+ <form onSubmit={handleSubmit} className="space-y-4">
+ <div className="space-y-2">
+ <Label htmlFor="target">Domaine ou URL cible</Label>
+ <Input
+ id="target"
+ name="target"
+ type="text"
+ value={target}
+ onChange={(e) => setTarget(e.target.value)}
+ placeholder="exemple.fr ou https://exemple.fr/page"
+ disabled={isPending}
+ required
+ />
+ <p className="text-xs text-muted-foreground">
+ Analyse des ancres avec backlinks actifs uniquement (live)
+ </p>
+ </div>
 
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={isPending || isTransitionPending || !target}
-            >
-              {isPending ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Analyse en cours...
-                </>
-              ) : (
-                <>
-                  <Anchor className="mr-2 h-4 w-4" />
-                  Analyser les ancres
-                </>
-              )}
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
+ <Button
+ type="submit"
+ className="w-full"
+ disabled={isPending || isTransitionPending || !target}
+ >
+ {isPending ? (
+ <>
+ <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+ Analyse en cours...
+ </>
+ ) : (
+ <>
+ <Anchor className="mr-2 h-4 w-4" />
+ Analyser les ancres
+ </>
+ )}
+ </Button>
+ </form>
+ </CardContent>
+ </Card>
 
-      {/* Erreur */}
-      {state.error && (
-        <Card className="mb-6 border-destructive/50 bg-destructive/5">
-          <CardContent className="pt-6">
-            <div className="flex items-start gap-3">
-              <AlertTriangle className="mt-0.5 h-5 w-5 text-destructive" />
-              <div>
-                <p className="font-semibold text-destructive">Erreur</p>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  {state.error}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
+ {/* Erreur */}
+ {state.error && (
+ <Card className="mb-6 border-destructive/50 bg-destructive/5">
+ <CardContent className="pt-6">
+ <div className="flex items-start gap-3">
+ <AlertTriangle className="mt-0.5 h-5 w-5 text-destructive" />
+ <div>
+ <p className="font-semibold text-destructive">Erreur</p>
+ <p className="mt-1 text-sm text-muted-foreground">
+ {state.error}
+ </p>
+ </div>
+ </div>
+ </CardContent>
+ </Card>
+ )}
 
-      {/* Loading */}
-      {isPending && (
-        <Card className="mb-6">
-          <CardContent className="flex flex-col items-center justify-center py-12">
-            <SpinnerCustom />
-            <p className="mt-4 font-medium">Récupération des ancres...</p>
-            <p className="mt-2 text-sm text-muted-foreground">
-              Cela peut prendre quelques secondes
-            </p>
-          </CardContent>
-        </Card>
-      )}
+ {/* Loading */}
+ {isPending && (
+ <Card className="mb-6">
+ <CardContent className="flex flex-col items-center justify-center py-12">
+ <SpinnerCustom />
+ <p className="mt-4 font-medium">Récupération des ancres...</p>
+ <p className="mt-2 text-sm text-muted-foreground">
+ Cela peut prendre quelques secondes
+ </p>
+ </CardContent>
+ </Card>
+ )}
 
-      {/* Résultats */}
-      {state.success && state.result && aggregatedMetrics && (
-        <>
-          {/* Métriques globales */}
-          <div className="mb-6 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  Total Ancres
-                </CardTitle>
-                <Tag className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold">
-                  {formatNumber(state.result.total_count)}
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  ancres uniques trouvées
-                </p>
-              </CardContent>
-            </Card>
+ {/* Résultats */}
+ {state.success && state.result && aggregatedMetrics && (
+ <>
+ {/* Métriques globales */}
+ <div className="mb-6 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+ <Card>
+ <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+ <CardTitle className="text-sm font-medium">
+ Total Ancres
+ </CardTitle>
+ <Tag className="h-4 w-4 text-muted-foreground" />
+ </CardHeader>
+ <CardContent>
+ <div className="text-3xl font-bold">
+ {formatNumber(state.result.total_count)}
+ </div>
+ <p className="text-xs text-muted-foreground">
+ ancres uniques trouvées
+ </p>
+ </CardContent>
+ </Card>
 
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  Total Backlinks
-                </CardTitle>
-                <Link2 className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold">
-                  {formatNumber(aggregatedMetrics.totalBacklinks)}
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  liens avec ancre
-                </p>
-              </CardContent>
-            </Card>
+ <Card>
+ <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+ <CardTitle className="text-sm font-medium">
+ Total Backlinks
+ </CardTitle>
+ <Link2 className="h-4 w-4 text-muted-foreground" />
+ </CardHeader>
+ <CardContent>
+ <div className="text-3xl font-bold">
+ {formatNumber(aggregatedMetrics.totalBacklinks)}
+ </div>
+ <p className="text-xs text-muted-foreground">
+ liens avec ancre
+ </p>
+ </CardContent>
+ </Card>
 
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Dofollow</CardTitle>
-                <TrendingUp className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold">
-                  {Math.round(aggregatedMetrics.dofollowPercent)}%
-                </div>
-                <p className="text-xs text-muted-foreground">liens dofollow</p>
-              </CardContent>
-            </Card>
+ <Card>
+ <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+ <CardTitle className="text-sm font-medium">Dofollow</CardTitle>
+ <TrendingUp className="h-4 w-4 text-muted-foreground" />
+ </CardHeader>
+ <CardContent>
+ <div className="text-3xl font-bold">
+ {Math.round(aggregatedMetrics.dofollowPercent)}%
+ </div>
+ <p className="text-xs text-muted-foreground">liens dofollow</p>
+ </CardContent>
+ </Card>
 
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  Spam Score Moyen
-                </CardTitle>
-                <Shield className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold">
-                  {Math.round(aggregatedMetrics.avgSpamScore)}%
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  qualité des ancres
-                </p>
-              </CardContent>
-            </Card>
-          </div>
+ <Card>
+ <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+ <CardTitle className="text-sm font-medium">
+ Spam Score Moyen
+ </CardTitle>
+ <Shield className="h-4 w-4 text-muted-foreground" />
+ </CardHeader>
+ <CardContent>
+ <div className="text-3xl font-bold">
+ {Math.round(aggregatedMetrics.avgSpamScore)}%
+ </div>
+ <p className="text-xs text-muted-foreground">
+ qualité des ancres
+ </p>
+ </CardContent>
+ </Card>
+ </div>
 
-          {/* Distribution des types d'ancres */}
-          <Card className="mb-6">
-            <CardHeader>
-              <CardTitle>Distribution des Types d&apos;Ancres</CardTitle>
-              <CardDescription>
-                Répartition par catégorie de texte d&apos;ancre
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {Object.entries(aggregatedMetrics.anchorTypes)
-                  .sort((a, b) => b[1] - a[1])
-                  .map(([type, count], idx) => {
-                    const percentage =
-                      (count / aggregatedMetrics.totalBacklinks) * 100
-                    return (
-                      <div key={idx} className="space-y-2">
-                        <div className="flex items-center justify-between text-sm">
-                          <div className="flex items-center gap-2">
-                            <Badge color={getAnchorTypeBadge(type)}>
-                              {type}
-                            </Badge>
-                          </div>
-                          <span className="text-muted-foreground">
-                            {formatNumber(count)} backlinks (
-                            {percentage.toFixed(1)}%)
-                          </span>
-                        </div>
-                        <Progress value={percentage} className="h-2" />
-                      </div>
-                    )
-                  })}
-              </div>
-            </CardContent>
-          </Card>
+ {/* Distribution des types d'ancres */}
+ <Card className="mb-6">
+ <CardHeader>
+ <CardTitle>Distribution des Types d&apos;Ancres</CardTitle>
+ <CardDescription>
+ Répartition par catégorie de texte d&apos;ancre
+ </CardDescription>
+ </CardHeader>
+ <CardContent>
+ <div className="space-y-4">
+ {Object.entries(aggregatedMetrics.anchorTypes)
+ .sort((a, b) => b[1] - a[1])
+ .map(([type, count], idx) => {
+ const percentage =
+ (count / aggregatedMetrics.totalBacklinks) * 100
+ return (
+ <div key={idx} className="space-y-2">
+ <div className="flex items-center justify-between text-sm">
+ <div className="flex items-center gap-2">
+ <Badge color={getAnchorTypeBadge(type)}>
+ {type}
+ </Badge>
+ </div>
+ <span className="text-muted-foreground">
+ {formatNumber(count)} backlinks (
+ {percentage.toFixed(1)}%)
+ </span>
+ </div>
+ <Progress value={percentage} className="h-2" />
+ </div>
+ )
+ })}
+ </div>
+ </CardContent>
+ </Card>
 
-          {/* Top 10 Ancres */}
-          <Card className="mb-6">
-            <CardHeader>
-              <CardTitle>Top 10 Ancres par Volume</CardTitle>
-              <CardDescription>
-                Les ancres générant le plus de backlinks
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {aggregatedMetrics.topAnchors.map((item, idx) => (
-                  <div
-                    key={idx}
-                    className="flex items-center justify-between rounded-lg border p-3"
-                  >
-                    <div className="flex items-center gap-3">
-                      <Badge color="blue">{idx + 1}</Badge>
-                      <div>
-                        <p className="font-medium">
-                          {item.anchor && item.anchor.length > 60
-                            ? item.anchor.substring(0, 60) + '...'
-                            : item.anchor || '(vide)'}
-                        </p>
-                        <div className="mt-1 flex gap-2">
-                          <Badge color="zinc" className="text-xs">
-                            {formatNumber(item.referring_domains)} domaines
-                          </Badge>
-                          <Badge
-                            color={getSpamScoreBadge(item.backlinks_spam_score)}
-                            className="text-xs"
-                          >
-                            Spam: {item.backlinks_spam_score}%
-                          </Badge>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-2xl font-bold">
-                        {formatNumber(item.backlinks)}
-                      </p>
-                      <p className="text-xs text-muted-foreground">backlinks</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+ {/* Top 10 Ancres */}
+ <Card className="mb-6">
+ <CardHeader>
+ <CardTitle>Top 10 Ancres par Volume</CardTitle>
+ <CardDescription>
+ Les ancres générant le plus de backlinks
+ </CardDescription>
+ </CardHeader>
+ <CardContent>
+ <div className="space-y-3">
+ {aggregatedMetrics.topAnchors.map((item, idx) => (
+ <div
+ key={idx}
+ className="flex items-center justify-between rounded-lg border p-3"
+ >
+ <div className="flex items-center gap-3">
+ <Badge color="blue">{idx + 1}</Badge>
+ <div>
+ <p className="font-medium">
+ {item.anchor && item.anchor.length > 60
+ ? item.anchor.substring(0, 60) + '...'
+ : item.anchor || '(vide)'}
+ </p>
+ <div className="mt-1 flex gap-2">
+ <Badge color="zinc" className="text-xs">
+ {formatNumber(item.referring_domains)} domaines
+ </Badge>
+ <Badge
+ color={getSpamScoreBadge(item.backlinks_spam_score)}
+ className="text-xs"
+ >
+ Spam: {item.backlinks_spam_score}%
+ </Badge>
+ </div>
+ </div>
+ </div>
+ <div className="text-right">
+ <p className="text-2xl font-bold">
+ {formatNumber(item.backlinks)}
+ </p>
+ <p className="text-xs text-muted-foreground">backlinks</p>
+ </div>
+ </div>
+ ))}
+ </div>
+ </CardContent>
+ </Card>
 
-          {/* Types de liens */}
-          <Card className="mb-6">
-            <CardHeader>
-              <CardTitle>Types de Liens</CardTitle>
-              <CardDescription>
-                Répartition par type de lien HTML
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid gap-3 md:grid-cols-2">
-                {aggregatedMetrics.topLinkTypes.map(([type, count], idx) => (
-                  <div
-                    key={idx}
-                    className="flex items-center justify-between rounded-lg border p-3"
-                  >
-                    <div className="flex items-center gap-2">
-                      <Badge color="zinc">{type}</Badge>
-                    </div>
-                    <span className="font-medium">
-                      {formatNumber(count)} liens
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+ {/* Types de liens */}
+ <Card className="mb-6">
+ <CardHeader>
+ <CardTitle>Types de Liens</CardTitle>
+ <CardDescription>
+ Répartition par type de lien HTML
+ </CardDescription>
+ </CardHeader>
+ <CardContent>
+ <div className="grid gap-3 md:grid-cols-2">
+ {aggregatedMetrics.topLinkTypes.map(([type, count], idx) => (
+ <div
+ key={idx}
+ className="flex items-center justify-between rounded-lg border p-3"
+ >
+ <div className="flex items-center gap-2">
+ <Badge color="zinc">{type}</Badge>
+ </div>
+ <span className="font-medium">
+ {formatNumber(count)} liens
+ </span>
+ </div>
+ ))}
+ </div>
+ </CardContent>
+ </Card>
 
-          {/* Recherche et filtres */}
-          <Card className="mb-6">
-            <CardHeader>
-              <CardTitle>Rechercher une Ancre</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex gap-2">
-                <Input
-                  type="text"
-                  placeholder="Rechercher dans les ancres..."
-                  value={searchTerm}
-                  onChange={(e) => {
-                    setSearchTerm(e.target.value)
-                    setCurrentPage(1)
-                  }}
-                  className="max-w-md"
-                />
-                {searchTerm && (
-                  <Button
-                    variant="outline"
-                    onClick={() => {
-                      setSearchTerm('')
-                      setCurrentPage(1)
-                    }}
-                  >
-                    Réinitialiser
-                  </Button>
-                )}
-              </div>
-              {searchTerm && (
-                <p className="mt-2 text-sm text-muted-foreground">
-                  {filteredItems.length} résultat(s) trouvé(s)
-                </p>
-              )}
-            </CardContent>
-          </Card>
+ {/* Recherche et filtres */}
+ <Card className="mb-6">
+ <CardHeader>
+ <CardTitle>Rechercher une Ancre</CardTitle>
+ </CardHeader>
+ <CardContent>
+ <div className="flex gap-2">
+ <Input
+ type="text"
+ placeholder="Rechercher dans les ancres..."
+ value={searchTerm}
+ onChange={(e) => {
+ setSearchTerm(e.target.value)
+ setCurrentPage(1)
+ }}
+ className="max-w-md"
+ />
+ {searchTerm && (
+ <Button
+ variant="outline"
+ onClick={() => {
+ setSearchTerm('')
+ setCurrentPage(1)
+ }}
+ >
+ Réinitialiser
+ </Button>
+ )}
+ </div>
+ {searchTerm && (
+ <p className="mt-2 text-sm text-muted-foreground">
+ {filteredItems.length} résultat(s) trouvé(s)
+ </p>
+ )}
+ </CardContent>
+ </Card>
 
-          {/* Table des ancres */}
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle>Liste Complète des Ancres</CardTitle>
-                  <CardDescription>
-                    {formatNumber(filteredItems.length)} ancres{' '}
-                    {searchTerm && `(filtrées)`}
-                  </CardDescription>
-                </div>
-                <Badge color="zinc">
-                  Coût API: ${state.cost?.toFixed(4) || '0'}
-                </Badge>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="rounded-md border">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Ancre</TableHead>
-                      <TableHead className="w-[100px]">Type</TableHead>
-                      <TableHead className="w-[80px]">Rank</TableHead>
-                      <TableHead className="w-[100px]">Backlinks</TableHead>
-                      <TableHead className="w-[100px]">Domaines</TableHead>
-                      <TableHead className="w-[100px]">Spam Score</TableHead>
-                      <TableHead className="w-[120px]">Première Vue</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {paginatedItems.map((item, idx) => {
-                      const anchorType = classifyAnchor(
-                        item.anchor ?? null,
-                        state.result!.target,
-                      )
-                      return (
-                        <TableRow key={idx}>
-                          <TableCell className="font-medium">
-                            <div className="max-w-md">
-                              <p className="truncate">
-                                {item.anchor || '(vide)'}
-                              </p>
-                              {item.lost_date && (
-                                <Badge color="red" className="mt-1 text-xs">
-                                  Perdu le {formatDate(item.lost_date)}
-                                </Badge>
-                              )}
-                              {item.broken_backlinks > 0 && (
-                                <Badge color="zinc" className="mt-1 text-xs">
-                                  {item.broken_backlinks} liens cassés
-                                </Badge>
-                              )}
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            <Badge color={getAnchorTypeBadge(anchorType)}>
-                              {anchorType}
-                            </Badge>
-                          </TableCell>
-                          <TableCell>
-                            <Badge color="blue">{item.rank}</Badge>
-                          </TableCell>
-                          <TableCell>{formatNumber(item.backlinks)}</TableCell>
-                          <TableCell>
-                            {formatNumber(item.referring_domains)}
-                          </TableCell>
-                          <TableCell>
-                            <Badge
-                              color={getSpamScoreBadge(
-                                item.backlinks_spam_score,
-                              )}
-                            >
-                              {item.backlinks_spam_score}%
-                            </Badge>
-                          </TableCell>
-                          <TableCell className="text-sm text-muted-foreground">
-                            {formatDate(item.first_seen)}
-                          </TableCell>
-                        </TableRow>
-                      )
-                    })}
-                  </TableBody>
-                </Table>
-              </div>
+ {/* Table des ancres */}
+ <Card>
+ <CardHeader>
+ <div className="flex items-center justify-between">
+ <div>
+ <CardTitle>Liste Complète des Ancres</CardTitle>
+ <CardDescription>
+ {formatNumber(filteredItems.length)} ancres{' '}
+ {searchTerm && `(filtrées)`}
+ </CardDescription>
+ </div>
+ <Badge color="zinc">
+ Coût API: ${state.cost?.toFixed(4) || '0'}
+ </Badge>
+ </div>
+ </CardHeader>
+ <CardContent>
+ <div className="rounded-md border">
+ <Table>
+ <TableHeader>
+ <TableRow>
+ <TableHead>Ancre</TableHead>
+ <TableHead className="w-[100px]">Type</TableHead>
+ <TableHead className="w-[80px]">Rank</TableHead>
+ <TableHead className="w-[100px]">Backlinks</TableHead>
+ <TableHead className="w-[100px]">Domaines</TableHead>
+ <TableHead className="w-[100px]">Spam Score</TableHead>
+ <TableHead className="w-[120px]">Première Vue</TableHead>
+ </TableRow>
+ </TableHeader>
+ <TableBody>
+ {paginatedItems.map((item, idx) => {
+ const anchorType = classifyAnchor(
+ item.anchor ?? null,
+ state.result!.target,
+ )
+ return (
+ <TableRow key={idx}>
+ <TableCell className="font-medium">
+ <div className="max-w-md">
+ <p className="truncate">
+ {item.anchor || '(vide)'}
+ </p>
+ {item.lost_date && (
+ <Badge color="red" className="mt-1 text-xs">
+ Perdu le {formatDate(item.lost_date)}
+ </Badge>
+ )}
+ {item.broken_backlinks > 0 && (
+ <Badge color="zinc" className="mt-1 text-xs">
+ {item.broken_backlinks} liens cassés
+ </Badge>
+ )}
+ </div>
+ </TableCell>
+ <TableCell>
+ <Badge color={getAnchorTypeBadge(anchorType)}>
+ {anchorType}
+ </Badge>
+ </TableCell>
+ <TableCell>
+ <Badge color="blue">{item.rank}</Badge>
+ </TableCell>
+ <TableCell>{formatNumber(item.backlinks)}</TableCell>
+ <TableCell>
+ {formatNumber(item.referring_domains)}
+ </TableCell>
+ <TableCell>
+ <Badge
+ color={getSpamScoreBadge(
+ item.backlinks_spam_score,
+ )}
+ >
+ {item.backlinks_spam_score}%
+ </Badge>
+ </TableCell>
+ <TableCell className="text-sm text-muted-foreground">
+ {formatDate(item.first_seen)}
+ </TableCell>
+ </TableRow>
+ )
+ })}
+ </TableBody>
+ </Table>
+ </div>
 
-              {/* Pagination */}
-              {totalPages > 1 && (
-                <div className="mt-4 flex items-center justify-between">
-                  <p className="text-sm text-muted-foreground">
-                    Page {currentPage} sur {totalPages}
-                  </p>
-                  <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                      disabled={currentPage === 1}
-                    >
-                      <ChevronLeft className="h-4 w-4" />
-                      Précédent
-                    </Button>
-                    <Button
-                      variant="outline"
-                      onClick={() =>
-                        setCurrentPage((p) => Math.min(totalPages, p + 1))
-                      }
-                      disabled={currentPage === totalPages}
-                    >
-                      Suivant
-                      <ChevronRight className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </>
-      )}
-    </div>
-  )
+ {/* Pagination */}
+ {totalPages > 1 && (
+ <div className="mt-4 flex items-center justify-between">
+ <p className="text-sm text-muted-foreground">
+ Page {currentPage} sur {totalPages}
+ </p>
+ <div className="flex gap-2">
+ <Button
+ variant="outline"
+ onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+ disabled={currentPage === 1}
+ >
+ <ChevronLeft className="h-4 w-4" />
+ Précédent
+ </Button>
+ <Button
+ variant="outline"
+ onClick={() =>
+ setCurrentPage((p) => Math.min(totalPages, p + 1))
+ }
+ disabled={currentPage === totalPages}
+ >
+ Suivant
+ <ChevronRight className="h-4 w-4" />
+ </Button>
+ </div>
+ </div>
+ )}
+ </CardContent>
+ </Card>
+ </>
+ )}
+ </div>
+ )
 }
