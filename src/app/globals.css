@@ -77,4 +77,83 @@
       --destructive-foreground: oklch(98.8% 0.003 106.5);
     }
   }
+
+  /* Système de typographie cohérent pour le dashboard */
+  .dashboard-text-base {
+    @apply text-base leading-relaxed;
+    color: var(--foreground);
+  }
+
+  .dashboard-text-sm {
+    @apply text-sm leading-normal;
+    color: var(--foreground);
+  }
+
+  .dashboard-text-xs {
+    @apply text-xs leading-tight;
+    color: var(--foreground);
+  }
+
+  .dashboard-text-lg {
+    @apply text-lg leading-relaxed;
+    color: var(--foreground);
+  }
+
+  .dashboard-heading-1 {
+    @apply text-3xl font-bold tracking-tight;
+    color: var(--foreground);
+  }
+
+  .dashboard-heading-2 {
+    @apply text-2xl font-semibold tracking-tight;
+    color: var(--foreground);
+  }
+
+  .dashboard-heading-3 {
+    @apply text-xl font-semibold;
+    color: var(--foreground);
+  }
+
+  .dashboard-heading-4 {
+    @apply text-lg font-semibold;
+    color: var(--foreground);
+  }
+
+  .dashboard-body {
+    @apply text-base;
+    color: var(--foreground);
+  }
+
+  .dashboard-body-sm {
+    @apply text-sm;
+    color: var(--muted-foreground);
+  }
+
+  .dashboard-body-lg {
+    @apply text-lg;
+    color: var(--foreground);
+  }
+
+  /* Style uniforme pour les réponses API */
+  .api-response {
+    @apply rounded-lg border-2 p-6 shadow-sm;
+    border-color: var(--border);
+    background-color: var(--card);
+    color: var(--card-foreground);
+  }
+
+  .api-response-header {
+    @apply mb-4 flex items-center gap-3 border-b pb-4;
+    border-color: var(--border);
+  }
+
+  .api-response-title {
+    @apply text-lg font-semibold;
+    color: var(--foreground);
+  }
+
+  .api-response-content {
+    @apply text-base;
+    color: var(--foreground);
+  }
 }

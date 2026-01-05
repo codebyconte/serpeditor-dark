@@ -289,7 +289,7 @@ export default async function DashboardPage() {
                         <div>
                           <div className="mb-4 flex items-center gap-2">
                             <Activity className="text-muted-foreground h-4 w-4" />
-                            <p className="text-muted-foreground text-sm font-medium">
+                            <p className="dashboard-body-sm font-medium">
                               Performances - 30 derniers jours
                             </p>
                           </div>
@@ -300,13 +300,13 @@ export default async function DashboardPage() {
                                 <div className="rounded-md bg-blue-500/10 p-1.5">
                                   <MousePointerClick className="h-4 w-4 text-blue-600 dark:text-blue-400" />
                                 </div>
-                                <span className="text-muted-foreground text-xs font-medium">Clics</span>
+                                <span className="dashboard-body-sm font-medium">Clics</span>
                               </div>
                               <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
                                 {projectData.clicks.toLocaleString('fr-FR')}
                               </p>
                               {projectDataPrevious && (
-                                <p className="mt-1 flex items-center gap-1 text-xs">
+                                <p className="dashboard-body-sm mt-1 flex items-center gap-1">
                                   {clicksChange > 0 ? (
                                     <>
                                       <TrendingUp className="h-3 w-3 text-green-600" />
@@ -330,13 +330,13 @@ export default async function DashboardPage() {
                                 <div className="rounded-md bg-purple-500/10 p-1.5">
                                   <Eye className="h-4 w-4 text-purple-600 dark:text-purple-400" />
                                 </div>
-                                <span className="text-muted-foreground text-xs font-medium">Impressions</span>
+                                <span className="dashboard-body-sm font-medium">Impressions</span>
                               </div>
                               <p className="text-2xl font-bold text-purple-600 dark:text-purple-400">
                                 {projectData.impressions.toLocaleString('fr-FR')}
                               </p>
                               {projectDataPrevious && (
-                                <p className="mt-1 flex items-center gap-1 text-xs">
+                                <p className="dashboard-body-sm mt-1 flex items-center gap-1">
                                   {impressionsChange > 0 ? (
                                     <>
                                       <TrendingUp className="h-3 w-3 text-green-600" />
@@ -360,7 +360,7 @@ export default async function DashboardPage() {
                                 <div className="rounded-md bg-emerald-500/10 p-1.5">
                                   <Zap className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
                                 </div>
-                                <span className="text-muted-foreground text-xs font-medium">CTR moyen</span>
+                                <span className="dashboard-body-sm font-medium">CTR moyen</span>
                               </div>
                               <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
                                 {(projectData.ctr * 100).toFixed(2)}%
@@ -373,7 +373,7 @@ export default async function DashboardPage() {
                                 <div className="rounded-md bg-orange-500/10 p-1.5">
                                   <BarChart3 className="h-4 w-4 text-orange-600 dark:text-orange-400" />
                                 </div>
-                                <span className="text-muted-foreground text-xs font-medium">Position</span>
+                                <span className="dashboard-body-sm font-medium">Position</span>
                               </div>
                               <p className="text-2xl font-bold text-orange-600 dark:text-orange-400">
                                 {projectData.position.toFixed(1)}
@@ -409,48 +409,48 @@ export default async function DashboardPage() {
 
                         {/* Actions rapides */}
                         <div>
-                          <h3 className="mb-3 text-sm font-medium">Actions rapides</h3>
+                          <h3 className="dashboard-heading-4 mb-3">Actions rapides</h3>
                           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
                             <Link href={`/dashboard/mots-cles-organiques?project=${project.id}`}>
-                              <Button variant="outline" className="h-auto w-full flex-col gap-2 py-3">
+                              <Button variant="outline" className="h-auto w-full flex-col gap-2 border-2 py-3 transition-all hover:border-primary/50">
                                 <Search className="h-4 w-4" />
-                                <span className="text-xs">Mots-clés</span>
+                                <span className="dashboard-body-sm">Mots-clés</span>
                               </Button>
                             </Link>
                             <Link href={`/dashboard/pages-principales?project=${project.id}`}>
-                              <Button variant="outline" className="h-auto w-full flex-col gap-2 py-3">
+                              <Button variant="outline" className="h-auto w-full flex-col gap-2 border-2 py-3 transition-all hover:border-primary/50">
                                 <FileSearch className="h-4 w-4" />
-                                <span className="text-xs">Pages</span>
+                                <span className="dashboard-body-sm">Pages</span>
                               </Button>
                             </Link>
                             <Link href={`/dashboard/audit-de-site/${project.id}`}>
-                              <Button variant="outline" className="h-auto w-full flex-col gap-2 py-3">
+                              <Button variant="outline" className="h-auto w-full flex-col gap-2 border-2 py-3 transition-all hover:border-primary/50">
                                 <FileSearch className="h-4 w-4" />
-                                <span className="text-xs">Audit</span>
+                                <span className="dashboard-body-sm">Audit</span>
                               </Button>
                             </Link>
                             <Link href={`/dashboard/backlinks?project=${project.id}`}>
-                              <Button variant="outline" className="h-auto w-full flex-col gap-2 py-3">
+                              <Button variant="outline" className="h-auto w-full flex-col gap-2 border-2 py-3 transition-all hover:border-primary/50">
                                 <Link2 className="h-4 w-4" />
-                                <span className="text-xs">Backlinks</span>
+                                <span className="dashboard-body-sm">Backlinks</span>
                               </Button>
                             </Link>
                             <Link href={`/dashboard/analyse-serp?project=${project.id}`}>
-                              <Button variant="outline" className="h-auto w-full flex-col gap-2 py-3">
+                              <Button variant="outline" className="h-auto w-full flex-col gap-2 border-2 py-3 transition-all hover:border-primary/50">
                                 <BarChart3 className="h-4 w-4" />
-                                <span className="text-xs">SERP</span>
+                                <span className="dashboard-body-sm">SERP</span>
                               </Button>
                             </Link>
                             <Link href={`/dashboard/suivi-positions?project=${project.id}`}>
-                              <Button variant="outline" className="h-auto w-full flex-col gap-2 py-3">
+                              <Button variant="outline" className="h-auto w-full flex-col gap-2 border-2 py-3 transition-all hover:border-primary/50">
                                 <TrendingUp className="h-4 w-4" />
-                                <span className="text-xs">Positions</span>
+                                <span className="dashboard-body-sm">Positions</span>
                               </Button>
                             </Link>
                             <Link href={`/dashboard/analyse-concurrents?project=${project.id}`}>
-                              <Button variant="outline" className="h-auto w-full flex-col gap-2 py-3">
+                              <Button variant="outline" className="h-auto w-full flex-col gap-2 border-2 py-3 transition-all hover:border-primary/50">
                                 <Target className="h-4 w-4" />
-                                <span className="text-xs">Concurrents</span>
+                                <span className="dashboard-body-sm">Concurrents</span>
                               </Button>
                             </Link>
                           </div>
@@ -459,8 +459,8 @@ export default async function DashboardPage() {
                     ) : (
                       <div className="rounded-lg border border-dashed p-8 text-center">
                         <BarChart3 className="text-muted-foreground/50 mx-auto h-12 w-12" />
-                        <p className="text-muted-foreground mt-4 text-sm font-medium">Aucune donnée disponible</p>
-                        <p className="text-muted-foreground mt-1 text-xs">
+                        <p className="dashboard-body-sm mt-4 font-medium">Aucune donnée disponible</p>
+                        <p className="dashboard-body-sm mt-1">
                           Vérifiez que ce site est connecté à Google Search Console
                         </p>
                       </div>

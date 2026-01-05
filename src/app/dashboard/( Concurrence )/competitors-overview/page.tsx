@@ -75,7 +75,7 @@ export default function CompetitorsAnalyzerPage() {
           <form onSubmit={handleSearch} className="space-y-6">
             {/* Target */}
             <div>
-              <label className="mb-2 block text-sm font-semibold text-foreground">
+              <label className="dashboard-heading-4 mb-2 block">
                 Domaine à analyser
               </label>
               <div className="relative">
@@ -89,14 +89,14 @@ export default function CompetitorsAnalyzerPage() {
                   disabled={loading}
                 />
               </div>
-              <p className="mt-2 text-sm text-muted-foreground">
+              <p className="dashboard-body-sm mt-2">
                 Entrez le domaine sans https:// ni www.
               </p>
             </div>
 
             {/* Info localisation et langue */}
             <div className="rounded-lg border border-primary/20 bg-primary/5 px-4 py-3">
-              <p className="text-sm text-primary">
+              <p className="dashboard-body-sm text-primary">
                 <span className="font-semibold">Localisation :</span> France
                 (2250) • <span className="font-semibold">Langue :</span>{' '}
                 Français (fr)
@@ -105,7 +105,7 @@ export default function CompetitorsAnalyzerPage() {
 
             {/* Exclude Top Domains */}
             <div>
-              <label className="mb-2 block text-sm font-semibold text-foreground">
+              <label className="dashboard-heading-4 mb-2 block">
                 Options
               </label>
               <label className="flex items-center gap-3 rounded-xl border-2 border bg-card px-4 py-3 hover:bg-card">
@@ -116,7 +116,7 @@ export default function CompetitorsAnalyzerPage() {
                   disabled={loading}
                   className="h-5 w-5 rounded border text-primary focus:ring-2 focus:ring-blue-500"
                 />
-                <span className="text-sm font-medium text-foreground">
+                <span className="dashboard-body-sm font-medium">
                   Exclure les sites majeurs (Wikipedia, Amazon, etc.)
                 </span>
               </label>
@@ -126,7 +126,7 @@ export default function CompetitorsAnalyzerPage() {
             <button
               type="submit"
               disabled={loading || !target.trim()}
-              className="flex w-full items-center justify-center gap-3 rounded-xl bg-primary py-4 text-lg font-semibold text-primary-foreground shadow-lg hover:bg-primary/90 hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-50"
+              className="flex w-full items-center justify-center gap-3 rounded-xl border-2 border-primary bg-primary py-4 text-base font-semibold text-primary-foreground shadow-lg transition-all hover:bg-primary/90 hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-50 disabled:border-primary/50"
             >
               {loading ? (
                 <>
@@ -146,8 +146,8 @@ export default function CompetitorsAnalyzerPage() {
             <div className="mt-6 flex items-start gap-3 rounded-xl border-2 border-destructive/50 bg-destructive/10 p-4">
               <AlertCircle className="h-5 w-5 flex-shrink-0 text-destructive" />
               <div>
-                <p className="font-semibold text-destructive">Erreur</p>
-                <p className="text-sm text-destructive/90">{error}</p>
+                <p className="dashboard-heading-4 text-destructive">Erreur</p>
+                <p className="dashboard-body-sm text-destructive/90">{error}</p>
               </div>
             </div>
           )}
@@ -157,27 +157,27 @@ export default function CompetitorsAnalyzerPage() {
         {loading && (
           <div className="flex flex-col items-center justify-center rounded-2xl border bg-card p-16">
             <Loader2 className="h-16 w-16 animate-spin text-primary" />
-            <p className="mt-4 text-lg font-medium text-foreground">
+            <p className="dashboard-body-lg mt-4">
               Analyse des concurrents en cours...
             </p>
-            <p className="mt-2 text-sm text-muted-foreground">
+            <p className="dashboard-body-sm mt-2">
               Cela peut prendre quelques secondes
             </p>
           </div>
         )}
 
         {!loading && competitorsData && (
-          <div>
-            <div className="mb-6 flex items-center justify-between rounded-xl border bg-card p-6 shadow-sm">
+          <div className="api-response">
+            <div className="api-response-header">
               <div className="flex items-center gap-4">
                 <div className="rounded-lg bg-primary/10 p-3">
                   <Target className="h-6 w-6 text-primary" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-bold text-foreground">
+                  <h2 className="dashboard-heading-3">
                     {competitorsData.target}
                   </h2>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="dashboard-body-sm mt-1">
                     {competitorsData.total_count} concurrents trouvés • France •
                     Français
                   </p>
@@ -185,10 +185,12 @@ export default function CompetitorsAnalyzerPage() {
               </div>
             </div>
 
-            <CompetitorsAnalyzer
-              data={competitorsData}
-              target={competitorsData.target}
-            />
+            <div className="api-response-content">
+              <CompetitorsAnalyzer
+                data={competitorsData}
+                target={competitorsData.target}
+              />
+            </div>
           </div>
         )}
 
@@ -197,38 +199,38 @@ export default function CompetitorsAnalyzerPage() {
             <div className="rounded-full bg-primary/10 p-6">
               <Target className="h-12 w-12 text-primary" />
             </div>
-            <h3 className="mt-6 text-xl font-semibold text-foreground">
+            <h3 className="dashboard-heading-3 mt-6">
               Analysez vos concurrents SEO
             </h3>
-            <p className="mt-2 max-w-md text-muted-foreground">
+            <p className="dashboard-body-sm mt-2 max-w-md">
               Identifiez qui se positionne sur les mêmes mots-clés que vous et
               découvrez leurs stratégies
             </p>
             <div className="mt-8 grid grid-cols-3 gap-6 text-left">
               <div className="rounded-xl border bg-card p-4">
                 <div className="mb-2 text-2xl">🎯</div>
-                <h4 className="font-semibold text-foreground">
+                <h4 className="dashboard-heading-4">
                   Identifiez vos rivaux
                 </h4>
-                <p className="mt-1 text-sm text-muted-foreground">
+                <p className="dashboard-body-sm mt-1">
                   Découvrez qui se bat pour les mêmes positions
                 </p>
               </div>
               <div className="rounded-xl border bg-card p-4">
                 <div className="mb-2 text-2xl">📊</div>
-                <h4 className="font-semibold text-foreground">
+                <h4 className="dashboard-heading-4">
                   Analysez leur force
                 </h4>
-                <p className="mt-1 text-sm text-muted-foreground">
+                <p className="dashboard-body-sm mt-1">
                   Keywords, ETV, positions et distribution
                 </p>
               </div>
               <div className="rounded-xl border bg-card p-4">
                 <div className="mb-2 text-2xl">🚀</div>
-                <h4 className="font-semibold text-foreground">
+                <h4 className="dashboard-heading-4">
                   Optimisez votre stratégie
                 </h4>
-                <p className="mt-1 text-sm text-muted-foreground">
+                <p className="dashboard-body-sm mt-1">
                   Trouvez des opportunités de mots-clés
                 </p>
               </div>

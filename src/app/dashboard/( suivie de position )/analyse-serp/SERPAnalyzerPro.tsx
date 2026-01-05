@@ -195,9 +195,9 @@ export default function SERPAnalyzerPro({
 
   if (!analytics) {
     return (
-      <div className="rounded-xl border border-gray-200 bg-white p-12 text-center">
-        <AlertTriangle className="mx-auto h-12 w-12 text-gray-400" />
-        <p className="mt-4 text-gray-600">Aucune donnée disponible</p>
+      <div className="bg-card rounded-xl border border-border p-12 text-center">
+        <AlertTriangle className="text-muted-foreground mx-auto h-12 w-12" />
+        <p className="dashboard-body-sm mt-4">Aucune donnée disponible</p>
       </div>
     )
   }
@@ -213,19 +213,19 @@ export default function SERPAnalyzerPro({
   return (
     <div className="space-y-6">
       {/* En-tête avec informations du mot-clé */}
-      <div className="rounded-xl border-2 border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50 p-6 shadow-sm">
+      <div className="bg-card rounded-xl border-2 border-primary/20 bg-gradient-to-r from-primary/5 to-primary/10 p-6 shadow-sm">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">
+            <h2 className="dashboard-heading-2">
               Analyse SERP : &quot;{keyword}&quot;
             </h2>
-            <p className="mt-1 text-sm text-gray-600">
+            <p className="dashboard-body-sm mt-1">
               Analyse historique de l&apos;évolution des résultats de recherche
               Google
             </p>
           </div>
-          <div className="rounded-lg bg-white p-3 shadow-sm">
-            <Search className="h-6 w-6 text-blue-600" />
+          <div className="bg-card rounded-lg p-3 shadow-sm">
+            <Search className="text-primary h-6 w-6" />
           </div>
         </div>
       </div>
@@ -281,12 +281,12 @@ export default function SERPAnalyzerPro({
       </div>
 
       {/* Navigation avec descriptions SEO */}
-      <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+      <div className="bg-card rounded-xl border border-border p-4 shadow-sm">
         <div className="mb-3">
-          <h3 className="text-sm font-semibold text-gray-700">
+          <h3 className="dashboard-heading-4">
             Vues d&apos;analyse disponibles
           </h3>
-          <p className="text-xs text-gray-500">
+          <p className="dashboard-body-sm">
             Sélectionnez une vue pour analyser différents aspects de la SERP
           </p>
         </div>
@@ -379,14 +379,14 @@ function MetricCard({
   }
 
   return (
-    <div className="rounded-xl border-2 bg-white p-6 shadow-sm">
+    <div className="bg-card rounded-xl border-2 border-border p-6 shadow-sm">
       <div className="flex items-start justify-between">
         <div className="flex-1">
-          <p className="text-sm font-medium text-gray-600">{label}</p>
-          <p className="mt-2 text-3xl font-bold text-gray-900">{value}</p>
-          {subtitle && <p className="mt-1 text-xs text-gray-500">{subtitle}</p>}
+          <p className="dashboard-body-sm font-medium">{label}</p>
+          <p className="dashboard-heading-1 mt-2">{value}</p>
+          {subtitle && <p className="dashboard-body-sm mt-1">{subtitle}</p>}
         </div>
-        <div className={`rounded-lg border p-3 ${colorClasses[color]}`}>
+        <div className={`rounded-lg border border-border p-3 ${colorClasses[color]}`}>
           {icon}
         </div>
       </div>
@@ -410,20 +410,18 @@ function ViewTab({
   return (
     <button
       onClick={onClick}
-      className={`flex flex-col items-start gap-1 rounded-lg px-4 py-3 text-left font-medium transition-all ${
+      className={`flex flex-col items-start gap-1 rounded-lg border-2 px-4 py-3 text-left font-medium transition-all ${
         active
-          ? 'bg-blue-600 text-white shadow-md'
-          : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
+          ? 'border-primary bg-primary text-primary-foreground shadow-md'
+          : 'border-border bg-card text-foreground hover:bg-accent hover:text-accent-foreground'
       }`}
     >
       <div className="flex items-center gap-2">
         {icon}
-        <span className="font-semibold">{label}</span>
+        <span className="dashboard-heading-4">{label}</span>
       </div>
       {description && (
-        <span
-          className={`text-xs ${active ? 'text-blue-100' : 'text-gray-500'}`}
-        >
+        <span className={`dashboard-body-sm ${active ? 'text-primary-foreground/80' : ''}`}>
           {description}
         </span>
       )}
@@ -442,18 +440,18 @@ function ComparisonView({
 }) {
   if (loading) {
     return (
-      <div className="flex items-center justify-center rounded-xl border border-gray-200 bg-white p-12">
-        <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
-        <span className="ml-3 text-gray-600">Comparaison en cours...</span>
+      <div className="bg-card flex items-center justify-center rounded-xl border border-border p-12">
+        <Loader2 className="text-primary h-8 w-8 animate-spin" />
+        <span className="dashboard-body-sm ml-3">Comparaison en cours...</span>
       </div>
     )
   }
 
   if (!comparison) {
     return (
-      <div className="rounded-xl border border-gray-200 bg-white p-12 text-center">
-        <AlertTriangle className="mx-auto h-12 w-12 text-gray-400" />
-        <p className="mt-4 text-gray-600">
+      <div className="bg-card rounded-xl border border-border p-12 text-center">
+        <AlertTriangle className="text-muted-foreground mx-auto h-12 w-12" />
+        <p className="dashboard-body-sm mt-4">
           {snapshots.length < 2
             ? 'Au moins 2 snapshots nécessaires pour la comparaison'
             : 'Impossible de charger la comparaison'}
@@ -468,10 +466,10 @@ function ComparisonView({
       <div className="rounded-xl border-2 border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50 p-6 shadow-sm">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
-            <h3 className="text-xl font-bold text-gray-900">
+            <h3 className="dashboard-heading-3">
               Analyse comparative des SERP
             </h3>
-            <p className="mt-1 text-sm text-gray-600">
+            <p className="dashboard-body-sm mt-1">
               Comparaison entre le{' '}
               <span className="font-semibold">
                 {new Date(comparison.date1).toLocaleDateString('fr-FR', {
@@ -489,19 +487,19 @@ function ComparisonView({
                 })}
               </span>
             </p>
-            <p className="mt-2 text-xs text-gray-500">
+            <p className="dashboard-body-sm mt-2">
               Analyse des changements de positions, nouveaux entrants et
               domaines sortis du top 100
             </p>
           </div>
-          <div className="rounded-lg bg-white p-4 text-center shadow-sm">
+          <div className="bg-card rounded-lg p-4 text-center shadow-sm">
             <div className="text-3xl font-bold text-blue-700">
               {(comparison.volatilityScore * 100).toFixed(1)}%
             </div>
-            <div className="text-xs font-medium text-gray-600">
+            <div className="dashboard-body-sm font-medium">
               Taux de volatilité
             </div>
-            <div className="mt-1 text-xs text-gray-500">
+            <div className="dashboard-body-sm mt-1">
               {comparison.volatilityScore < 0.3
                 ? 'SERP stable'
                 : comparison.volatilityScore < 0.6
@@ -589,15 +587,15 @@ function ComparisonView({
             <div className="border-b-2 border-yellow-300 bg-yellow-100 px-6 py-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <h4 className="text-lg font-bold text-gray-900">
+                  <h4 className="dashboard-heading-4">
                     🎯 Top 10 - Positions stratégiques
                   </h4>
-                  <p className="mt-1 text-sm text-gray-600">
+                  <p className="dashboard-body-sm mt-1">
                     Évolution des domaines dans les 10 premières positions
                     (zones de forte visibilité)
                   </p>
                 </div>
-                <div className="rounded-lg bg-white px-4 py-2 shadow-sm">
+                <div className="bg-card rounded-lg px-4 py-2 shadow-sm">
                   <div className="text-2xl font-bold text-yellow-700">
                     {
                       comparison.positionChanges.filter(
@@ -605,27 +603,27 @@ function ComparisonView({
                       ).length
                     }
                   </div>
-                  <div className="text-xs text-gray-600">mouvements</div>
+                  <div className="dashboard-body-sm">mouvements</div>
                 </div>
               </div>
             </div>
-            <div className="overflow-x-auto bg-white">
+            <div className="bg-card overflow-x-auto">
               <table className="w-full">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-semibold tracking-wider text-gray-700 uppercase">
+                    <th className="dashboard-body-sm border-border px-6 py-3 text-left font-semibold tracking-wider uppercase border-b">
                       Position finale
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold tracking-wider text-gray-700 uppercase">
+                    <th className="dashboard-body-sm border-border px-6 py-3 text-left font-semibold tracking-wider uppercase border-b">
                       Domaine
                     </th>
-                    <th className="px-6 py-3 text-center text-xs font-semibold tracking-wider text-gray-700 uppercase">
+                    <th className="dashboard-body-sm border-border px-6 py-3 text-center font-semibold tracking-wider uppercase border-b">
                       Position initiale
                     </th>
-                    <th className="px-6 py-3 text-center text-xs font-semibold tracking-wider text-gray-700 uppercase">
+                    <th className="dashboard-body-sm border-border px-6 py-3 text-center font-semibold tracking-wider uppercase border-b">
                       Évolution
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold tracking-wider text-gray-700 uppercase">
+                    <th className="dashboard-body-sm border-border px-6 py-3 text-left font-semibold tracking-wider uppercase border-b">
                       Page classée
                     </th>
                   </tr>
@@ -646,19 +644,19 @@ function ComparisonView({
                                 ? 'bg-green-100 text-green-800'
                                 : change.newPosition <= 10
                                   ? 'bg-blue-100 text-blue-800'
-                                  : 'bg-gray-100 text-gray-800'
+                                  : 'bg-muted text-foreground'
                             }`}
                           >
                             {change.newPosition}
                           </div>
                         </td>
                         <td className="px-6 py-4">
-                          <div className="font-semibold text-gray-900">
+                          <div className="dashboard-body font-semibold">
                             {change.domain}
                           </div>
                         </td>
                         <td className="px-6 py-4 text-center">
-                          <span className="font-medium text-gray-600">
+                          <span className="dashboard-body-sm font-medium">
                             #{change.oldPosition}
                           </span>
                         </td>
@@ -684,7 +682,7 @@ function ComparisonView({
                           </div>
                         </td>
                         <td className="max-w-md px-6 py-4">
-                          <div className="truncate text-sm text-gray-600">
+                          <div className="dashboard-body-sm truncate">
                             {change.title}
                           </div>
                         </td>
@@ -702,33 +700,33 @@ function ComparisonView({
             <div className="border-b-2 border-green-300 bg-green-100 px-6 py-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <h4 className="text-lg font-bold text-gray-900">
+                  <h4 className="dashboard-heading-4">
                     ✨ Nouveaux entrants dans le top 100
                   </h4>
-                  <p className="mt-1 text-sm text-gray-600">
+                  <p className="dashboard-body-sm mt-1">
                     Domaines qui sont apparus dans les résultats de recherche
                     (triés par position finale)
                   </p>
                 </div>
-                <div className="rounded-lg bg-white px-4 py-2 shadow-sm">
+                <div className="bg-card rounded-lg px-4 py-2 shadow-sm">
                   <div className="text-2xl font-bold text-green-700">
                     {comparison.newDomains.length}
                   </div>
-                  <div className="text-xs text-gray-600">nouveaux</div>
+                  <div className="dashboard-body-sm">nouveaux</div>
                 </div>
               </div>
             </div>
-            <div className="overflow-x-auto bg-white">
+            <div className="bg-card overflow-x-auto">
               <table className="w-full">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-semibold tracking-wider text-gray-700 uppercase">
+                    <th className="dashboard-body-sm border-border px-6 py-3 text-left font-semibold tracking-wider uppercase border-b">
                       Position
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold tracking-wider text-gray-700 uppercase">
+                    <th className="dashboard-body-sm border-border px-6 py-3 text-left font-semibold tracking-wider uppercase border-b">
                       Domaine
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold tracking-wider text-gray-700 uppercase">
+                    <th className="dashboard-body-sm border-border px-6 py-3 text-left font-semibold tracking-wider uppercase border-b">
                       Page classée
                     </th>
                   </tr>
@@ -745,7 +743,7 @@ function ComparisonView({
                                 ? 'bg-green-100 text-green-800'
                                 : item.position <= 10
                                   ? 'bg-blue-100 text-blue-800'
-                                  : 'bg-gray-100 text-gray-800'
+                                  : 'bg-muted text-foreground'
                             }`}
                           >
                             {item.position}
@@ -753,7 +751,7 @@ function ComparisonView({
                         </td>
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-2">
-                            <span className="font-semibold text-gray-900">
+                            <span className="dashboard-body font-semibold">
                               {item.domain}
                             </span>
                             <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs font-semibold text-green-700">
@@ -762,7 +760,7 @@ function ComparisonView({
                           </div>
                         </td>
                         <td className="max-w-md px-6 py-4">
-                          <div className="truncate text-sm text-gray-600">
+                          <div className="dashboard-body-sm truncate">
                             {item.title}
                           </div>
                         </td>
@@ -782,15 +780,15 @@ function ComparisonView({
             <div className="border-b-2 border-blue-300 bg-blue-100 px-6 py-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <h4 className="text-lg font-bold text-gray-900">
+                  <h4 className="dashboard-heading-4">
                     📊 Principaux mouvements (positions 11-100)
                   </h4>
-                  <p className="mt-1 text-sm text-gray-600">
+                  <p className="dashboard-body-sm mt-1">
                     Domaines ayant le plus bougé, triés par amplitude de
                     changement
                   </p>
                 </div>
-                <div className="rounded-lg bg-white px-4 py-2 shadow-sm">
+                <div className="bg-card rounded-lg px-4 py-2 shadow-sm">
                   <div className="text-2xl font-bold text-blue-700">
                     {
                       comparison.positionChanges.filter(
@@ -798,27 +796,27 @@ function ComparisonView({
                       ).length
                     }
                   </div>
-                  <div className="text-xs text-gray-600">mouvements</div>
+                  <div className="dashboard-body-sm">mouvements</div>
                 </div>
               </div>
             </div>
-            <div className="overflow-x-auto bg-white">
+            <div className="bg-card overflow-x-auto">
               <table className="w-full">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-semibold tracking-wider text-gray-700 uppercase">
+                    <th className="dashboard-body-sm border-border px-6 py-3 text-left font-semibold tracking-wider uppercase border-b">
                       Évolution
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold tracking-wider text-gray-700 uppercase">
+                    <th className="dashboard-body-sm border-border px-6 py-3 text-left font-semibold tracking-wider uppercase border-b">
                       Domaine
                     </th>
-                    <th className="px-6 py-3 text-center text-xs font-semibold tracking-wider text-gray-700 uppercase">
+                    <th className="dashboard-body-sm border-border px-6 py-3 text-center font-semibold tracking-wider uppercase border-b">
                       Avant
                     </th>
-                    <th className="px-6 py-3 text-center text-xs font-semibold tracking-wider text-gray-700 uppercase">
+                    <th className="dashboard-body-sm border-border px-6 py-3 text-center font-semibold tracking-wider uppercase border-b">
                       Après
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold tracking-wider text-gray-700 uppercase">
+                    <th className="dashboard-body-sm border-border px-6 py-3 text-left font-semibold tracking-wider uppercase border-b">
                       Page classée
                     </th>
                   </tr>
@@ -848,22 +846,22 @@ function ComparisonView({
                           )}
                         </td>
                         <td className="px-6 py-4">
-                          <div className="font-semibold text-gray-900">
+                          <div className="dashboard-body font-semibold">
                             {change.domain}
                           </div>
                         </td>
                         <td className="px-6 py-4 text-center">
-                          <span className="font-medium text-gray-600">
+                          <span className="dashboard-body-sm font-medium">
                             #{change.oldPosition}
                           </span>
                         </td>
                         <td className="px-6 py-4 text-center">
-                          <span className="font-medium text-gray-900">
+                          <span className="dashboard-body font-medium">
                             #{change.newPosition}
                           </span>
                         </td>
                         <td className="max-w-md px-6 py-4">
-                          <div className="truncate text-sm text-gray-600">
+                          <div className="dashboard-body-sm truncate">
                             {change.title}
                           </div>
                         </td>
@@ -881,33 +879,33 @@ function ComparisonView({
             <div className="border-b-2 border-red-300 bg-red-100 px-6 py-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <h4 className="text-lg font-bold text-gray-900">
+                  <h4 className="dashboard-heading-4">
                     ⚠️ Domaines sortis du top 100
                   </h4>
-                  <p className="mt-1 text-sm text-gray-600">
+                  <p className="dashboard-body-sm mt-1">
                     Domaines qui ne sont plus présents dans les résultats (triés
                     par ancienne position)
                   </p>
                 </div>
-                <div className="rounded-lg bg-white px-4 py-2 shadow-sm">
+                <div className="bg-card rounded-lg px-4 py-2 shadow-sm">
                   <div className="text-2xl font-bold text-red-700">
                     {comparison.lostDomains.length}
                   </div>
-                  <div className="text-xs text-gray-600">sortis</div>
+                  <div className="dashboard-body-sm">sortis</div>
                 </div>
               </div>
             </div>
-            <div className="overflow-x-auto bg-white">
+            <div className="bg-card overflow-x-auto">
               <table className="w-full">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-semibold tracking-wider text-gray-700 uppercase">
+                    <th className="dashboard-body-sm border-border px-6 py-3 text-left font-semibold tracking-wider uppercase border-b">
                       Ancienne position
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold tracking-wider text-gray-700 uppercase">
+                    <th className="dashboard-body-sm border-border px-6 py-3 text-left font-semibold tracking-wider uppercase border-b">
                       Domaine
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold tracking-wider text-gray-700 uppercase">
+                    <th className="dashboard-body-sm border-border px-6 py-3 text-left font-semibold tracking-wider uppercase border-b">
                       Dernière page classée
                     </th>
                   </tr>
@@ -924,7 +922,7 @@ function ComparisonView({
                                 ? 'bg-red-100 text-red-800'
                                 : item.previousPosition <= 10
                                   ? 'bg-orange-100 text-orange-800'
-                                  : 'bg-gray-100 text-gray-800'
+                                  : 'bg-muted text-foreground'
                             }`}
                           >
                             {item.previousPosition}
@@ -932,7 +930,7 @@ function ComparisonView({
                         </td>
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-2">
-                            <span className="font-semibold text-gray-900">
+                            <span className="dashboard-body font-semibold">
                               {item.domain}
                             </span>
                             <span className="rounded-full bg-red-100 px-2 py-0.5 text-xs font-semibold text-red-700">
@@ -941,7 +939,7 @@ function ComparisonView({
                           </div>
                         </td>
                         <td className="max-w-md px-6 py-4">
-                          <div className="truncate text-sm text-gray-600">
+                          <div className="dashboard-body-sm truncate">
                             {item.title}
                           </div>
                         </td>
@@ -969,12 +967,12 @@ function TimelineView({
   return (
     <div className="space-y-6">
       {/* Sélection du snapshot */}
-      <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+      <div className="bg-card rounded-xl border border-border p-6 shadow-sm">
         <div className="mb-4">
-          <h3 className="text-lg font-bold text-gray-900">
+          <h3 className="dashboard-heading-4">
             Sélectionner une période d&apos;analyse
           </h3>
-          <p className="mt-1 text-sm text-gray-600">
+          <p className="dashboard-body-sm mt-1">
             Choisissez une date pour voir l&apos;état détaillé de la SERP à ce
             moment précis
           </p>
@@ -987,16 +985,16 @@ function TimelineView({
               className={`rounded-lg border-2 p-3 text-center transition-all ${
                 selectedSnapshot?.datetime === snapshot.datetime
                   ? 'border-blue-600 bg-blue-50 text-blue-700'
-                  : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                  : 'border-border hover:border-primary/50 hover:bg-accent'
               }`}
             >
-              <div className="text-xs font-medium text-gray-500">
+              <div className="dashboard-body-sm font-medium">
                 {new Date(snapshot.datetime).toLocaleDateString('fr-FR', {
                   day: '2-digit',
                   month: 'short',
                 })}
               </div>
-              <div className="mt-1 text-xs text-gray-600">
+              <div className="dashboard-body-sm mt-1">
                 {snapshot.items_count} résultats
               </div>
             </button>
@@ -1006,11 +1004,11 @@ function TimelineView({
 
       {/* Affichage du snapshot sélectionné */}
       {selectedSnapshot && (
-        <div className="rounded-xl border border-gray-200 bg-white shadow-sm">
-          <div className="border-b border-gray-200 bg-gray-50 px-6 py-4">
+        <div className="bg-card rounded-xl border border-border shadow-sm">
+          <div className="border-b border-border bg-muted px-6 py-4">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-lg font-bold text-gray-900">
+                <h3 className="dashboard-heading-4">
                   SERP du{' '}
                   {new Date(selectedSnapshot.datetime).toLocaleDateString(
                     'fr-FR',
@@ -1023,7 +1021,7 @@ function TimelineView({
                     },
                   )}
                 </h3>
-                <p className="mt-1 text-sm text-gray-600">
+                <p className="dashboard-body-sm mt-1">
                   {selectedSnapshot.items.filter(isOrganicItem).length} résultat
                   {selectedSnapshot.items.filter(isOrganicItem).length > 1
                     ? 's'
@@ -1035,11 +1033,11 @@ function TimelineView({
                   dans le top 100
                 </p>
               </div>
-              <div className="rounded-lg bg-white px-4 py-2 shadow-sm">
-                <div className="text-sm font-semibold text-gray-700">
+              <div className="bg-card rounded-lg px-4 py-2 shadow-sm">
+                <div className="dashboard-body-sm font-semibold">
                   {selectedSnapshot.items_count} éléments SERP
                 </div>
-                <div className="text-xs text-gray-500">
+                <div className="dashboard-body-sm">
                   Tous types confondus
                 </div>
               </div>
@@ -1058,13 +1056,13 @@ function TimelineView({
                           ? 'border-green-200 bg-green-100 text-green-800'
                           : item.rank_absolute <= 10
                             ? 'border-blue-200 bg-blue-100 text-blue-800'
-                            : 'border-gray-200 bg-gray-100 text-gray-800'
+                            : 'border-border bg-muted text-foreground'
                       }`}
                     >
                       {item.rank_absolute}
                     </div>
                     <div className="min-w-0 flex-1">
-                      <div className="mb-1 text-sm text-gray-600">
+                      <div className="dashboard-body-sm mb-1">
                         {item.domain}
                       </div>
                       <h4 className="mb-2 text-base font-medium text-blue-600 hover:text-blue-700">
@@ -1080,7 +1078,7 @@ function TimelineView({
                         {item.url}
                       </div>
                       {item.description && (
-                        <p className="line-clamp-2 text-sm text-gray-600">
+                        <p className="dashboard-body-sm line-clamp-2">
                           {item.description}
                         </p>
                       )}
@@ -1120,27 +1118,27 @@ function DomainsView({
 
   return (
     <div className="space-y-6">
-      <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+      <div className="bg-card rounded-xl border border-border p-6 shadow-sm">
         <div className="mb-4">
-          <h3 className="text-lg font-bold text-gray-900">
+          <h3 className="dashboard-heading-4">
             Analyse concurrentielle
           </h3>
-          <p className="mt-1 text-sm text-gray-600">
+          <p className="dashboard-body-sm mt-1">
             Analysez la performance et l&apos;évolution de chaque concurrent
             dans le temps
           </p>
         </div>
         <div className="relative">
-          <Search className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-gray-400" />
+          <Search className="text-muted-foreground absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2" />
           <input
             type="text"
             value={domainFilter}
             onChange={(e) => setDomainFilter(e.target.value)}
             placeholder="Rechercher un domaine ou concurrent..."
-            className="w-full rounded-lg border border-gray-300 py-2 pr-4 pl-10 focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
+            className="border-border focus:border-primary focus:ring-primary w-full rounded-lg border py-2 pr-4 pl-10 focus:ring-2"
           />
         </div>
-        <p className="mt-2 text-xs text-gray-500">
+        <p className="dashboard-body-sm mt-2">
           {domains.length} domaine{domains.length > 1 ? 's' : ''} trouvé
           {domains.length > 1 ? 's' : ''}
         </p>
@@ -1174,18 +1172,18 @@ function DomainCard({
       return <TrendingUp className="h-5 w-5 text-green-600" />
     if (domain.trend === 'down')
       return <TrendingDown className="h-5 w-5 text-red-600" />
-    return <Minus className="h-5 w-5 text-gray-400" />
+    return <Minus className="text-muted-foreground h-5 w-5" />
   }
 
   const getAvgPositionColor = () => {
     if (domain.avgPosition <= 3) return 'text-green-600'
     if (domain.avgPosition <= 10) return 'text-blue-600'
     if (domain.avgPosition <= 20) return 'text-yellow-600'
-    return 'text-gray-600'
+    return 'text-muted-foreground'
   }
 
   return (
-    <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm hover:shadow-md">
+    <div className="bg-card overflow-hidden rounded-xl border border-border shadow-sm hover:shadow-md">
       <button
         onClick={onToggle}
         className="w-full p-6 text-left hover:bg-gray-50"
@@ -1193,15 +1191,15 @@ function DomainCard({
         <div className="flex items-center justify-between">
           <div className="flex flex-1 items-center gap-4">
             {isExpanded ? (
-              <ChevronDown className="h-5 w-5 text-gray-400" />
-            ) : (
-              <ChevronRight className="h-5 w-5 text-gray-400" />
+              <ChevronDown className="text-muted-foreground h-5 w-5" />
+              ) : (
+              <ChevronRight className="text-muted-foreground h-5 w-5" />
             )}
             <div className="flex-1">
-              <h4 className="text-lg font-semibold text-gray-900">
+              <h4 className="dashboard-heading-4">
                 {domain.domain}
               </h4>
-              <p className="mt-1 text-sm text-gray-600">
+              <p className="dashboard-body-sm mt-1">
                 {domain.appearances} apparitions
               </p>
             </div>
@@ -1211,13 +1209,13 @@ function DomainCard({
               <div className={`text-2xl font-bold ${getAvgPositionColor()}`}>
                 {domain.avgPosition.toFixed(1)}
               </div>
-              <div className="text-xs text-gray-500">Moy</div>
+              <div className="dashboard-body-sm">Moy</div>
             </div>
             <div className="text-center">
               <div className="text-xl font-bold text-green-600">
                 {domain.bestPosition}
               </div>
-              <div className="text-xs text-gray-500">Best</div>
+              <div className="dashboard-body-sm">Best</div>
             </div>
             <div className="text-center">{getTrendIcon()}</div>
           </div>
@@ -1225,22 +1223,22 @@ function DomainCard({
       </button>
 
       {isExpanded && (
-        <div className="border-t border-gray-200 bg-gray-50 p-6">
-          <h5 className="mb-4 font-semibold text-gray-900">
+        <div className="border-t border-border bg-muted p-6">
+          <h5 className="dashboard-heading-4 mb-4">
             Historique des positions
           </h5>
           <div className="space-y-2">
             {domain.history.map((entry: any, idx: number) => (
               <div
                 key={idx}
-                className="flex items-center justify-between rounded-lg bg-white p-3"
+                className="bg-card flex items-center justify-between rounded-lg p-3"
               >
                 <div className="flex-1">
-                  <div className="text-sm font-medium text-gray-900">
+                  <div className="dashboard-body-sm font-medium">
                     {new Date(entry.date).toLocaleString('fr-FR')}
                   </div>
                   {entry.title && (
-                    <div className="mt-1 truncate text-xs text-gray-600">
+                    <div className="dashboard-body-sm mt-1 truncate">
                       {entry.title}
                     </div>
                   )}
@@ -1251,7 +1249,7 @@ function DomainCard({
                       {entry.position}
                     </div>
                   ) : (
-                    <div className="text-sm text-gray-400">Absent</div>
+                    <div className="dashboard-body-sm text-muted-foreground">Absent</div>
                   )}
                 </div>
               </div>
@@ -1282,16 +1280,16 @@ function FeaturesView({ analytics }: { analytics: any }) {
 
   return (
     <div className="space-y-6">
-      <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+      <div className="bg-card rounded-xl border border-border p-6 shadow-sm">
         <div className="mb-4">
-          <h3 className="text-lg font-bold text-gray-900">
+          <h3 className="dashboard-heading-4">
             Rich Results &amp; Features SERP
           </h3>
-          <p className="mt-1 text-sm text-gray-600">
+          <p className="dashboard-body-sm mt-1">
             Analyse des éléments enrichis présents dans les résultats de
             recherche Google
           </p>
-          <p className="mt-2 text-xs text-gray-500">
+          <p className="dashboard-body-sm mt-2">
             {analytics.features.length} type
             {analytics.features.length > 1 ? 's' : ''} de feature
             {analytics.features.length > 1 ? 's' : ''} détecté
@@ -1304,18 +1302,18 @@ function FeaturesView({ analytics }: { analytics: any }) {
         {analytics.features.map(([type, count]: [string, number]) => (
           <div
             key={type}
-            className="rounded-xl border-2 border-gray-200 bg-white p-6 shadow-sm hover:shadow-md"
+            className="bg-card rounded-xl border-2 border-border p-6 shadow-sm hover:shadow-md"
           >
             <div className="flex items-center justify-between">
               <div className="flex-1">
-                <h4 className="font-semibold text-gray-900">
+                <h4 className="dashboard-heading-4">
                   {getFeatureLabel(type)}
                 </h4>
-                <p className="mt-1 text-xs text-gray-600">Feature SERP</p>
+                <p className="dashboard-body-sm mt-1">Feature SERP</p>
               </div>
               <div className="text-right">
                 <div className="text-2xl font-bold text-blue-600">{count}</div>
-                <div className="text-xs text-gray-500">détections</div>
+                <div className="dashboard-body-sm">détections</div>
               </div>
             </div>
           </div>
