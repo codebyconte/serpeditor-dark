@@ -33,14 +33,13 @@ export const data = {
       icon: Target,
       items: [
         {
-          title: "Vue d'ensemble du domaine",
+          title: "Vue d'ensemble",
           url: '/dashboard/domaine-overview',
         },
         {
-          title: 'Analyse concurrentielle',
-          url: '/dashboard/competitors-overview',
+          title: 'Recherche organiques',
+          url: '/dashboard/keyword-organic',
         },
-
         {
           title: 'Écart de mots-clés',
           url: '/dashboard/ecart-mots-cles',
@@ -64,10 +63,6 @@ export const data = {
         {
           title: 'Analyse de mot-clé',
           url: '/dashboard/keyword-overview',
-        },
-        {
-          title: 'Mots-clés positionnés',
-          url: '/dashboard/keyword-organic',
         },
       ],
     },
