@@ -20,7 +20,6 @@ import {
   Eye,
   Folder,
   Globe,
-  LayoutDashboard,
   MousePointerClick,
   TrendingDown,
   TrendingUp,
@@ -29,8 +28,38 @@ import {
 import { headers } from 'next/headers'
 import Link from 'next/link'
 
+// Types pour les données GSC
+interface GSCRow {
+  clicks?: number
+  impressions?: number
+  position?: number
+}
+
+interface GSCData {
+  rows?: GSCRow[]
+}
+
+interface ProjectMetrics {
+  clicks: number
+  impressions: number
+  ctr: number
+  position: number
+}
+
+interface ProjectAlert {
+  type: 'error' | 'warning' | 'info'
+  title: string
+  description: string
+  action: string
+}
+
 // ✅ Fonction pour récupérer les données GSC d'un projet
-async function getProjectGSCData(projectUrl: string, accessToken: string, startDate: Date, endDate: Date) {
+async function getProjectGSCData(
+  projectUrl: string,
+  accessToken: string,
+  startDate: Date,
+  endDate: Date,
+): Promise<ProjectMetrics | null> {
   try {
     const formatToISO = (date: Date) => format(date, 'yyyy-MM-dd')
     const siteUrl = encodeURIComponent(projectUrl)
@@ -57,9 +86,10 @@ async function getProjectGSCData(projectUrl: string, accessToken: string, startD
     const data = await response.json()
 
     // Calculer les totaux
-    if (data?.rows && data.rows.length > 0) {
-      const totals = data.rows.reduce(
-        (acc: any, row: any) => ({
+    const gscData = data as GSCData
+    if (gscData?.rows && gscData.rows.length > 0) {
+      const totals = gscData.rows.reduce(
+        (acc: ProjectMetrics, row: GSCRow) => ({
           clicks: acc.clicks + (row.clicks || 0),
           impressions: acc.impressions + (row.impressions || 0),
           ctr: 0,
@@ -69,7 +99,8 @@ async function getProjectGSCData(projectUrl: string, accessToken: string, startD
       )
 
       totals.ctr = totals.impressions > 0 ? totals.clicks / totals.impressions : 0
-      totals.position = data.rows.reduce((sum: number, row: any) => sum + (row.position || 0), 0) / data.rows.length
+      totals.position =
+        gscData.rows.reduce((sum: number, row: GSCRow) => sum + (row.position || 0), 0) / gscData.rows.length
 
       return totals
     }
@@ -82,8 +113,12 @@ async function getProjectGSCData(projectUrl: string, accessToken: string, startD
 }
 
 // ✅ Fonction pour calculer les alertes d'un projet
-function getProjectAlerts(project: any, metrics: any, metricsPrevious: any) {
-  const alerts = []
+function getProjectAlerts(
+  project: { id: string; crawl_status: string | null },
+  metrics: ProjectMetrics | null | undefined,
+  metricsPrevious: ProjectMetrics | null | undefined,
+): ProjectAlert[] {
+  const alerts: ProjectAlert[] = []
 
   // Alerte crawl status
   if (project.crawl_status === 'ERROR') {
@@ -193,10 +228,8 @@ export default async function DashboardPage() {
     <main className="text-foreground min-h-screen">
       <div className="container mx-auto px-4 pt-6 sm:px-6 lg:px-8">
         <PageHeader
-          title="Mes Projets"
-          description="Gérez et analysez vos sites web"
-          icon={LayoutDashboard}
-          iconClassName="border-blue-500/20 bg-gradient-to-br from-blue-500/10 to-cyan-500/10 text-blue-500"
+          title="Tableau de bord SEO"
+          description="Suivez vos performances, analysez vos concurrents et identifiez des opportunités de croissance en temps réel"
           actions={<OpenModal />}
         />
 
@@ -281,7 +314,7 @@ export default async function DashboardPage() {
                         <div>
                           <div className="mb-4 flex items-center gap-2">
                             <Activity className="text-muted-foreground h-4 w-4" />
-                            <p className="dashboard-body-sm font-medium">Performances - 30 derniers jours</p>
+                            <p className="">Performances - 30 derniers jours</p>
                           </div>
                           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                             {/* Clics */}
@@ -290,7 +323,7 @@ export default async function DashboardPage() {
                                 <div className="rounded-md bg-blue-500/10 p-1.5">
                                   <MousePointerClick className="h-4 w-4 text-blue-600 dark:text-blue-400" />
                                 </div>
-                                <span className="dashboard-body-sm font-medium">Clics</span>
+                                <span className="dashboard--sm font-medium">Clics</span>
                               </div>
                               <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
                                 {projectData.clicks.toLocaleString('fr-FR')}
@@ -320,7 +353,7 @@ export default async function DashboardPage() {
                                 <div className="rounded-md bg-purple-500/10 p-1.5">
                                   <Eye className="h-4 w-4 text-purple-600 dark:text-purple-400" />
                                 </div>
-                                <span className="dashboard-body-sm font-medium">Impressions</span>
+                                <span className="font-medium">Impressions</span>
                               </div>
                               <p className="text-2xl font-bold text-purple-600 dark:text-purple-400">
                                 {projectData.impressions.toLocaleString('fr-FR')}
@@ -350,7 +383,7 @@ export default async function DashboardPage() {
                                 <div className="rounded-md bg-emerald-500/10 p-1.5">
                                   <Zap className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
                                 </div>
-                                <span className="dashboard-body-sm font-medium">CTR moyen</span>
+                                <span className="font-medium">CTR moyen</span>
                               </div>
                               <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
                                 {(projectData.ctr * 100).toFixed(2)}%
@@ -363,7 +396,7 @@ export default async function DashboardPage() {
                                 <div className="rounded-md bg-orange-500/10 p-1.5">
                                   <BarChart3 className="h-4 w-4 text-orange-600 dark:text-orange-400" />
                                 </div>
-                                <span className="dashboard-body-sm font-medium">Position</span>
+                                <span className="font-medium">Position</span>
                               </div>
                               <p className="text-2xl font-bold text-orange-600 dark:text-orange-400">
                                 {projectData.position.toFixed(1)}

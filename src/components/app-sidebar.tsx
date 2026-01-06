@@ -4,13 +4,7 @@
 import { NavMain } from '@/components/nav-main'
 import { NavUser } from '@/components/nav-user'
 import { SidebarLogo } from '@/components/sidebar-logo'
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarHeader,
-  SidebarRail,
-} from '@/components/ui/sidebar'
+import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarRail } from '@/components/ui/sidebar'
 import {
   BrainCircuit,
   GlobeIcon,
@@ -29,10 +23,33 @@ import * as React from 'react'
 export const data = {
   navMain: [
     {
-      title: "Vue d'ensemble",
+      title: 'Tableau de bord',
       url: '/dashboard',
       icon: LayoutDashboard,
       badge: null,
+    },
+    {
+      title: 'Concurrence',
+      icon: Target,
+      items: [
+        {
+          title: "Vue d'ensemble du domaine",
+          url: '/dashboard/domaine-overview',
+        },
+        {
+          title: 'Analyse concurrentielle',
+          url: '/dashboard/competitors-overview',
+        },
+
+        {
+          title: 'Écart de mots-clés',
+          url: '/dashboard/ecart-mots-cles',
+        },
+        {
+          title: 'Écart de backlinks',
+          url: '/dashboard/ecart-backlinks',
+        },
+      ],
     },
     {
       title: 'Mots-clés',
@@ -112,25 +129,6 @@ export const data = {
         {
           title: 'Audit technique',
           url: '/dashboard/audit-de-site',
-        },
-      ],
-    },
-    {
-      title: 'Concurrence',
-      icon: Target,
-      items: [
-        {
-          title: 'Analyse concurrentielle',
-          url: '/dashboard/competitors-overview',
-        },
-
-        {
-          title: 'Écart de mots-clés',
-          url: '/dashboard/ecart-mots-cles',
-        },
-        {
-          title: 'Écart de backlinks',
-          url: '/dashboard/ecart-backlinks',
         },
       ],
     },
