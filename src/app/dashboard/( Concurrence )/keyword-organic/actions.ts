@@ -2,6 +2,8 @@
 'use server'
 
 import { auth } from '@/lib/auth'
+import { prisma } from '@/lib/prisma'
+import { revalidatePath } from 'next/cache'
 import { headers } from 'next/headers'
 import { z } from 'zod'
 
@@ -455,13 +457,7 @@ export async function fetchRankedKeywords(
         limit: validated.data.limit,
         offset: validated.data.offset,
         load_rank_absolute: true,
-        item_types: [
-          'organic',
-          'paid',
-          'featured_snippet',
-          'local_pack',
-          'ai_overview_reference',
-        ],
+        item_types: ['organic', 'paid', 'featured_snippet', 'local_pack', 'ai_overview_reference'],
         order_by: ['ranked_serp_element.serp_item.rank_group,asc'],
       },
     ]
@@ -469,17 +465,14 @@ export async function fetchRankedKeywords(
     const credentials = process.env.DATAFORSEO_PASSWORD
 
     // Appel API DataForSEO
-    const response = await fetch(
-      `${process.env.DATAFORSEO_URL}/dataforseo_labs/google/ranked_keywords/live`,
-      {
-        method: 'POST',
-        headers: {
-          Authorization: `Basic ${credentials}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(requestBody),
+    const response = await fetch(`${process.env.DATAFORSEO_URL}/dataforseo_labs/google/ranked_keywords/live`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Basic ${credentials}`,
+        'Content-Type': 'application/json',
       },
-    )
+      body: JSON.stringify(requestBody),
+    })
 
     if (!response.ok) {
       throw new Error(`Erreur API: ${response.status}`)
@@ -488,9 +481,7 @@ export async function fetchRankedKeywords(
     const data = await response.json()
 
     if (data.status_code !== 20000) {
-      throw new Error(
-        data.status_message || 'Erreur lors de la récupération des données',
-      )
+      throw new Error(data.status_message || 'Erreur lors de la récupération des données')
     }
 
     const taskResult = data.tasks?.[0]
@@ -510,10 +501,158 @@ export async function fetchRankedKeywords(
     console.error('Erreur fetchRankedKeywords:', error)
     return {
       success: false,
-      error:
-        error instanceof Error
-          ? error.message
-          : 'Une erreur est survenue lors de la récupération des données',
+      error: error instanceof Error ? error.message : 'Une erreur est survenue lors de la récupération des données',
+    }
+  }
+}
+
+// Récupérer les projets de l'utilisateur
+export async function getUserProjects() {
+  try {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    })
+
+    if (!session?.user?.id) {
+      return {
+        success: false,
+        error: 'Non authentifié',
+        data: [],
+      }
+    }
+
+    const projects = await prisma.project.findMany({
+      where: {
+        userId: session.user.id,
+      },
+      select: {
+        id: true,
+        url: true,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    })
+
+    return {
+      success: true,
+      data: projects,
+    }
+  } catch (error) {
+    console.error('Erreur getUserProjects:', error)
+    return {
+      success: false,
+      error: 'Erreur lors de la récupération des projets',
+      data: [],
+    }
+  }
+}
+
+// Interface pour sauvegarder un mot-clé
+export interface SaveKeywordData {
+  keyword: string
+  rankGroup: number
+  rankAbsolute?: number
+  searchVolume?: number
+  locationCode: number
+  languageCode: string
+}
+
+// Sauvegarder plusieurs mots-clés sélectionnés
+export async function saveSelectedKeywords(
+  projectId: string,
+  keywords: SaveKeywordData[],
+): Promise<{ success: boolean; error?: string; saved?: number; skipped?: number }> {
+  try {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    })
+
+    if (!session?.user?.id) {
+      return {
+        success: false,
+        error: 'Non authentifié',
+      }
+    }
+
+    // Vérifier que le projet appartient à l'utilisateur
+    const project = await prisma.project.findFirst({
+      where: {
+        id: projectId,
+        userId: session.user.id,
+      },
+    })
+
+    if (!project) {
+      return {
+        success: false,
+        error: "Projet non trouvé ou vous n'avez pas les permissions",
+      }
+    }
+
+    if (!keywords || keywords.length === 0) {
+      return {
+        success: false,
+        error: 'Aucun mot-clé sélectionné',
+      }
+    }
+
+    let saved = 0
+    let skipped = 0
+
+    // Sauvegarder chaque mot-clé
+    for (const keywordData of keywords) {
+      try {
+        // Vérifier si le mot-clé existe déjà
+        const existing = await prisma.keyword.findUnique({
+          where: {
+            projectId_keyword_locationCode_languageCode: {
+              projectId,
+              keyword: keywordData.keyword.trim(),
+              locationCode: keywordData.locationCode,
+              languageCode: keywordData.languageCode,
+            },
+          },
+        })
+
+        if (existing) {
+          skipped++
+          continue
+        }
+
+        // Créer le mot-clé (Prisma génère automatiquement l'ID)
+        await prisma.keyword.create({
+          data: {
+            id: crypto.randomUUID(),
+            keyword: keywordData.keyword.trim(),
+            projectId,
+            locationCode: keywordData.locationCode,
+            languageCode: keywordData.languageCode,
+            rankGroup: keywordData.rankGroup,
+            rankAbsolute: keywordData.rankAbsolute || null,
+            lastCheckedAt: new Date(),
+          },
+        })
+
+        saved++
+      } catch (error) {
+        console.error(`Erreur lors de la sauvegarde du mot-clé ${keywordData.keyword}:`, error)
+        skipped++
+      }
+    }
+
+    revalidatePath('/dashboard')
+
+    return {
+      success: true,
+      saved,
+      skipped,
+    }
+  } catch (error) {
+    console.error('Erreur saveSelectedKeywords:', error)
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Erreur lors de la sauvegarde des mots-clés',
     }
   }
 }
