@@ -4,30 +4,30 @@
   --font-display: 'Instrument Serif', serif;
   --font-sans: 'Inter', system-ui, sans-serif;
 
-  --color-olive-50: oklch(98.8% 0.003 106.5);
-  --color-olive-100: oklch(96.6% 0.005 106.5);
-  --color-olive-200: oklch(93% 0.007 106.5);
-  --color-olive-300: oklch(88% 0.011 106.6);
-  --color-olive-400: oklch(73.7% 0.021 106.9);
-  --color-olive-500: oklch(58% 0.031 107.3);
-  --color-olive-600: oklch(46.6% 0.025 107.3);
-  --color-olive-700: oklch(39.4% 0.023 107.4);
-  --color-olive-800: oklch(28.6% 0.016 107.4);
-  --color-olive-900: oklch(22.8% 0.013 107.4);
-  --color-olive-950: oklch(15.3% 0.006 107.1);
+  --color-mist-50: oklch(98.7% 0.002 197.1);
+  --color-mist-100: oklch(96.3% 0.002 197.1);
+  --color-mist-200: oklch(92.5% 0.005 214.3);
+  --color-mist-300: oklch(87.2% 0.007 219.6);
+  --color-mist-400: oklch(72.3% 0.014 214.4);
+  --color-mist-500: oklch(56% 0.021 213.5);
+  --color-mist-600: oklch(45% 0.017 213.2);
+  --color-mist-700: oklch(37.8% 0.015 216);
+  --color-mist-800: oklch(27.5% 0.011 216.9);
+  --color-mist-900: oklch(21.8% 0.008 223.9);
+  --color-mist-950: oklch(14.8% 0.004 228.8);
 }
 
 @layer base {
   html {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    background-color: var(--color-olive-100);
+    background-color: var(--color-mist-100);
     color: oklch(15% 0.006 107.1);
     --scroll-padding-top: 0;
     scroll-padding-top: var(--scroll-padding-top);
 
     @variant dark {
-      background-color: var(--color-olive-950);
+      background-color: var(--color-mist-950);
       color: oklch(98.8% 0.003 106.5);
     }
   }
@@ -40,7 +40,7 @@
   /* Amélioration du contraste pour les textes */
   :root {
     --foreground: oklch(15% 0.006 107.1);
-    --background: var(--color-olive-100);
+    --background: var(--color-mist-100);
     --muted-foreground: oklch(45% 0.01 107);
     --muted: oklch(96% 0.005 106.5);
     --card: oklch(100% 0 0);
@@ -60,7 +60,7 @@
   @variant dark {
     :root {
       --foreground: oklch(98.8% 0.003 106.5);
-      --background: var(--color-olive-950);
+      --background: var(--color-mist-950);
       --muted-foreground: oklch(70% 0.01 107);
       --muted: oklch(28.6% 0.016 107.4);
       --card: oklch(22.8% 0.013 107.4);

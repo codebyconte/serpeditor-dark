@@ -107,7 +107,7 @@ export default function Page() {
         logo={
           <NavbarLogo href="#">
             <img
-              src="https://assets.tailwindplus.com/logos/oatmeal-instrument.svg?color=olive-950"
+              src="https://assets.tailwindplus.com/logos/oatmeal-instrument.svg?color=mist-950"
               alt="Oatmeal"
               className="dark:hidden"
               width={85}
