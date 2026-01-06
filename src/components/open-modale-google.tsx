@@ -1,7 +1,7 @@
 'use client'
 
-import { Button } from '@/components/dashboard/button'
 import { Dialog, DialogActions, DialogDescription, DialogTitle } from '@/components/dashboard/dialog'
+import { Button, PlainButton } from '@/components/elements/button'
 import { authClient } from '@/lib/auth-client'
 import { Plus } from 'lucide-react'
 import { useState } from 'react'
@@ -20,7 +20,7 @@ export function OpenModal() {
   return (
     <>
       <section>
-        <Button onClick={() => setIsOpen(true)} type="button" color="teal" className="flex items-center">
+        <Button onClick={() => setIsOpen(true)} type="button" className="flex items-center" color="dark/light">
           <Plus />
           Créer un projet
         </Button>
@@ -32,10 +32,8 @@ export function OpenModal() {
           </DialogDescription>
 
           <DialogActions>
-            <Button plain onClick={() => setIsOpen(false)}>
-              Annuler
-            </Button>
-            <Button color="indigo" onClick={() => requestGoogleAccess()}>
+            <PlainButton onClick={() => setIsOpen(false)}>Annuler</PlainButton>
+            <Button color="dark/light" onClick={() => requestGoogleAccess()}>
               Connecter avec Google
             </Button>
           </DialogActions>

@@ -1,5 +1,6 @@
 // 📁 app/dashboard/page.tsx
-import { Dropdown, DropdownButton, DropdownItem, DropdownMenu } from '@/components/dashboard/dropdown'
+import { DeleteProjectButton } from '@/components/dashboard/delete-project-button'
+import { Dropdown, DropdownButton, DropdownMenu } from '@/components/dashboard/dropdown'
 import { PageHeader } from '@/components/dashboard/page-header'
 import { OpenModal } from '@/components/open-modale-google'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
@@ -229,7 +230,7 @@ export default async function DashboardPage() {
                     <div className="flex items-start justify-between">
                       <div className="flex-1 space-y-2">
                         <div className="flex items-center gap-3">
-                          <div className="bg-primary/10 flex h-10 w-10 items-center justify-center rounded-lg">
+                          <div className="flex h-10 w-10 items-center justify-center rounded-lg">
                             <Globe className="text-primary h-5 w-5" />
                           </div>
                           <div className="flex-1">
@@ -266,8 +267,7 @@ export default async function DashboardPage() {
                             <EllipsisVertical size={16} />
                           </DropdownButton>
                           <DropdownMenu>
-                            <DropdownItem>Modifier</DropdownItem>
-                            <DropdownItem>Supprimer</DropdownItem>
+                            <DeleteProjectButton projectId={project.id} projectUrl={project.url} />
                           </DropdownMenu>
                         </Dropdown>
                       </CardAction>

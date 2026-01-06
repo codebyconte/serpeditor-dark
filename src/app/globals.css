@@ -41,7 +41,7 @@
   :root {
     --foreground: oklch(15% 0.006 107.1);
     --background: var(--color-mist-100);
-    --muted-foreground: oklch(45% 0.01 107);
+    --muted-foreground: oklch(30% 0.01 107);
     --muted: oklch(96% 0.005 106.5);
     --card: oklch(100% 0 0);
     --card-foreground: oklch(15% 0.006 107.1);
