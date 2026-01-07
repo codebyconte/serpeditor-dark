@@ -56,13 +56,13 @@ export const data = {
       badge: 'Core',
       items: [
         {
+          title: 'Vue d’ensemble  mots clés',
+          url: '/dashboard/keyword-overview',
+        },
+        {
           title: 'Recherche de mots-clés',
           url: '/dashboard/keyword-magic',
           badge: 'Popular',
-        },
-        {
-          title: 'Analyse de mot-clé',
-          url: '/dashboard/keyword-overview',
         },
       ],
     },
