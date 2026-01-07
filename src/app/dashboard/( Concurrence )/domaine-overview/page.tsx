@@ -34,21 +34,18 @@ export default function DomainOverviewPage() {
             <div className="mt-8 grid grid-cols-3 gap-6 text-left">
               <Card>
                 <CardContent className="p-4">
-                  <div className="mb-2 text-2xl">🎯</div>
                   <h4 className="dashboard-heading-4">Positions détaillées</h4>
                   <p className="text-muted-foreground mt-1">Top 3, Top 10, Top 20... Distribution complète</p>
                 </CardContent>
               </Card>
               <Card>
                 <CardContent className="p-4">
-                  <div className="mb-2 text-2xl">💰</div>
                   <h4 className="dashboard-heading-4">Valeur du trafic</h4>
                   <p className="text-muted-foreground mt-1">Estimation du coût équivalent en Google Ads</p>
                 </CardContent>
               </Card>
               <Card>
                 <CardContent className="p-4">
-                  <div className="mb-2 text-2xl">📈</div>
                   <h4 className="dashboard-heading-4">Tendances</h4>
                   <p className="text-muted-foreground mt-1">Nouveaux mots-clés, positions gagnées/perdues</p>
                 </CardContent>
@@ -58,7 +55,7 @@ export default function DomainOverviewPage() {
             {/* Exemples */}
             <Alert className="border-primary/20 bg-primary/5 mt-8">
               <Info className="text-primary h-5 w-5" />
-              <AlertTitle className="text-foreground">💡 Exemples de domaines :</AlertTitle>
+              <AlertTitle className="text-foreground">Exemples de domaines :</AlertTitle>
               <AlertDescription>
                 <div className="mt-2 flex flex-wrap gap-2">
                   {['amazon.fr', 'leboncoin.fr', 'cdiscount.com', 'fnac.com', 'decathlon.fr'].map((example) => (

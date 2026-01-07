@@ -41,7 +41,7 @@ export const data = {
           url: '/dashboard/keyword-organic',
         },
         {
-          title: 'Écart de mots-clés',
+          title: 'Possibilités de mots clés',
           url: '/dashboard/ecart-mots-cles',
         },
         {

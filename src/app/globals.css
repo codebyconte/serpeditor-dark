@@ -90,7 +90,7 @@
   }
 
   .dashboard-text-xs {
-    @apply text-xs leading-tight;
+    @apply text-base leading-tight;
     color: var(--foreground);
   }
 
@@ -125,8 +125,8 @@
   }
 
   .dashboard-body-sm {
-    @apply text-sm;
-    color: var(--muted-foreground);
+    @apply text-base;
+    color: var(--foreground);
   }
 
   .dashboard-body-lg {
