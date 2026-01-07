@@ -10,21 +10,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import {
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  useSidebar,
-} from '@/components/ui/sidebar'
+import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@/components/ui/sidebar'
 import { authClient, useSession } from '@/lib/auth-client'
-import {
-  BadgeCheck,
-  Bell,
-  ChevronsUpDown,
-  CreditCard,
-  LogOut,
-  Sparkles,
-} from 'lucide-react'
+import { BadgeCheck, Bell, ChevronsUpDown, CreditCard, LogOut, Sparkles } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
 export function NavUser() {
@@ -55,25 +43,18 @@ export function NavUser() {
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
               <Avatar className="h-8 w-8 rounded-lg">
-                <AvatarImage
-                  src={session?.user?.image || undefined}
-                  alt={session?.user?.name || undefined}
-                />
-                <AvatarFallback className="rounded-lg">
-                  {session?.user.name[0]}
-                </AvatarFallback>
+                <AvatarImage src={session?.user?.image || undefined} alt={session?.user?.name || undefined} />
+                <AvatarFallback className="rounded-lg">{session?.user.name[0]}</AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">
-                  {session?.user.name}
-                </span>
+                <span className="truncate font-medium">{session?.user.name}</span>
                 <span className="truncate text-xs">{session?.user.email}</span>
               </div>
               <ChevronsUpDown className="ml-auto size-4" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
-            className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
+            className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg bg-mist-600"
             side={isMobile ? 'bottom' : 'right'}
             align="end"
             sideOffset={4}
@@ -81,48 +62,39 @@ export function NavUser() {
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage
-                    src={session?.user?.image || undefined}
-                    alt={session?.user.name}
-                  />
-                  <AvatarFallback className="rounded-lg">
-                    {session?.user.name[0]}
-                  </AvatarFallback>
+                  <AvatarImage src={session?.user?.image || undefined} alt={session?.user.name} />
+                  <AvatarFallback className="rounded-lg">{session?.user.name[0]}</AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">
-                    {session?.user.name}
-                  </span>
-                  <span className="truncate text-xs">
-                    {session?.user.email}
-                  </span>
+                  <span className="truncate font-medium">{session?.user.name}</span>
+                  <span className="truncate text-xs">{session?.user.email}</span>
                 </div>
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
+              <DropdownMenuItem className="hover:cursor-pointer hover:bg-mist-500">
                 <Sparkles />
                 Upgrade to Pro
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
+              <DropdownMenuItem className="hover:cursor-pointer hover:bg-mist-500">
                 <BadgeCheck />
                 Account
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem className="hover:cursor-pointer hover:bg-mist-500">
                 <CreditCard />
                 Billing
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem className="hover:cursor-pointer hover:bg-mist-500">
                 <Bell />
                 Notifications
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleSignOut}>
+            <DropdownMenuItem onClick={handleSignOut} className="hover:cursor-pointer hover:bg-mist-500">
               <LogOut />
               Log out
             </DropdownMenuItem>

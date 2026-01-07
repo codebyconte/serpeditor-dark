@@ -226,40 +226,6 @@ export default function SERPAnalyzerPage() {
           </CardContent>
         </Card>
       )}
-
-      {!loading && !serpData && !error && (
-        <Card className="border-2-dashed">
-          <CardContent className="flex flex-col items-center justify-center py-16 text-center">
-            <div className="bg-primary/10 rounded-full p-6">
-              <Search className="text-primary h-12 w-12" />
-            </div>
-            <h3 className="dashboard-heading-3 mt-6">Analysez l&apos;historique SERP</h3>
-            <p className="dashboard-body-sm text-muted-foreground mt-2 max-w-md">
-              Suivez l&apos;évolution des positions sur 365 jours avec des données historiques précises
-            </p>
-            <div className="mt-8 grid grid-cols-1 gap-6 text-left md:grid-cols-3">
-              <Card>
-                <CardContent className="p-4">
-                  <h4 className="dashboard-heading-4">365 jours d&apos;historique</h4>
-                  <p className="dashboard-body-sm text-muted-foreground mt-1">Données SERP mensuelles complètes</p>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardContent className="p-4">
-                  <h4 className="dashboard-heading-4">Comparaison automatique</h4>
-                  <p className="dashboard-body-sm text-muted-foreground mt-1">Analyse des changements entre périodes</p>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardContent className="p-4">
-                  <h4 className="dashboard-heading-4">Suivi des domaines</h4>
-                  <p className="dashboard-body-sm text-muted-foreground mt-1">Historique détaillé par concurrent</p>
-                </CardContent>
-              </Card>
-            </div>
-          </CardContent>
-        </Card>
-      )}
     </div>
   )
 }
