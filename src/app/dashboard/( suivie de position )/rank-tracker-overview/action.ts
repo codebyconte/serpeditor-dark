@@ -1,6 +1,8 @@
 'use server'
 
 import { prisma } from '@/lib/prisma'
+import { fetchKeywordMetrics } from '@/lib/rank-tracking/dataforseo'
+import { randomUUID } from 'crypto'
 
 // Types pour les réponses DataForSEO
 interface DataForSEOResponse<T> {
@@ -99,6 +101,63 @@ interface HistoricalRankOverviewResult {
   total_count: number
   items_count: number
   items: HistoricalRankOverviewItem[]
+}
+
+/**
+ * Calcule le CTR estimé basé sur la position
+ * Basé sur les données moyennes de Google Search Console
+ */
+function calculateEstimatedCTR(position: number | null): number | null {
+  if (position === null) return null
+
+  // Courbe de CTR basée sur les données réelles
+  if (position === 1) return 0.316 // 31.6%
+  if (position === 2) return 0.244 // 24.4%
+  if (position === 3) return 0.186 // 18.6%
+  if (position >= 4 && position <= 10) return 0.05 + (10 - position) * 0.015 // 5% à 14%
+  if (position >= 11 && position <= 20) return 0.02 + (20 - position) * 0.002 // 2% à 4%
+  if (position >= 21 && position <= 30) return 0.01 + (30 - position) * 0.0005 // 1% à 1.5%
+  if (position >= 31 && position <= 50) return 0.005 + (50 - position) * 0.0001 // 0.5% à 0.7%
+  if (position >= 51 && position <= 100) return 0.001 + (100 - position) * 0.00001 // 0.1% à 0.5%
+
+  return 0.001 // Par défaut pour positions > 100
+}
+
+/**
+ * Calcule le trafic estimé mensuel
+ * Trafic = Volume de recherche × CTR estimé
+ */
+function calculateEstimatedTraffic(searchVolume: number | null, ctr: number | null): number | null {
+  if (searchVolume === null || ctr === null) return null
+  return Math.round(searchVolume * ctr)
+}
+
+/**
+ * Calcule le score de visibilité
+ * Basé sur la position et le volume de recherche
+ * Score de 0 à 100
+ */
+function calculateVisibilityScore(position: number | null, searchVolume: number | null): number | null {
+  if (position === null || searchVolume === null) return null
+
+  // Poids de la position (plus la position est bonne, plus le score est élevé)
+  let positionScore = 0
+  if (position === 1) positionScore = 100
+  else if (position === 2) positionScore = 80
+  else if (position === 3) positionScore = 65
+  else if (position >= 4 && position <= 10) positionScore = 50 - (position - 4) * 5
+  else if (position >= 11 && position <= 20) positionScore = 30 - (position - 11) * 2
+  else if (position >= 21 && position <= 30) positionScore = 15 - (position - 21) * 0.5
+  else if (position >= 31 && position <= 50) positionScore = 10 - (position - 31) * 0.2
+  else if (position >= 51 && position <= 100) positionScore = 5 - (position - 51) * 0.05
+  else positionScore = 0
+
+  // Poids du volume (normalisé sur une échelle logarithmique)
+  // Volume élevé = plus de poids
+  const volumeWeight = Math.min(1, Math.log10(searchVolume + 1) / 6) // Normalisé pour volumes jusqu'à 1M
+
+  // Score final = position score × volume weight
+  return Math.round(positionScore * volumeWeight)
 }
 
 // Récupérer les domaines depuis la base de données
@@ -363,6 +422,83 @@ export async function getKeywordData(keyword: string, locationCode: number = 225
   }
 }
 
+// Mettre à jour les métriques d'un mot-clé (Volume, CPC, Competition)
+export async function updateKeywordMetrics(keywordId: string) {
+  try {
+    const keyword = await prisma.keyword.findUnique({
+      where: { id: keywordId },
+    })
+
+    if (!keyword) {
+      return {
+        success: false,
+        error: 'Mot-clé introuvable',
+      }
+    }
+
+    // Charger les métriques depuis l'API
+    const metricsResult = await fetchKeywordMetrics(keyword.keyword, keyword.locationCode, keyword.languageCode)
+
+    if (!metricsResult.success || !metricsResult.data) {
+      return {
+        success: false,
+        error: metricsResult.error || 'Erreur lors du chargement des métriques',
+      }
+    }
+
+    const metrics = metricsResult.data
+
+    // Recalculer les métriques dérivées avec les nouvelles données
+    const ctr = calculateEstimatedCTR(keyword.rankGroup)
+    const estimatedTraffic = calculateEstimatedTraffic(metrics.searchVolume, ctr)
+    const visibilityScore = calculateVisibilityScore(keyword.rankGroup, metrics.searchVolume)
+
+    // Mettre à jour en base de données
+    const updated = await prisma.keyword.update({
+      where: { id: keywordId },
+      data: {
+        searchVolume: metrics.searchVolume || keyword.searchVolume,
+        cpc: metrics.cpc || keyword.cpc,
+        competition: metrics.competition || keyword.competition,
+        competitionLevel: metrics.competitionLevel || keyword.competitionLevel,
+        estimatedCtr: ctr,
+        estimatedTraffic: estimatedTraffic,
+        visibilityScore: visibilityScore,
+        updatedAt: new Date(),
+      },
+    })
+
+    return {
+      success: true,
+      data: updated,
+    }
+  } catch (error) {
+    console.error('Error updating keyword metrics:', error)
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Erreur lors de la mise à jour des métriques',
+    }
+  }
+}
+
+// Récupérer l'historique des positions d'un mot-clé
+export async function getKeywordHistory(keywordId: string, limit: number = 90) {
+  try {
+    const history = await prisma.keyword_position_history.findMany({
+      where: { keywordId },
+      orderBy: { checkedAt: 'desc' },
+      take: limit,
+    })
+    return { success: true, data: history }
+  } catch (error) {
+    console.error('Error fetching keyword history:', error)
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Erreur lors de la récupération de l&apos;historique',
+    }
+  }
+}
+
 // Supprimer un mot-clé suivi
 export async function deleteKeyword(keywordId: string) {
   try {
@@ -402,7 +538,7 @@ async function checkKeywordPosition(
       .replace(/^(https?:\/\/)?(www\.)?/, '')
       .replace(/\/$/, '')
 
-    const response = await fetch(`${process.env.DATAFORSEO_URL}/dataforseo_labs/google/serp/live/advanced`, {
+    const response = await fetch(`${process.env.DATAFORSEO_URL}/serp/google/organic/live/advanced`, {
       method: 'POST',
       headers: {
         Authorization: `Basic ${credentials}`,
@@ -422,7 +558,14 @@ async function checkKeywordPosition(
     })
 
     if (!response.ok) {
-      throw new Error(`API request failed: ${response.statusText}`)
+      const errorText = await response.text().catch(() => response.statusText)
+      console.error('DataForSEO API Error:', {
+        status: response.status,
+        statusText: response.statusText,
+        url: `${process.env.DATAFORSEO_URL}/serp/google/organic/live/advanced`,
+        error: errorText,
+      })
+      throw new Error(`API request failed: ${response.status} ${response.statusText}`)
     }
 
     const data = await response.json()
@@ -499,6 +642,26 @@ export async function updateKeywordPosition(keywordId: string) {
     // Vérifier la position actuelle
     const position = await checkKeywordPosition(keyword.keyword, domain, keyword.locationCode, keyword.languageCode)
 
+    // Charger les métriques si elles ne sont pas déjà présentes
+    let searchVolume = keyword.searchVolume
+    let cpc = keyword.cpc
+    let competition = keyword.competition
+    let competitionLevel = keyword.competitionLevel
+    if (!searchVolume || !cpc) {
+      const metricsResult = await fetchKeywordMetrics(keyword.keyword, keyword.locationCode, keyword.languageCode)
+      if (metricsResult.success && metricsResult.data) {
+        searchVolume = metricsResult.data.searchVolume || searchVolume || null
+        cpc = metricsResult.data.cpc || cpc || null
+        competition = metricsResult.data.competition || competition || null
+        competitionLevel = metricsResult.data.competitionLevel || competitionLevel || null
+      }
+    }
+
+    // Calculer les métriques dérivées
+    const ctr = calculateEstimatedCTR(position.rankGroup)
+    const estimatedTraffic = calculateEstimatedTraffic(searchVolume, ctr)
+    const visibilityScore = calculateVisibilityScore(position.rankGroup, searchVolume)
+
     // Mettre à jour en base de données
     const updated = await prisma.keyword.update({
       where: { id: keywordId },
@@ -507,8 +670,31 @@ export async function updateKeywordPosition(keywordId: string) {
         rankGroup: position.rankGroup,
         rankAbsolute: position.rankAbsolute,
         lastCheckedAt: new Date(),
+        // Mettre à jour les métriques si elles étaient manquantes
+        searchVolume: searchVolume || keyword.searchVolume,
+        cpc: cpc || keyword.cpc,
+        competition: competition || keyword.competition,
+        competitionLevel: competitionLevel || keyword.competitionLevel,
+        // Mettre à jour les métriques calculées
+        estimatedCtr: ctr,
+        estimatedTraffic: estimatedTraffic,
+        visibilityScore: visibilityScore,
+        updatedAt: new Date(),
       },
     })
+
+    // Créer l'entrée d'historique si une position a été trouvée
+    if (position.rankGroup !== null) {
+      await prisma.keyword_position_history.create({
+        data: {
+          id: randomUUID(),
+          keywordId: keywordId,
+          rankGroup: position.rankGroup,
+          rankAbsolute: position.rankAbsolute,
+          checkedAt: new Date(),
+        },
+      })
+    }
 
     return {
       success: true,
@@ -545,6 +731,28 @@ export async function updateAllKeywordPositions(projectId: string) {
 
       const position = await checkKeywordPosition(keyword.keyword, domain, keyword.locationCode, keyword.languageCode)
 
+      // Charger les métriques si elles ne sont pas déjà présentes
+      let searchVolume = keyword.searchVolume
+      let cpc = keyword.cpc
+      let competition = keyword.competition
+      let competitionLevel = keyword.competitionLevel
+      if (!searchVolume || !cpc) {
+        const metricsResult = await fetchKeywordMetrics(keyword.keyword, keyword.locationCode, keyword.languageCode)
+        if (metricsResult.success && metricsResult.data) {
+          searchVolume = metricsResult.data.searchVolume || searchVolume || null
+          cpc = metricsResult.data.cpc || cpc || null
+          competition = metricsResult.data.competition || competition || null
+          competitionLevel = metricsResult.data.competitionLevel || competitionLevel || null
+        }
+        // Attendre 100ms entre les appels API pour respecter le rate limiting
+        await new Promise((resolve) => setTimeout(resolve, 100))
+      }
+
+      // Calculer les métriques dérivées
+      const ctr = calculateEstimatedCTR(position.rankGroup)
+      const estimatedTraffic = calculateEstimatedTraffic(searchVolume, ctr)
+      const visibilityScore = calculateVisibilityScore(position.rankGroup, searchVolume)
+
       const updated = await prisma.keyword.update({
         where: { id: keyword.id },
         data: {
@@ -552,10 +760,36 @@ export async function updateAllKeywordPositions(projectId: string) {
           rankGroup: position.rankGroup,
           rankAbsolute: position.rankAbsolute,
           lastCheckedAt: new Date(),
+          // Mettre à jour les métriques si elles étaient manquantes
+          searchVolume: searchVolume || keyword.searchVolume,
+          cpc: cpc || keyword.cpc,
+          competition: competition || keyword.competition,
+          competitionLevel: competitionLevel || keyword.competitionLevel,
+          // Mettre à jour les métriques calculées
+          estimatedCtr: ctr,
+          estimatedTraffic: estimatedTraffic,
+          visibilityScore: visibilityScore,
+          updatedAt: new Date(),
         },
       })
 
+      // Créer l'entrée d'historique si une position a été trouvée
+      if (position.rankGroup !== null) {
+        await prisma.keyword_position_history.create({
+          data: {
+            id: randomUUID(),
+            keywordId: keyword.id,
+            rankGroup: position.rankGroup,
+            rankAbsolute: position.rankAbsolute,
+            checkedAt: new Date(),
+          },
+        })
+      }
+
       results.push(updated)
+
+      // Attendre 100ms entre chaque vérification pour respecter le rate limiting
+      await new Promise((resolve) => setTimeout(resolve, 100))
     }
 
     return {
@@ -623,9 +857,19 @@ export async function addKeyword(formData: FormData) {
     const domain = project.url.replace(/^(https?:\/\/)?(www\.)?/, '').replace(/\/$/, '')
     const position = await checkKeywordPosition(keyword.trim(), domain, locationCode, languageCode)
 
-    // Créer le mot-clé avec la position initiale
+    // Charger les métriques du mot-clé (Volume, CPC, Competition)
+    const metricsResult = await fetchKeywordMetrics(keyword.trim(), locationCode, languageCode)
+    const metrics = metricsResult.success ? metricsResult.data : null
+
+    // Calculer les métriques dérivées
+    const ctr = calculateEstimatedCTR(position.rankGroup)
+    const estimatedTraffic = calculateEstimatedTraffic(metrics?.searchVolume || null, ctr)
+    const visibilityScore = calculateVisibilityScore(position.rankGroup, metrics?.searchVolume || null)
+
+    // Créer le mot-clé avec toutes les données
     const newKeyword = await prisma.keyword.create({
       data: {
+        id: randomUUID(),
         keyword: keyword.trim(),
         projectId,
         locationCode,
@@ -633,6 +877,15 @@ export async function addKeyword(formData: FormData) {
         rankGroup: position.rankGroup,
         rankAbsolute: position.rankAbsolute,
         lastCheckedAt: new Date(),
+        // Métriques enrichies
+        searchVolume: metrics?.searchVolume || null,
+        cpc: metrics?.cpc || null,
+        competition: metrics?.competition || null,
+        competitionLevel: metrics?.competitionLevel || null,
+        // Métriques calculées
+        estimatedCtr: ctr,
+        estimatedTraffic: estimatedTraffic,
+        visibilityScore: visibilityScore,
       },
       include: {
         project: {
@@ -643,6 +896,19 @@ export async function addKeyword(formData: FormData) {
         },
       },
     })
+
+    // Créer l'entrée d'historique si une position a été trouvée
+    if (position.rankGroup !== null) {
+      await prisma.keyword_position_history.create({
+        data: {
+          id: randomUUID(),
+          keywordId: newKeyword.id,
+          rankGroup: position.rankGroup,
+          rankAbsolute: position.rankAbsolute,
+          checkedAt: new Date(),
+        },
+      })
+    }
 
     return { success: true, data: newKeyword }
   } catch (error) {

@@ -30,18 +30,48 @@ model keyword {
   projectId                String
   locationCode             Int                        @default(2250)
   languageCode             String                     @default("fr")
+
+  // Positions actuelles
   rankGroup                Int?
   rankAbsolute             Int?
   previousRank             Int?
+  rankedUrl                String?
+
+  // Métriques enrichies
+  searchVolume             Int?
+  cpc                      Float?
+  competition              Float?
+  competitionLevel         String?
+  searchIntent             SearchIntent?
+  searchIntentConfidence   Float?
+
+  // Métriques calculées
+  visibilityScore          Float?
+  estimatedCtr             Float?
+  estimatedTraffic         Int?
+
+  // Positions moyennes sur périodes
+  avgPosition7d            Float?
+  avgPosition30d           Float?
+  avgPosition90d           Float?
+
+  // Métadonnées
   createdAt                DateTime                   @default(now())
   updatedAt                DateTime                   @default(now())
   lastCheckedAt            DateTime?
+
+  // Relations
   project                  project                    @relation(fields: [projectId], references: [id], onDelete: Cascade)
   keyword_group_assignment keyword_group_assignment[]
   keyword_position_history keyword_position_history[]
   keyword_tag_assignment   keyword_tag_assignment[]
+  keyword_alerts           keyword_alert[]
+  keyword_annotations      keyword_annotation[]
 
   @@unique([projectId, keyword, locationCode, languageCode])
+  @@index([projectId, rankGroup])
+  @@index([projectId, searchIntent])
+  @@index([lastCheckedAt])
 }
 
 model keyword_group {
@@ -70,17 +100,33 @@ model keyword_group_assignment {
 }
 
 model keyword_position_history {
-  id           String   @id
-  keywordId    String
-  rankGroup    Int?
-  rankAbsolute Int?
-  url          String?
-  searchVolume Int?
-  checkedAt    DateTime @default(now())
-  createdAt    DateTime @default(now())
-  keyword      keyword  @relation(fields: [keywordId], references: [id], onDelete: Cascade)
+  id                    String        @id
+  keywordId             String
+
+  // Positions
+  rankGroup             Int?
+  rankAbsolute          Int?
+  rankedUrl             String?
+  previousUrl           String?
+
+  // Métriques SERP
+  searchVolume          Int?
+  serpFeatures          String[]
+
+  // Métriques calculées
+  visibilityScore       Float?
+  estimatedCtr          Float?
+  estimatedTraffic      Int?
+  searchIntent          SearchIntent?
+
+  // Métadonnées
+  checkedAt             DateTime      @default(now())
+  createdAt             DateTime      @default(now())
+
+  keyword               keyword       @relation(fields: [keywordId], references: [id], onDelete: Cascade)
 
   @@index([keywordId, checkedAt])
+  @@index([checkedAt])
 }
 
 model keyword_tag {
@@ -107,19 +153,22 @@ model keyword_tag_assignment {
 }
 
 model project {
-  id              String          @id
-  url             String          @unique
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @default(now())
-  userId          String
-  task_id         String?         @unique
-  task_created_at DateTime?
-  task_expires_at DateTime?
-  crawl_status    CrawlStatus?
-  keyword         keyword[]
-  keyword_group   keyword_group[]
-  keyword_tag     keyword_tag[]
-  user            user            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                   String                 @id
+  url                  String                 @unique
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime               @default(now())
+  userId               String
+  task_id              String?                @unique
+  task_created_at      DateTime?
+  task_expires_at      DateTime?
+  crawl_status         CrawlStatus?
+  keyword              keyword[]
+  keyword_group        keyword_group[]
+  keyword_tag          keyword_tag[]
+  keyword_alerts       keyword_alert[]
+  keyword_annotations  keyword_annotation[]
+  project_rank_metrics project_rank_metrics[]
+  user                 user                   @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model session {
@@ -160,4 +209,133 @@ enum CrawlStatus {
   PENDING
   READY
   ERROR
+}
+
+enum SearchIntent {
+  INFORMATIONAL
+  NAVIGATIONAL
+  COMMERCIAL
+  TRANSACTIONAL
+}
+
+enum KeywordAlertType {
+  POSITION_DROP
+  POSITION_GAIN
+  NEW_RANKING
+  LOST_RANKING
+  URL_CHANGE
+  TRAFFIC_DROP
+  TRAFFIC_GAIN
+  VISIBILITY_DROP
+}
+
+enum AnnotationType {
+  NOTE
+  GOOGLE_UPDATE
+  SITE_CHANGE
+  COMPETITOR_ACTION
+  CONTENT_UPDATE
+  TECHNICAL_ISSUE
+}
+
+enum PeriodType {
+  DAILY
+  WEEKLY
+  MONTHLY
+}
+
+model keyword_alert {
+  id                String           @id
+  keywordId         String
+  projectId         String
+  alertType         KeywordAlertType
+  threshold         Int?
+  thresholdPercent  Float?
+  isActive          Boolean          @default(true)
+  isTriggered       Boolean          @default(false)
+  lastTriggeredAt   DateTime?
+  triggeredCount    Int              @default(0)
+  triggerData       Json?
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+  keyword           keyword          @relation(fields: [keywordId], references: [id], onDelete: Cascade)
+  project           project          @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId, isActive])
+  @@index([keywordId, alertType])
+  @@index([isTriggered, lastTriggeredAt])
+}
+
+model keyword_alert_history {
+  id            String           @id
+  alertId       String
+  keywordId     String
+  alertType     KeywordAlertType
+  previousValue Float?
+  currentValue  Float?
+  change        Float?
+  changePercent Float?
+  message       String
+  metadata      Json?
+  triggeredAt   DateTime         @default(now())
+  createdAt     DateTime         @default(now())
+
+  @@index([alertId, triggeredAt])
+  @@index([keywordId, triggeredAt])
+  @@index([triggeredAt])
+}
+
+model keyword_annotation {
+  id               String         @id
+  keywordId        String?
+  projectId        String
+  title            String
+  content          String         @db.Text
+  annotationType   AnnotationType @default(NOTE)
+  annotationDate   DateTime
+  affectedKeywords String[]
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  createdBy        String?
+  keyword          keyword?       @relation(fields: [keywordId], references: [id], onDelete: Cascade)
+  project          project        @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId, annotationDate])
+  @@index([keywordId, annotationDate])
+  @@index([annotationDate])
+}
+
+model project_rank_metrics {
+  id                      String     @id
+  projectId               String
+  date                    DateTime   @db.Date
+  periodType              PeriodType
+  keywordsTop3            Int        @default(0)
+  keywordsTop10           Int        @default(0)
+  keywordsTop20           Int        @default(0)
+  keywordsTop50           Int        @default(0)
+  keywordsTop100          Int        @default(0)
+  keywordsNotRanked       Int        @default(0)
+  totalKeywords           Int        @default(0)
+  avgPosition             Float?
+  avgVisibilityScore      Float?
+  totalVisibilityScore    Float?
+  totalEstimatedTraffic   Int?
+  totalSearchVolume       Int?
+  avgEstimatedCtr         Float?
+  keywordsGained          Int        @default(0)
+  keywordsLost            Int        @default(0)
+  keywordsImproved        Int        @default(0)
+  keywordsDeclined        Int        @default(0)
+  intentInformational     Int        @default(0)
+  intentNavigational      Int        @default(0)
+  intentCommercial        Int        @default(0)
+  intentTransactional     Int        @default(0)
+  createdAt               DateTime   @default(now())
+  updatedAt               DateTime   @updatedAt
+  project                 project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, date, periodType])
+  @@index([projectId, date])
+  @@index([date, periodType])
 }

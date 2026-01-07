@@ -8,17 +8,20 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { ArrowDown, ArrowUp, Loader2, Plus, RefreshCw, Search, Trash2, TrendingUp } from 'lucide-react'
+import { ArrowDown, ArrowUp, Eye, Loader2, Plus, RefreshCw, Search, Trash2, TrendingUp } from 'lucide-react'
 import { useCallback, useEffect, useState } from 'react'
+import { toast } from 'sonner'
 import {
   addKeyword,
   deleteKeyword,
   getDomains,
   getHistoricalRankOverview,
-  getKeywordData,
+  getKeywordHistory,
   getTrackedKeywords,
   updateAllKeywordPositions,
+  updateKeywordMetrics,
   updateKeywordPosition,
 } from './action'
 
@@ -161,6 +164,17 @@ export default function RankOverviewContent() {
   } | null>(null)
   const [updatingPositions, setUpdatingPositions] = useState(false)
   const [updatingKeywordId, setUpdatingKeywordId] = useState<string | null>(null)
+  const [selectedKeywordForDetails, setSelectedKeywordForDetails] = useState<TrackedKeyword | null>(null)
+  const [isDetailPanelOpen, setIsDetailPanelOpen] = useState(false)
+  const [keywordHistory, setKeywordHistory] = useState<
+    Array<{
+      id: string
+      rankGroup: number | null
+      rankAbsolute: number | null
+      checkedAt: Date
+    }>
+  >([])
+  const [loadingHistory, setLoadingHistory] = useState(false)
 
   // Charger les domaines au montage
   useEffect(() => {
@@ -187,9 +201,12 @@ export default function RankOverviewContent() {
         setTrackedKeywords(result.data)
         // Réinitialiser les données des mots-clés
         setKeywordDataMap({})
+      } else if (result.error) {
+        toast.error(result.error || 'Erreur lors du chargement des mots-clés')
       }
     } catch (error) {
       console.error('Error loading tracked keywords:', error)
+      toast.error('Erreur lors du chargement des mots-clés')
     } finally {
       setLoadingKeywords(false)
     }
@@ -199,20 +216,20 @@ export default function RankOverviewContent() {
     if (loadingKeywordData[keyword.id]) return
 
     setLoadingKeywordData((prev) => ({ ...prev, [keyword.id]: true }))
+    const toastId = toast.loading('Chargement des métriques...')
     try {
-      const result = await getKeywordData(keyword.keyword, keyword.locationCode, keyword.languageCode)
+      // Utiliser la nouvelle fonction qui sauvegarde en base
+      const result = await updateKeywordMetrics(keyword.id)
       if (result.success) {
-        setKeywordDataMap((prev) => ({
-          ...prev,
-          [keyword.id]: result.data || null,
-        }))
+        toast.success('Métriques mises à jour avec succès', { id: toastId })
+        // Recharger les mots-clés pour afficher les nouvelles données
+        await loadTrackedKeywords()
+      } else {
+        toast.error(result.error || 'Erreur lors du chargement des métriques', { id: toastId })
       }
     } catch (error) {
       console.error('Error loading keyword data:', error)
-      setKeywordDataMap((prev) => ({
-        ...prev,
-        [keyword.id]: null,
-      }))
+      toast.error('Erreur lors du chargement des métriques', { id: toastId })
     } finally {
       setLoadingKeywordData((prev) => ({ ...prev, [keyword.id]: false }))
     }
@@ -222,16 +239,18 @@ export default function RankOverviewContent() {
     if (!selectedProjectId) return
 
     setUpdatingPositions(true)
+    const toastId = toast.loading('Mise à jour des positions en cours...')
     try {
       const result = await updateAllKeywordPositions(selectedProjectId)
       if (result.success) {
+        toast.success('Positions mises à jour avec succès', { id: toastId })
         await loadTrackedKeywords()
       } else {
-        alert(result.error || 'Erreur lors de la mise à jour des positions')
+        toast.error(result.error || 'Erreur lors de la mise à jour des positions', { id: toastId })
       }
     } catch (error) {
       console.error('Error updating positions:', error)
-      alert('Erreur lors de la mise à jour des positions')
+      toast.error('Erreur lors de la mise à jour des positions', { id: toastId })
     } finally {
       setUpdatingPositions(false)
     }
@@ -242,15 +261,33 @@ export default function RankOverviewContent() {
     try {
       const result = await updateKeywordPosition(keywordId)
       if (result.success) {
+        toast.success('Position mise à jour avec succès')
         await loadTrackedKeywords()
       } else {
-        alert(result.error || 'Erreur lors de la mise à jour de la position')
+        toast.error(result.error || 'Erreur lors de la mise à jour de la position')
       }
     } catch (error) {
       console.error('Error updating keyword position:', error)
-      alert('Erreur lors de la mise à jour de la position')
+      toast.error('Erreur lors de la mise à jour de la position')
     } finally {
       setUpdatingKeywordId(null)
+    }
+  }
+
+  const handleViewDetails = async (keyword: TrackedKeyword) => {
+    setSelectedKeywordForDetails(keyword)
+    setIsDetailPanelOpen(true)
+    // Charger l'historique
+    setLoadingHistory(true)
+    try {
+      const result = await getKeywordHistory(keyword.id, 90)
+      if (result.success && 'data' in result && result.data) {
+        setKeywordHistory(result.data)
+      }
+    } catch (error) {
+      console.error('Error loading history:', error)
+    } finally {
+      setLoadingHistory(false)
     }
   }
 
@@ -266,15 +303,16 @@ export default function RankOverviewContent() {
     try {
       const result = await deleteKeyword(keywordToDelete.id)
       if (result.success) {
+        toast.success('Mot-clé supprimé avec succès')
         setIsDeleteDialogOpen(false)
         setKeywordToDelete(null)
         await loadTrackedKeywords()
       } else {
-        alert(result.error || 'Erreur lors de la suppression')
+        toast.error(result.error || 'Erreur lors de la suppression')
       }
     } catch (error) {
       console.error('Error deleting keyword:', error)
-      alert('Erreur lors de la suppression du mot-clé')
+      toast.error('Erreur lors de la suppression du mot-clé')
     } finally {
       setDeletingKeywords((prev) => {
         const next = new Set(prev)
@@ -293,6 +331,7 @@ export default function RankOverviewContent() {
     if (!newKeyword.trim() || !selectedProjectId) return
 
     setAddingKeyword(true)
+    const toastId = toast.loading('Ajout du mot-clé en cours...')
     try {
       const formData = new FormData()
       formData.set('keyword', newKeyword.trim())
@@ -302,15 +341,16 @@ export default function RankOverviewContent() {
 
       const result = await addKeyword(formData)
       if (result.success) {
+        toast.success('Mot-clé ajouté avec succès', { id: toastId })
         setNewKeyword('')
         setIsAddDialogOpen(false)
         await loadTrackedKeywords()
       } else {
-        alert(result.error || 'Erreur lors de l&apos;ajout du mot-clé')
+        toast.error(result.error || 'Erreur lors de l&apos;ajout du mot-clé', { id: toastId })
       }
     } catch (error) {
       console.error('Error adding keyword:', error)
-      alert('Erreur lors de l&apos;ajout du mot-clé')
+      toast.error('Erreur lors de l&apos;ajout du mot-clé', { id: toastId })
     } finally {
       setAddingKeyword(false)
     }
@@ -347,11 +387,15 @@ export default function RankOverviewContent() {
         // Stocker toutes les données historiques
         setHistoricalData(sortedItems)
       } else {
+        if (historicalResult.error) {
+          toast.error(historicalResult.error || 'Erreur lors du chargement des données historiques')
+        }
         setOverviewData(null)
         setHistoricalData([])
       }
     } catch (error) {
       console.error('Error loading data:', error)
+      toast.error('Erreur lors du chargement des données historiques')
       setOverviewData(null)
       setHistoricalData([])
     } finally {
@@ -366,11 +410,13 @@ export default function RankOverviewContent() {
     }
   }, [selectedDomain, loadData])
 
-  const formatNumber = (num: number) => {
+  const formatNumber = (num: number | null | undefined) => {
+    if (num === null || num === undefined) return '-'
     return new Intl.NumberFormat('fr-FR').format(num)
   }
 
-  const formatCurrency = (num: number) => {
+  const formatCurrency = (num: number | null | undefined) => {
+    if (num === null || num === undefined) return '-'
     return new Intl.NumberFormat('fr-FR', {
       style: 'currency',
       currency: 'EUR',
@@ -730,12 +776,12 @@ export default function RankOverviewContent() {
                         <TableCell className="font-medium">
                           <div className="flex items-center gap-2">
                             <span>{kw.keyword}</span>
-                            {!keywordData && !isLoading && (
+                            {(!kw.searchVolume || !kw.cpc) && !isLoading && (
                               <Button
                                 variant="outline"
                                 className="h-6 w-6 p-0"
                                 onClick={() => loadKeywordData(kw)}
-                                title="Charger les données du mot-clé"
+                                title="Charger les métriques manquantes (Volume, CPC, Difficulté)"
                               >
                                 <Search className="h-3 w-3" />
                               </Button>
@@ -798,32 +844,35 @@ export default function RankOverviewContent() {
                           </div>
                         </TableCell>
                         <TableCell>
-                          {isLoading ? (
+                          {kw.searchVolume ? (
+                            formatNumber(kw.searchVolume)
+                          ) : isLoading ? (
                             <Loader2 className="h-4 w-4 animate-spin" />
-                          ) : keywordData?.keyword_data?.keyword_info?.search_volume ? (
-                            formatNumber(keywordData.keyword_data.keyword_info.search_volume)
                           ) : (
                             <span className="text-muted-foreground">-</span>
                           )}
                         </TableCell>
                         <TableCell>
-                          {keywordData?.keyword_data?.keyword_info?.cpc
-                            ? formatCurrency(keywordData.keyword_data.keyword_info.cpc)
-                            : keywordData?.keyword_data?.keyword_info?.cpc === null
-                              ? '-'
-                              : isLoading
-                                ? '-'
-                                : '-'}
+                          {kw.cpc ? (
+                            formatCurrency(kw.cpc)
+                          ) : kw.cpc === null ? (
+                            '-'
+                          ) : isLoading ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <span className="text-muted-foreground">-</span>
+                          )}
                         </TableCell>
                         <TableCell>
-                          {keywordData?.keyword_data?.keyword_info?.competition !== null &&
-                          keywordData?.keyword_data?.keyword_info?.competition !== undefined
-                            ? `${Math.round(keywordData.keyword_data.keyword_info.competition * 100)}%`
-                            : keywordData?.serp_info?.[0]?.keyword_difficulty
-                              ? `${keywordData.serp_info[0].keyword_difficulty}%`
-                              : isLoading
-                                ? '-'
-                                : '-'}
+                          {kw.competition !== null && kw.competition !== undefined ? (
+                            `${Math.round(kw.competition * 100)}%`
+                          ) : kw.competitionLevel ? (
+                            <Badge color="zinc">{kw.competitionLevel}</Badge>
+                          ) : isLoading ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <span className="text-muted-foreground">-</span>
+                          )}
                         </TableCell>
                         <TableCell>
                           <span className="text-sm">
@@ -845,6 +894,14 @@ export default function RankOverviewContent() {
                         </TableCell>
                         <TableCell className="text-right">
                           <div className="flex items-center justify-end gap-2">
+                            <Button
+                              variant="outline"
+                              className="h-8 w-8 p-0"
+                              onClick={() => handleViewDetails(kw)}
+                              title="Voir les détails"
+                            >
+                              <Eye className="h-4 w-4" />
+                            </Button>
                             <Button
                               variant="outline"
                               className="h-8 w-8 p-0"
@@ -1111,6 +1168,248 @@ export default function RankOverviewContent() {
           </DashboardButton>
         </DialogActions>
       </Dialog>
+
+      {/* Panel latéral pour les détails du mot-clé */}
+      <Sheet open={isDetailPanelOpen} onOpenChange={setIsDetailPanelOpen}>
+        <SheetContent className="overflow-y-auto bg-mist-600 p-4 sm:max-w-2xl">
+          {selectedKeywordForDetails && (
+            <>
+              <SheetHeader>
+                <SheetTitle>{selectedKeywordForDetails.keyword}</SheetTitle>
+                <SheetDescription>Détails et historique de position</SheetDescription>
+              </SheetHeader>
+
+              <div className="mt-6 space-y-6">
+                {/* Métriques actuelles */}
+                <div>
+                  <h3 className="dashboard-heading-4 mb-3">Métriques actuelles</h3>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <Card>
+                      <CardHeader className="pb-3">
+                        <CardTitle className="dashboard-body-sm font-medium">Position</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="dashboard-heading-2">
+                          {selectedKeywordForDetails.rankGroup ? (
+                            <>
+                              #{selectedKeywordForDetails.rankGroup}
+                              {selectedKeywordForDetails.rankAbsolute && (
+                                <span className="text-muted-foreground dashboard-body-sm ml-2">
+                                  (abs: {selectedKeywordForDetails.rankAbsolute})
+                                </span>
+                              )}
+                            </>
+                          ) : (
+                            'Non classé'
+                          )}
+                        </div>
+                        {selectedKeywordForDetails.previousRank !== null && (
+                          <div className="text-muted-foreground dashboard-text-xs mt-2">
+                            Position précédente: #{selectedKeywordForDetails.previousRank}
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
+
+                    <Card>
+                      <CardHeader className="pb-3">
+                        <CardTitle className="dashboard-body-sm font-medium">Volume de recherche</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="dashboard-heading-2">
+                          {selectedKeywordForDetails.searchVolume
+                            ? formatNumber(selectedKeywordForDetails.searchVolume)
+                            : '-'}
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    <Card>
+                      <CardHeader className="pb-3">
+                        <CardTitle className="dashboard-body-sm font-medium">Score de visibilité</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="dashboard-heading-2">
+                          {selectedKeywordForDetails.visibilityScore
+                            ? `${selectedKeywordForDetails.visibilityScore.toFixed(1)}/100`
+                            : '-'}
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    <Card>
+                      <CardHeader className="pb-3">
+                        <CardTitle className="dashboard-body-sm font-medium">Trafic estimé</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="dashboard-heading-2">
+                          {selectedKeywordForDetails.estimatedTraffic
+                            ? formatNumber(selectedKeywordForDetails.estimatedTraffic)
+                            : '-'}
+                        </div>
+                        {selectedKeywordForDetails.estimatedCtr && (
+                          <div className="text-muted-foreground dashboard-text-xs mt-2">
+                            CTR: {(selectedKeywordForDetails.estimatedCtr * 100).toFixed(1)}%
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
+
+                    {selectedKeywordForDetails.cpc && (
+                      <Card>
+                        <CardHeader className="pb-3">
+                          <CardTitle className="dashboard-body-sm font-medium">CPC</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="dashboard-heading-2">{formatCurrency(selectedKeywordForDetails.cpc)}</div>
+                        </CardContent>
+                      </Card>
+                    )}
+
+                    {selectedKeywordForDetails.competition !== null && (
+                      <Card>
+                        <CardHeader className="pb-3">
+                          <CardTitle className="dashboard-body-sm font-medium">Compétition</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="dashboard-heading-2">
+                            {Math.round(selectedKeywordForDetails.competition * 100)}%
+                          </div>
+                          {selectedKeywordForDetails.competitionLevel && (
+                            <Badge color="zinc" className="mt-2">
+                              {selectedKeywordForDetails.competitionLevel}
+                            </Badge>
+                          )}
+                        </CardContent>
+                      </Card>
+                    )}
+                  </div>
+                </div>
+
+                {/* Historique des positions */}
+                <div>
+                  <h3 className="dashboard-heading-4 mb-3">Historique des positions</h3>
+                  {loadingHistory ? (
+                    <div className="flex items-center justify-center py-8">
+                      <Loader2 className="h-6 w-6 animate-spin" />
+                    </div>
+                  ) : keywordHistory.length > 0 ? (
+                    <Card>
+                      <CardContent className="p-0">
+                        <div className="max-h-96 overflow-y-auto">
+                          <Table>
+                            <TableHeader>
+                              <TableRow>
+                                <TableHead>Date</TableHead>
+                                <TableHead>Position</TableHead>
+                                <TableHead>Position absolue</TableHead>
+                              </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                              {keywordHistory.map((entry) => (
+                                <TableRow key={entry.id}>
+                                  <TableCell className="dashboard-body-sm">
+                                    {new Date(entry.checkedAt).toLocaleDateString('fr-FR', {
+                                      day: '2-digit',
+                                      month: 'short',
+                                      year: 'numeric',
+                                      hour: '2-digit',
+                                      minute: '2-digit',
+                                    })}
+                                  </TableCell>
+                                  <TableCell>
+                                    {entry.rankGroup !== null ? (
+                                      <Badge
+                                        className={
+                                          entry.rankGroup <= 3
+                                            ? 'bg-green-500'
+                                            : entry.rankGroup <= 10
+                                              ? 'bg-blue-500'
+                                              : entry.rankGroup <= 20
+                                                ? 'bg-yellow-500'
+                                                : 'bg-gray-500'
+                                        }
+                                      >
+                                        #{entry.rankGroup}
+                                      </Badge>
+                                    ) : (
+                                      <span className="text-muted-foreground">Non classé</span>
+                                    )}
+                                  </TableCell>
+                                  <TableCell>
+                                    {entry.rankAbsolute !== null ? (
+                                      <span className="text-muted-foreground dashboard-body-sm">
+                                        #{entry.rankAbsolute}
+                                      </span>
+                                    ) : (
+                                      <span className="text-muted-foreground">-</span>
+                                    )}
+                                  </TableCell>
+                                </TableRow>
+                              ))}
+                            </TableBody>
+                          </Table>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ) : (
+                    <Card>
+                      <CardContent className="py-8 text-center">
+                        <p className="text-muted-foreground">Aucun historique disponible</p>
+                        <p className="text-muted-foreground dashboard-text-xs mt-2">
+                          L&apos;historique sera créé lors des prochaines vérifications de position
+                        </p>
+                      </CardContent>
+                    </Card>
+                  )}
+                </div>
+
+                {/* Informations supplémentaires */}
+                <div>
+                  <h3 className="dashboard-heading-4 mb-3">Informations</h3>
+                  <Card>
+                    <CardContent className="space-y-3 pt-6">
+                      <div className="flex items-center justify-between">
+                        <span className="dashboard-body-sm text-muted-foreground">Localisation</span>
+                        <Badge color="zinc">
+                          {selectedKeywordForDetails.locationCode} ({selectedKeywordForDetails.languageCode})
+                        </Badge>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="dashboard-body-sm text-muted-foreground">Dernière vérification</span>
+                        <span className="dashboard-body-sm">
+                          {selectedKeywordForDetails.lastCheckedAt
+                            ? new Date(selectedKeywordForDetails.lastCheckedAt).toLocaleDateString('fr-FR', {
+                                day: '2-digit',
+                                month: 'short',
+                                year: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit',
+                              })
+                            : 'Jamais'}
+                        </span>
+                      </div>
+                      {selectedKeywordForDetails.rankedUrl && (
+                        <div className="flex items-start justify-between">
+                          <span className="dashboard-body-sm text-muted-foreground">URL classée</span>
+                          <a
+                            href={selectedKeywordForDetails.rankedUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="dashboard-body-sm text-primary hover:underline"
+                          >
+                            {selectedKeywordForDetails.rankedUrl}
+                          </a>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                </div>
+              </div>
+            </>
+          )}
+        </SheetContent>
+      </Sheet>
     </div>
   )
 }
