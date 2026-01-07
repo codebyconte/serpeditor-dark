@@ -48,6 +48,10 @@ export const data = {
           title: 'Possibilités de backlinks',
           url: '/dashboard/ecart-backlinks',
         },
+        {
+          title: 'Identifiez vos concurrents',
+          url: '/dashboard/rank-tracker-competitors',
+        },
       ],
     },
     {
@@ -87,10 +91,6 @@ export const data = {
         {
           title: 'Comparateur de SERP',
           url: '/dashboard/comparateur-serp',
-        },
-        {
-          title: 'Concurrents SEO',
-          url: '/dashboard/rank-tracker-competitors',
         },
       ],
     },

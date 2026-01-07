@@ -120,8 +120,7 @@ export async function getSERPCompetitors(
     if (options?.filters !== undefined) {
       // Compter les filtres de base (pas les opérateurs logiques)
       const filterCount = Array.isArray(options.filters)
-        ? options.filters.filter((f) => Array.isArray(f) && f.length >= 2)
-            .length
+        ? options.filters.filter((f) => Array.isArray(f) && f.length >= 2).length
         : 0
       if (filterCount > 8) {
         return {
@@ -138,12 +137,7 @@ export async function getSERPCompetitors(
         location_code: 2250, // France
         language_code: 'fr', // Français
         include_subdomains: options?.includeSubdomains ?? true,
-        item_types: options?.itemTypes ?? [
-          'organic',
-          'paid',
-          'featured_snippet',
-          'local_pack',
-        ],
+        item_types: options?.itemTypes ?? ['organic', 'paid', 'featured_snippet', 'local_pack'],
         limit: options?.limit ?? 100,
         offset: options?.offset ?? 0,
         ...(options?.filters && { filters: options.filters }),
@@ -152,17 +146,14 @@ export async function getSERPCompetitors(
       },
     ]
 
-    const response = await fetch(
-      `${process.env.DATAFORSEO_URL}/dataforseo_labs/google/serp_competitors/live`,
-      {
-        method: 'POST',
-        headers: {
-          Authorization: `Basic ${credentials}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
+    const response = await fetch(`${process.env.DATAFORSEO_URL}/dataforseo_labs/google/serp_competitors/live`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Basic ${credentials}`,
+        'Content-Type': 'application/json',
       },
-    )
+      body: JSON.stringify(payload),
+    })
 
     if (!response.ok) {
       throw new Error(`API Error: ${response.status} ${response.statusText}`)
