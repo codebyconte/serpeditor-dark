@@ -85,7 +85,7 @@
   }
 
   .dashboard-text-sm {
-    @apply text-sm leading-normal;
+    @apply text-base leading-normal;
     color: var(--foreground);
   }
 

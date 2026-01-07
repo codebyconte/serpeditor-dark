@@ -45,7 +45,7 @@ export const data = {
           url: '/dashboard/ecart-mots-cles',
         },
         {
-          title: 'Écart de backlinks',
+          title: 'Possibilités de backlinks',
           url: '/dashboard/ecart-backlinks',
         },
       ],
