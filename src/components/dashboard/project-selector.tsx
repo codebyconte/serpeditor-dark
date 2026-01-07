@@ -34,14 +34,14 @@ export function ProjectSelector({ projects, currentProjectId }: ProjectSelectorP
     <div className="flex items-center gap-2">
       <Globe className="text-muted-foreground h-4 w-4" />
       <Select value={currentProjectId || projects[0]?.id || ''} onValueChange={handleProjectChange}>
-        <SelectTrigger className="w-[250px]">
+        <SelectTrigger className="w-[250px] hover:cursor-pointer">
           <SelectValue>
             {selectedProject ? selectedProject.url.replace(/^https?:\/\//, '') : 'Sélectionner un projet'}
           </SelectValue>
         </SelectTrigger>
         <SelectContent className="bg-mist-600">
           {projects.map((project) => (
-            <SelectItem key={project.id} value={project.id}>
+            <SelectItem key={project.id} value={project.id} className="hover:cursor-pointer hover:bg-mist-500">
               {project.url.replace(/^https?:\/\//, '')}
             </SelectItem>
           ))}

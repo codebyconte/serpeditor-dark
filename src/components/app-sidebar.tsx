@@ -64,6 +64,10 @@ export const data = {
           url: '/dashboard/keyword-magic',
           badge: 'Popular',
         },
+        {
+          title: 'Mot clés organiques',
+          url: '/dashboard/mots-cles-organiques',
+        },
       ],
     },
     {
@@ -75,13 +79,14 @@ export const data = {
           title: 'Synthèse des positions',
           url: '/dashboard/rank-tracker-overview',
         },
+
         {
           title: 'Pages positionnées',
           url: '/dashboard/pages-principales',
         },
         {
-          title: 'Analyse SERP',
-          url: '/dashboard/analyse-serp',
+          title: 'Comparateur de SERP',
+          url: '/dashboard/comparateur-serp',
         },
         {
           title: 'Concurrents SEO',

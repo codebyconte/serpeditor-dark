@@ -117,11 +117,7 @@ export interface FeaturedSnippetSERPItem extends BaseSERPItem {
 }
 
 // Union type pour tous les types d'éléments SERP
-export type HistoricalSERPItem =
-  | OrganicSERPItem
-  | PaidSERPItem
-  | FeaturedSnippetSERPItem
-  | BaseSERPItem // Pour tous les autres types (carousel, video, knowledge_graph, etc.)
+export type HistoricalSERPItem = OrganicSERPItem | PaidSERPItem | FeaturedSnippetSERPItem | BaseSERPItem // Pour tous les autres types (carousel, video, knowledge_graph, etc.)
 
 export interface HistoricalSERPSnapshot {
   se_type: string
@@ -230,17 +226,14 @@ export async function getHistoricalSERP(
       },
     ]
 
-    const response = await fetch(
-      `${process.env.DATAFORSEO_URL}/dataforseo_labs/google/historical_serps/live`,
-      {
-        method: 'POST',
-        headers: {
-          Authorization: `Basic ${process.env.DATAFORSEO_PASSWORD}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
+    const response = await fetch(`${process.env.DATAFORSEO_URL}/dataforseo_labs/google/historical_serps/live`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Basic ${process.env.DATAFORSEO_PASSWORD}`,
+        'Content-Type': 'application/json',
       },
-    )
+      body: JSON.stringify(payload),
+    })
 
     if (!response.ok) {
       throw new Error(`API Error: ${response.status} ${response.statusText}`)
@@ -264,7 +257,7 @@ export async function getHistoricalSERP(
     }
 
     // Transformer les données pour correspondre à notre structure
-    let allSnapshots: HistoricalSERPSnapshot[] = (taskResult.items || []).map(
+    const allSnapshots: HistoricalSERPSnapshot[] = (taskResult.items || []).map(
       (item: {
         se_type: string
         keyword: string
@@ -298,12 +291,8 @@ export async function getHistoricalSERP(
     let filteredSnapshots = allSnapshots
 
     if (options?.dateFrom || options?.dateTo) {
-      const targetDateFrom = options?.dateFrom
-        ? new Date(options.dateFrom + 'T00:00:00')
-        : null
-      const targetDateTo = options?.dateTo
-        ? new Date(options.dateTo + 'T23:59:59')
-        : null
+      const targetDateFrom = options?.dateFrom ? new Date(options.dateFrom + 'T00:00:00') : null
+      const targetDateTo = options?.dateTo ? new Date(options.dateTo + 'T23:59:59') : null
 
       if (targetDateFrom && targetDateTo) {
         // Filtrer les snapshots dans la plage de dates
@@ -318,12 +307,8 @@ export async function getHistoricalSERP(
           const closestToFrom = allSnapshots.reduce((closest, current) => {
             const closestDate = new Date(closest.datetime)
             const currentDate = new Date(current.datetime)
-            const closestDiff = Math.abs(
-              closestDate.getTime() - targetDateFrom!.getTime(),
-            )
-            const currentDiff = Math.abs(
-              currentDate.getTime() - targetDateFrom!.getTime(),
-            )
+            const closestDiff = Math.abs(closestDate.getTime() - targetDateFrom!.getTime())
+            const currentDiff = Math.abs(currentDate.getTime() - targetDateFrom!.getTime())
             return currentDiff < closestDiff ? current : closest
           })
 
@@ -331,27 +316,18 @@ export async function getHistoricalSERP(
           const closestToTo = allSnapshots.reduce((closest, current) => {
             const closestDate = new Date(closest.datetime)
             const currentDate = new Date(current.datetime)
-            const closestDiff = Math.abs(
-              closestDate.getTime() - targetDateTo!.getTime(),
-            )
-            const currentDiff = Math.abs(
-              currentDate.getTime() - targetDateTo!.getTime(),
-            )
+            const closestDiff = Math.abs(closestDate.getTime() - targetDateTo!.getTime())
+            const currentDiff = Math.abs(currentDate.getTime() - targetDateTo!.getTime())
             return currentDiff < closestDiff ? current : closest
           })
 
           // Inclure tous les snapshots entre les deux plus proches
           const sortedSnapshots = [...allSnapshots].sort(
-            (a, b) =>
-              new Date(a.datetime).getTime() - new Date(b.datetime).getTime(),
+            (a, b) => new Date(a.datetime).getTime() - new Date(b.datetime).getTime(),
           )
 
-          const fromIndex = sortedSnapshots.findIndex(
-            (s) => s.datetime === closestToFrom.datetime,
-          )
-          const toIndex = sortedSnapshots.findIndex(
-            (s) => s.datetime === closestToTo.datetime,
-          )
+          const fromIndex = sortedSnapshots.findIndex((s) => s.datetime === closestToFrom.datetime)
+          const toIndex = sortedSnapshots.findIndex((s) => s.datetime === closestToTo.datetime)
 
           if (fromIndex !== -1 && toIndex !== -1) {
             const startIndex = Math.min(fromIndex, toIndex)
@@ -360,8 +336,7 @@ export async function getHistoricalSERP(
           } else {
             // Fallback : prendre les 2 snapshots les plus proches
             filteredSnapshots = [closestToFrom, closestToTo].filter(
-              (s, i, arr) =>
-                arr.findIndex((x) => x.datetime === s.datetime) === i,
+              (s, i, arr) => arr.findIndex((x) => x.datetime === s.datetime) === i,
             )
           }
         }
@@ -369,10 +344,7 @@ export async function getHistoricalSERP(
         // Seulement dateFrom : trouver le snapshot le plus proche après cette date
         filteredSnapshots = allSnapshots
           .filter((snapshot) => new Date(snapshot.datetime) >= targetDateFrom)
-          .sort(
-            (a, b) =>
-              new Date(a.datetime).getTime() - new Date(b.datetime).getTime(),
-          )
+          .sort((a, b) => new Date(a.datetime).getTime() - new Date(b.datetime).getTime())
 
         if (filteredSnapshots.length === 0 && allSnapshots.length > 0) {
           // Prendre le snapshot le plus proche de dateFrom
@@ -380,12 +352,8 @@ export async function getHistoricalSERP(
             allSnapshots.reduce((closest, current) => {
               const closestDate = new Date(closest.datetime)
               const currentDate = new Date(current.datetime)
-              const closestDiff = Math.abs(
-                closestDate.getTime() - targetDateFrom.getTime(),
-              )
-              const currentDiff = Math.abs(
-                currentDate.getTime() - targetDateFrom.getTime(),
-              )
+              const closestDiff = Math.abs(closestDate.getTime() - targetDateFrom.getTime())
+              const currentDiff = Math.abs(currentDate.getTime() - targetDateFrom.getTime())
               return currentDiff < closestDiff ? current : closest
             }),
           ]
@@ -394,10 +362,7 @@ export async function getHistoricalSERP(
         // Seulement dateTo : trouver le snapshot le plus proche avant cette date
         filteredSnapshots = allSnapshots
           .filter((snapshot) => new Date(snapshot.datetime) <= targetDateTo)
-          .sort(
-            (a, b) =>
-              new Date(b.datetime).getTime() - new Date(a.datetime).getTime(),
-          )
+          .sort((a, b) => new Date(b.datetime).getTime() - new Date(a.datetime).getTime())
 
         if (filteredSnapshots.length === 0 && allSnapshots.length > 0) {
           // Prendre le snapshot le plus proche de dateTo
@@ -405,12 +370,8 @@ export async function getHistoricalSERP(
             allSnapshots.reduce((closest, current) => {
               const closestDate = new Date(closest.datetime)
               const currentDate = new Date(current.datetime)
-              const closestDiff = Math.abs(
-                closestDate.getTime() - targetDateTo.getTime(),
-              )
-              const currentDiff = Math.abs(
-                currentDate.getTime() - targetDateTo.getTime(),
-              )
+              const closestDiff = Math.abs(closestDate.getTime() - targetDateTo.getTime())
+              const currentDiff = Math.abs(currentDate.getTime() - targetDateTo.getTime())
               return currentDiff < closestDiff ? current : closest
             }),
           ]
@@ -419,9 +380,7 @@ export async function getHistoricalSERP(
     }
 
     // Trier les snapshots par date
-    filteredSnapshots.sort(
-      (a, b) => new Date(a.datetime).getTime() - new Date(b.datetime).getTime(),
-    )
+    filteredSnapshots.sort((a, b) => new Date(a.datetime).getTime() - new Date(b.datetime).getTime())
 
     return {
       success: true,
@@ -479,8 +438,7 @@ export async function compareSERPs(
   serp2: HistoricalSERPSnapshot,
 ): Promise<SERPComparison> {
   // Filtrer uniquement les éléments organiques avec type guard
-  const isOrganicItem = (item: HistoricalSERPItem): item is OrganicSERPItem =>
-    item.type === 'organic'
+  const isOrganicItem = (item: HistoricalSERPItem): item is OrganicSERPItem => item.type === 'organic'
 
   const organicItems1 = serp1.items.filter(isOrganicItem)
   const organicItems2 = serp2.items.filter(isOrganicItem)
@@ -561,13 +519,9 @@ export async function compareSERPs(
   positionChanges.sort((a, b) => Math.abs(b.change) - Math.abs(a.change))
 
   const volatilityScore =
-    allDomains.size > 0
-      ? (newDomains.length + lostDomains.length + changedDomainsCount) /
-        allDomains.size
-      : 0
+    allDomains.size > 0 ? (newDomains.length + lostDomains.length + changedDomainsCount) / allDomains.size : 0
 
-  const averagePositionChange =
-    changedDomainsCount > 0 ? totalPositionChange / changedDomainsCount : 0
+  const averagePositionChange = changedDomainsCount > 0 ? totalPositionChange / changedDomainsCount : 0
 
   return {
     date1: serp1.datetime,
@@ -584,9 +538,7 @@ export async function compareSERPs(
 /**
  * Analyse la volatilité sur une période
  */
-export async function analyzeSERPVolatility(
-  snapshots: HistoricalSERPSnapshot[],
-) {
+export async function analyzeSERPVolatility(snapshots: HistoricalSERPSnapshot[]) {
   if (snapshots.length < 2) {
     return {
       averageVolatility: 0,
@@ -597,34 +549,25 @@ export async function analyzeSERPVolatility(
     }
   }
 
-  const sortedSnapshots = [...snapshots].sort(
-    (a, b) => new Date(a.datetime).getTime() - new Date(b.datetime).getTime(),
-  )
+  const sortedSnapshots = [...snapshots].sort((a, b) => new Date(a.datetime).getTime() - new Date(b.datetime).getTime())
 
   const comparisons = []
   const volatilityScores = []
 
   for (let i = 1; i < sortedSnapshots.length; i++) {
-    const comparison = await compareSERPs(
-      sortedSnapshots[i - 1],
-      sortedSnapshots[i],
-    )
+    const comparison = await compareSERPs(sortedSnapshots[i - 1], sortedSnapshots[i])
     comparisons.push(comparison)
     volatilityScores.push(comparison.volatilityScore)
   }
 
-  const averageVolatility =
-    volatilityScores.reduce((sum, score) => sum + score, 0) /
-    volatilityScores.length
+  const averageVolatility = volatilityScores.reduce((sum, score) => sum + score, 0) / volatilityScores.length
   const maxVolatility = Math.max(...volatilityScores)
   const minVolatility = Math.min(...volatilityScores)
 
   const recentScores = volatilityScores.slice(-3)
   const earlyScores = volatilityScores.slice(0, 3)
-  const recentAvg =
-    recentScores.reduce((sum, s) => sum + s, 0) / recentScores.length
-  const earlyAvg =
-    earlyScores.reduce((sum, s) => sum + s, 0) / earlyScores.length
+  const recentAvg = recentScores.reduce((sum, s) => sum + s, 0) / recentScores.length
+  const earlyAvg = earlyScores.reduce((sum, s) => sum + s, 0) / earlyScores.length
 
   let trend: 'increasing' | 'decreasing' | 'stable' = 'stable'
   if (recentAvg > earlyAvg * 1.2) trend = 'increasing'
