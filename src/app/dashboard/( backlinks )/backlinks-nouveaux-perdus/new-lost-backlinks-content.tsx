@@ -1,11 +1,12 @@
 // 📁 app/dashboard/backlinks/nouveaux-perdus/new-lost-backlinks-content.tsx
 'use client'
 
-import { Button } from '@/components/elements/button'
+import { Button, SoftButton } from '@/components/elements/button'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { SpinnerCustom } from '@/components/ui/spinner'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -13,14 +14,19 @@ import {
   AlertTriangle,
   ArrowDown,
   ArrowUp,
+  ArrowUpDown,
   Calendar,
+  ChevronLeft,
+  ChevronRight,
+  Download,
+  Filter,
   LineChart,
   Loader2,
   Minus,
   TrendingDown,
   TrendingUp,
 } from 'lucide-react'
-import { useActionState, useMemo, useTransition } from 'react'
+import { useActionState, useMemo, useState, useTransition } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { fetchNewLostBacklinks, type NewLostBacklinksState } from './action'
@@ -56,10 +62,52 @@ const newLostBacklinksFormSchema = z.object({
 
 type NewLostBacklinksFormValues = z.infer<typeof newLostBacklinksFormSchema>
 
+type SortField =
+  | 'date'
+  | 'new_backlinks'
+  | 'lost_backlinks'
+  | 'net_backlinks'
+  | 'new_domains'
+  | 'lost_domains'
+  | 'net_domains'
+type SortDirection = 'asc' | 'desc'
+type PeriodFilter = 'all' | '7d' | '30d' | '60d' | '90d'
+
+// Composant pour l'en-tête de colonne triable (défini en dehors du composant principal)
+const SortableHeader = ({
+  field,
+  children,
+  sortField,
+  sortDirection,
+  onSort,
+}: {
+  field: SortField
+  children: React.ReactNode
+  sortField: SortField
+  sortDirection: SortDirection
+  onSort: (field: SortField) => void
+}) => (
+  <TableHead className="hover:bg-muted/50 cursor-pointer text-right select-none" onClick={() => onSort(field)}>
+    <div className="flex items-center justify-end gap-1">
+      {children}
+      {sortField === field &&
+        (sortDirection === 'asc' ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />)}
+      {sortField !== field && <ArrowUpDown className="h-3 w-3 opacity-30" />}
+    </div>
+  </TableHead>
+)
+
 export function NewLostBacklinksContent() {
   const initialState: NewLostBacklinksState = { success: false }
   const [state, formAction, isPending] = useActionState(fetchNewLostBacklinks, initialState)
   const [isTransitionPending, startTransition] = useTransition()
+
+  // États pour la pagination, le tri et les filtres
+  const [currentPage, setCurrentPage] = useState(1)
+  const [itemsPerPage, setItemsPerPage] = useState(10)
+  const [sortField, setSortField] = useState<SortField>('date')
+  const [sortDirection, setSortDirection] = useState<SortDirection>('desc')
+  const [periodFilter, setPeriodFilter] = useState<PeriodFilter>('all')
 
   const form = useForm<NewLostBacklinksFormValues>({
     resolver: zodResolver(newLostBacklinksFormSchema),
@@ -72,6 +120,9 @@ export function NewLostBacklinksContent() {
   const onSubmit = (values: NewLostBacklinksFormValues) => {
     const formData = new FormData()
     formData.set('target', values.target.trim())
+    // Réinitialiser la pagination lors d'une nouvelle recherche
+    setCurrentPage(1)
+    setPeriodFilter('all')
     startTransition(() => {
       formAction(formData)
     })
@@ -128,6 +179,127 @@ export function NewLostBacklinksContent() {
       worstPeriod,
     }
   }, [state.result])
+
+  // Filtrage, tri et pagination des données
+  const processedData = useMemo(() => {
+    if (!state.result?.items) return null
+
+    let items = [...state.result.items]
+
+    // Appliquer le filtre de période
+    if (periodFilter !== 'all') {
+      const now = new Date()
+      const daysMap = { '7d': 7, '30d': 30, '60d': 60, '90d': 90 }
+      const days = daysMap[periodFilter]
+      const cutoffDate = new Date(now.getTime() - days * 24 * 60 * 60 * 1000)
+
+      items = items.filter((item) => new Date(item.date) >= cutoffDate)
+    }
+
+    // Appliquer le tri
+    items.sort((a, b) => {
+      let aValue: number | string
+      let bValue: number | string
+
+      switch (sortField) {
+        case 'date':
+          aValue = new Date(a.date).getTime()
+          bValue = new Date(b.date).getTime()
+          break
+        case 'new_backlinks':
+          aValue = a.new_backlinks
+          bValue = b.new_backlinks
+          break
+        case 'lost_backlinks':
+          aValue = a.lost_backlinks
+          bValue = b.lost_backlinks
+          break
+        case 'net_backlinks':
+          aValue = a.new_backlinks - a.lost_backlinks
+          bValue = b.new_backlinks - b.lost_backlinks
+          break
+        case 'new_domains':
+          aValue = a.new_referring_domains
+          bValue = b.new_referring_domains
+          break
+        case 'lost_domains':
+          aValue = a.lost_referring_domains
+          bValue = b.lost_referring_domains
+          break
+        case 'net_domains':
+          aValue = a.new_referring_domains - a.lost_referring_domains
+          bValue = b.new_referring_domains - b.lost_referring_domains
+          break
+        default:
+          aValue = 0
+          bValue = 0
+      }
+
+      if (sortDirection === 'asc') {
+        return aValue > bValue ? 1 : aValue < bValue ? -1 : 0
+      } else {
+        return aValue < bValue ? 1 : aValue > bValue ? -1 : 0
+      }
+    })
+
+    // Calculer la pagination
+    const totalItems = items.length
+    const totalPages = Math.ceil(totalItems / itemsPerPage)
+    const startIndex = (currentPage - 1) * itemsPerPage
+    const endIndex = startIndex + itemsPerPage
+    const paginatedItems = items.slice(startIndex, endIndex)
+
+    return {
+      items: paginatedItems,
+      totalItems,
+      totalPages,
+      startIndex,
+      endIndex,
+      allItems: items, // Pour l'export CSV
+    }
+  }, [state.result, periodFilter, sortField, sortDirection, currentPage, itemsPerPage])
+
+  // Fonction pour changer le tri
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')
+    } else {
+      setSortField(field)
+      setSortDirection('desc')
+    }
+    setCurrentPage(1) // Réinitialiser à la première page
+  }
+
+  // Fonction pour exporter en CSV
+  const exportToCSV = () => {
+    if (!processedData?.allItems) return
+
+    const headers = ['Date', 'Nouveaux BL', 'Perdus BL', 'Net BL', 'Nouveaux Dom.', 'Perdus Dom.', 'Net Dom.']
+    const rows = processedData.allItems.map((item) => {
+      const netBacklinks = item.new_backlinks - item.lost_backlinks
+      const netDomains = item.new_referring_domains - item.lost_referring_domains
+      return [
+        formatDate(item.date),
+        item.new_backlinks.toString(),
+        item.lost_backlinks.toString(),
+        netBacklinks.toString(),
+        item.new_referring_domains.toString(),
+        item.lost_referring_domains.toString(),
+        netDomains.toString(),
+      ]
+    })
+
+    const csvContent = [headers, ...rows].map((row) => row.join(',')).join('\n')
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+    const link = document.createElement('a')
+    const url = URL.createObjectURL(blob)
+    link.setAttribute('href', url)
+    link.setAttribute('download', `backlinks-evolution-${new Date().toISOString().split('T')[0]}.csv`)
+    link.style.visibility = 'hidden'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
 
   // Helper pour formater les nombres
   const formatNumber = (num: number) => {
@@ -254,6 +426,111 @@ export function NewLostBacklinksContent() {
       {/* Résultats */}
       {state.success && state.result && aggregatedMetrics && (
         <>
+          {/* Insights et recommandations SEO */}
+          <Card className="border-primary/20 bg-primary/5 mb-6">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <LineChart className="text-primary h-5 w-5" />
+                Analyse SEO Professionnelle
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid gap-4 md:grid-cols-2">
+                {/* Taux de croissance */}
+                <div className="space-y-2">
+                  <h4 className="text-sm font-semibold">Taux de Croissance</h4>
+                  <div className="grid grid-cols-2 gap-2 text-sm">
+                    <div className="bg-background rounded-lg p-3">
+                      <p className="text-muted-foreground text-xs">Backlinks</p>
+                      <p
+                        className={`text-lg font-bold ${
+                          aggregatedMetrics.netBacklinks > 0 ? 'text-green-600' : 'text-red-600'
+                        }`}
+                      >
+                        {aggregatedMetrics.totalLostBacklinks > 0
+                          ? ((aggregatedMetrics.netBacklinks / aggregatedMetrics.totalLostBacklinks) * 100).toFixed(1)
+                          : '0'}
+                        %
+                      </p>
+                    </div>
+                    <div className="bg-background rounded-lg p-3">
+                      <p className="text-muted-foreground text-xs">Domaines</p>
+                      <p
+                        className={`text-lg font-bold ${
+                          aggregatedMetrics.netDomains > 0 ? 'text-green-600' : 'text-red-600'
+                        }`}
+                      >
+                        {aggregatedMetrics.totalLostDomains > 0
+                          ? ((aggregatedMetrics.netDomains / aggregatedMetrics.totalLostDomains) * 100).toFixed(1)
+                          : '0'}
+                        %
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Ratio acquisition/perte */}
+                <div className="space-y-2">
+                  <h4 className="text-sm font-semibold">Ratio Acquisition/Perte</h4>
+                  <div className="grid grid-cols-2 gap-2 text-sm">
+                    <div className="bg-background rounded-lg p-3">
+                      <p className="text-muted-foreground text-xs">Backlinks</p>
+                      <p className="text-lg font-bold">
+                        {aggregatedMetrics.totalLostBacklinks > 0
+                          ? (aggregatedMetrics.totalNewBacklinks / aggregatedMetrics.totalLostBacklinks).toFixed(2)
+                          : '∞'}
+                        :1
+                      </p>
+                    </div>
+                    <div className="bg-background rounded-lg p-3">
+                      <p className="text-muted-foreground text-xs">Domaines</p>
+                      <p className="text-lg font-bold">
+                        {aggregatedMetrics.totalLostDomains > 0
+                          ? (aggregatedMetrics.totalNewDomains / aggregatedMetrics.totalLostDomains).toFixed(2)
+                          : '∞'}
+                        :1
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Recommandations */}
+              <div className="bg-background mt-4 space-y-2 rounded-lg p-4">
+                <h4 className="flex items-center gap-2 text-sm font-semibold">
+                  {aggregatedMetrics.netBacklinks > 0 ? (
+                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-green-100 text-green-700">
+                      ✓
+                    </span>
+                  ) : (
+                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-amber-100 text-amber-700">
+                      !
+                    </span>
+                  )}
+                  Recommandations
+                </h4>
+                <ul className="text-muted-foreground ml-8 space-y-1 text-sm">
+                  {aggregatedMetrics.netBacklinks > 0 ? (
+                    <>
+                      <li>• Votre profil de backlinks est en croissance positive</li>
+                      <li>• Continuez vos efforts d&apos;acquisition de liens</li>
+                      <li>• Surveillez la qualité des nouveaux domaines référents</li>
+                    </>
+                  ) : (
+                    <>
+                      <li>• Votre profil perd plus de backlinks qu&apos;il n&apos;en gagne</li>
+                      <li>• Analysez les backlinks perdus pour identifier les causes</li>
+                      <li>• Renforcez votre stratégie de link building</li>
+                    </>
+                  )}
+                  {aggregatedMetrics.totalNewMainDomains / (aggregatedMetrics.totalNewDomains || 1) < 0.3 && (
+                    <li>• Diversifiez vos sources de backlinks (peu de domaines principaux)</li>
+                  )}
+                </ul>
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Métriques globales */}
           <div className="mb-6 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <Card>
@@ -465,68 +742,230 @@ export function NewLostBacklinksContent() {
             </Card>
           </div>
 
-          {/* Table des données */}
+          {/* Table des données avec filtres et pagination */}
           <Card>
             <CardHeader>
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <CardTitle>Données Détaillées</CardTitle>
-                  <CardDescription>{state.result.items.length} période(s) analysée(s)</CardDescription>
+                  <CardDescription>
+                    {processedData?.totalItems || 0} période(s) {periodFilter !== 'all' && 'filtrée(s)'}
+                  </CardDescription>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {/* Filtre de période */}
+                  <div className="flex items-center gap-2">
+                    <Filter className="text-muted-foreground h-4 w-4" />
+                    <Select
+                      value={periodFilter}
+                      onValueChange={(value: PeriodFilter) => {
+                        setPeriodFilter(value)
+                        setCurrentPage(1)
+                      }}
+                    >
+                      <SelectTrigger className="w-[140px]">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-mist-600">
+                        <SelectItem value="all" className="hover:cursor-pointer hover:bg-mist-500">
+                          Tout
+                        </SelectItem>
+                        <SelectItem value="7d" className="hover:cursor-pointer hover:bg-mist-500">
+                          7 derniers jours
+                        </SelectItem>
+                        <SelectItem value="30d" className="hover:cursor-pointer hover:bg-mist-500">
+                          30 derniers jours
+                        </SelectItem>
+                        <SelectItem value="60d" className="hover:cursor-pointer hover:bg-mist-500">
+                          60 derniers jours
+                        </SelectItem>
+                        <SelectItem value="90d" className="hover:cursor-pointer hover:bg-mist-500">
+                          90 derniers jours
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Bouton Export CSV */}
+                  <SoftButton onClick={exportToCSV} disabled={!processedData?.allItems?.length}>
+                    <Download className="mr-2 h-4 w-4" />
+                    Export CSV
+                  </SoftButton>
                 </div>
               </div>
             </CardHeader>
             <CardContent>
-              <div className="rounded-md border">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Date</TableHead>
-                      <TableHead className="text-right">Nouveaux BL</TableHead>
-                      <TableHead className="text-right">Perdus BL</TableHead>
-                      <TableHead className="text-right">Net BL</TableHead>
-                      <TableHead className="text-right">Nouveaux Dom.</TableHead>
-                      <TableHead className="text-right">Perdus Dom.</TableHead>
-                      <TableHead className="text-right">Net Dom.</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {state.result.items.map((item, idx) => {
-                      const netBacklinks = item.new_backlinks - item.lost_backlinks
-                      const netDomains = item.new_referring_domains - item.lost_referring_domains
-
-                      return (
-                        <TableRow key={idx}>
-                          <TableCell className="font-medium">{formatDate(item.date)}</TableCell>
-                          <TableCell className="text-right text-green-600">
-                            +{formatNumber(item.new_backlinks)}
-                          </TableCell>
-                          <TableCell className="text-right text-red-600">
-                            -{formatNumber(item.lost_backlinks)}
-                          </TableCell>
-                          <TableCell className="text-right">
-                            <Badge color={getNetBadgeColor(netBacklinks)}>
-                              {netBacklinks > 0 ? '+' : ''}
-                              {formatNumber(netBacklinks)}
-                            </Badge>
-                          </TableCell>
-                          <TableCell className="text-right text-green-600">
-                            +{formatNumber(item.new_referring_domains)}
-                          </TableCell>
-                          <TableCell className="text-right text-red-600">
-                            -{formatNumber(item.lost_referring_domains)}
-                          </TableCell>
-                          <TableCell className="text-right">
-                            <Badge color={getNetBadgeColor(netDomains)}>
-                              {netDomains > 0 ? '+' : ''}
-                              {formatNumber(netDomains)}
-                            </Badge>
-                          </TableCell>
+              {processedData && processedData.items.length > 0 ? (
+                <>
+                  <div className="rounded-md border">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead
+                            className="hover:bg-muted/50 cursor-pointer select-none"
+                            onClick={() => handleSort('date')}
+                          >
+                            <div className="flex items-center gap-1">
+                              Date
+                              {sortField === 'date' &&
+                                (sortDirection === 'asc' ? (
+                                  <ArrowUp className="h-3 w-3" />
+                                ) : (
+                                  <ArrowDown className="h-3 w-3" />
+                                ))}
+                              {sortField !== 'date' && <ArrowUpDown className="h-3 w-3 opacity-30" />}
+                            </div>
+                          </TableHead>
+                          <SortableHeader
+                            field="new_backlinks"
+                            sortField={sortField}
+                            sortDirection={sortDirection}
+                            onSort={handleSort}
+                          >
+                            Nouveaux BL
+                          </SortableHeader>
+                          <SortableHeader
+                            field="lost_backlinks"
+                            sortField={sortField}
+                            sortDirection={sortDirection}
+                            onSort={handleSort}
+                          >
+                            Perdus BL
+                          </SortableHeader>
+                          <SortableHeader
+                            field="net_backlinks"
+                            sortField={sortField}
+                            sortDirection={sortDirection}
+                            onSort={handleSort}
+                          >
+                            Net BL
+                          </SortableHeader>
+                          <SortableHeader
+                            field="new_domains"
+                            sortField={sortField}
+                            sortDirection={sortDirection}
+                            onSort={handleSort}
+                          >
+                            Nouveaux Dom.
+                          </SortableHeader>
+                          <SortableHeader
+                            field="lost_domains"
+                            sortField={sortField}
+                            sortDirection={sortDirection}
+                            onSort={handleSort}
+                          >
+                            Perdus Dom.
+                          </SortableHeader>
+                          <SortableHeader
+                            field="net_domains"
+                            sortField={sortField}
+                            sortDirection={sortDirection}
+                            onSort={handleSort}
+                          >
+                            Net Dom.
+                          </SortableHeader>
                         </TableRow>
-                      )
-                    })}
-                  </TableBody>
-                </Table>
-              </div>
+                      </TableHeader>
+                      <TableBody>
+                        {processedData.items.map((item, idx) => {
+                          const netBacklinks = item.new_backlinks - item.lost_backlinks
+                          const netDomains = item.new_referring_domains - item.lost_referring_domains
+
+                          return (
+                            <TableRow key={idx}>
+                              <TableCell className="font-medium">{formatDate(item.date)}</TableCell>
+                              <TableCell className="text-right text-green-600">
+                                +{formatNumber(item.new_backlinks)}
+                              </TableCell>
+                              <TableCell className="text-right text-red-600">
+                                -{formatNumber(item.lost_backlinks)}
+                              </TableCell>
+                              <TableCell className="text-right">
+                                <Badge color={getNetBadgeColor(netBacklinks)}>
+                                  {netBacklinks > 0 ? '+' : ''}
+                                  {formatNumber(netBacklinks)}
+                                </Badge>
+                              </TableCell>
+                              <TableCell className="text-right text-green-600">
+                                +{formatNumber(item.new_referring_domains)}
+                              </TableCell>
+                              <TableCell className="text-right text-red-600">
+                                -{formatNumber(item.lost_referring_domains)}
+                              </TableCell>
+                              <TableCell className="text-right">
+                                <Badge color={getNetBadgeColor(netDomains)}>
+                                  {netDomains > 0 ? '+' : ''}
+                                  {formatNumber(netDomains)}
+                                </Badge>
+                              </TableCell>
+                            </TableRow>
+                          )
+                        })}
+                      </TableBody>
+                    </Table>
+                  </div>
+
+                  {/* Contrôles de pagination */}
+                  <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="text-muted-foreground text-sm">Lignes par page:</span>
+                      <Select
+                        value={itemsPerPage.toString()}
+                        onValueChange={(value) => {
+                          setItemsPerPage(Number(value))
+                          setCurrentPage(1)
+                        }}
+                      >
+                        <SelectTrigger className="w-[70px]">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent className="bg-mist-600">
+                          <SelectItem value="5" className="hover:cursor-pointer hover:bg-mist-500">
+                            5
+                          </SelectItem>
+                          <SelectItem value="10" className="hover:cursor-pointer hover:bg-mist-500">
+                            10
+                          </SelectItem>
+                          <SelectItem value="20" className="hover:cursor-pointer hover:bg-mist-500">
+                            20
+                          </SelectItem>
+                          <SelectItem value="50" className="hover:cursor-pointer hover:bg-mist-500">
+                            50
+                          </SelectItem>
+                          <SelectItem value="100" className="hover:cursor-pointer hover:bg-mist-500">
+                            100
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <span className="text-muted-foreground text-sm">
+                        {processedData.startIndex + 1}-{Math.min(processedData.endIndex, processedData.totalItems)} sur{' '}
+                        {processedData.totalItems}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <SoftButton onClick={() => setCurrentPage(currentPage - 1)} disabled={currentPage === 1}>
+                        <ChevronLeft className="h-4 w-4" />
+                        Précédent
+                      </SoftButton>
+                      <span className="text-muted-foreground text-sm">
+                        Page {currentPage} sur {processedData.totalPages}
+                      </span>
+                      <SoftButton
+                        onClick={() => setCurrentPage(currentPage + 1)}
+                        disabled={currentPage === processedData.totalPages}
+                      >
+                        Suivant
+                        <ChevronRight className="h-4 w-4" />
+                      </SoftButton>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <div className="text-muted-foreground py-8 text-center">
+                  Aucune donnée disponible pour cette période
+                </div>
+              )}
             </CardContent>
           </Card>
         </>
