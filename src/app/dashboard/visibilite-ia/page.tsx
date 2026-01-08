@@ -3,7 +3,7 @@
 import { Divider } from '@/components/dashboard/divider'
 import { Heading } from '@/components/dashboard/heading'
 import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
+import { Button } from '@/components/elements/button'
 import {
  Card,
  CardContent,
@@ -66,8 +66,7 @@ export default function VisibiliteIAPage() {
  )
 
  return (
- <main className="min-h-screen overflow-x-hidden bg-gradient-to-b from-background to-muted/20">
- <div className="mx-auto box-border w-full max-w-full min-w-0 overflow-x-hidden px-4 pt-6 sm:px-6 lg:px-8 xl:px-12 2xl:px-16">
+ <main className="mx-auto max-w-7xl space-y-6 p-6">
  {/* Header */}
  <div className="mb-8 lg:mb-12">
  <div className="mb-4 flex items-center gap-4 lg:gap-6">
@@ -114,10 +113,10 @@ export default function VisibiliteIAPage() {
  >
  <TabsList className="mb-6 grid w-full grid-cols-2 lg:mb-8 lg:w-auto">
  <TabsTrigger value="ai-keywords" className="gap-2 lg:px-8">
- <BarChart3 className="h-4 w-4" />
+ <BarChart3 className="h-4 w-4 " />
  <span className="hidden sm:inline">AI Keyword Data</span>
  <span className="sm:hidden">Keywords</span>
- </TabsTrigger>
+</TabsTrigger>
  <TabsTrigger value="llm-mentions" className="gap-2 lg:px-8">
  <MessageSquare className="h-4 w-4" />
  <span className="hidden sm:inline">LLM Mentions</span>
@@ -166,7 +165,7 @@ export default function VisibiliteIAPage() {
 
  <Button
  type="submit"
- className="h-11 w-full gap-2 lg:h-12 lg:text-base"
+ className="h-11 w-full gap-2 lg:h-12 lg:text-base hover:cursor-pointer"
  disabled={isKeywordPending}
  >
  {isKeywordPending ? (
@@ -508,7 +507,7 @@ export default function VisibiliteIAPage() {
 
  <Button
  type="submit"
- className="h-11 w-full gap-2 lg:h-12 lg:text-base"
+ className="h-11 w-full gap-2 lg:h-12 lg:text-base hover:cursor-pointer"
  disabled={isMentionsPending}
  >
  {isMentionsPending ? (
@@ -590,7 +589,7 @@ export default function VisibiliteIAPage() {
  key={index}
  className="w-full max-w-full min-w-0 overflow-x-hidden border-2 shadow-sm transition-shadow hover:shadow-md"
  >
- <CardHeader className="w-full max-w-full min-w-0 overflow-x-hidden border-b bg-gradient-to-r from-purple-500/5 to-pink-500/5">
+ <CardHeader className="w-full max-w-full min-w-0 overflow-x-hidden border-b">
  <div className="flex w-full max-w-full min-w-0 items-start justify-between gap-4">
  <div className="max-w-full min-w-0 flex-1 overflow-x-hidden">
  <div className="mb-2 flex w-full max-w-full min-w-0 items-center gap-2">
@@ -687,6 +686,12 @@ export default function VisibiliteIAPage() {
  dangerouslySetInnerHTML={{
  __html: (() => {
  let html = item.answer
+                                  
+                                  // Supprimer les références de citation [[1]](url) car les sources sont déjà affichées en dessous
+                                  // Cela nettoie des patterns comme [[1]](https://...) ou [[2]](http://...)
+                                  html = html.replace(/\[\[(\d+)\]\]\([^)]+\)/g, '')
+                                  // Supprimer aussi les patterns comme [[1]] seuls ou (url)[[1]]
+                                  html = html.replace(/\[\[(\d+)\]\]/g, '').replace(/\([^)]+\)\[\[(\d+)\]\]/g, '')
  // Convertir les liens markdown [texte](url)
  html = html.replace(
  /\[([^\]]+)\]\(([^)]+)\)/g,
@@ -1116,7 +1121,6 @@ export default function VisibiliteIAPage() {
  </Card>
  </div>
  </section>
- </div>
  </main>
  )
 }
