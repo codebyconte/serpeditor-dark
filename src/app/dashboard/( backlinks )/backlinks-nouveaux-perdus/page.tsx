@@ -1,5 +1,6 @@
 // 📁 app/dashboard/backlinks/nouveaux-perdus/page.tsx
-import { Card, CardContent } from '@/components/ui/card'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { AlertCircle, BarChart3, Calendar, Target, TrendingUp, Zap } from 'lucide-react'
 import { NewLostBacklinksContent } from './new-lost-backlinks-content'
 
@@ -10,7 +11,7 @@ export const metadata = {
 
 export default function NewLostBacklinksPage() {
   return (
-    <main className="text-foreground min-h-screen">
+    <main className="text-foreground min-h-screen max-w-7xl mx-auto py-8">
       <Card className="border-primary/20 bg-primary/5">
         <CardContent className="p-8">
           <div className="flex items-start gap-4">
@@ -25,183 +26,195 @@ export default function NewLostBacklinksPage() {
           </div>
         </CardContent>
       </Card>
+
       <NewLostBacklinksContent />
 
-      <div className="rounded-xl border border-gray-200 bg-gradient-to-br from-blue-50 to-indigo-50 p-6">
-        <div className="space-y-5">
-          {/* Section 1 */}
-          <div>
-            <h4 className="mb-3 flex items-center gap-2 text-base font-bold text-gray-900">
-              <Calendar className="h-5 w-5 text-blue-600" />
-              Visualisez l'historique complet de votre profil de backlinks
-            </h4>
-            <ul className="space-y-2 text-sm text-gray-700">
-              <li className="flex items-start gap-2">
-                <span className="mt-1 text-blue-600">•</span>
-                <span>
-                  Consultez l'évolution jour par jour du nombre total de backlinks et de domaines référents sur les 12
-                  derniers mois.
-                </span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="mt-1 text-blue-600">•</span>
-                <span>
-                  Identifiez les périodes de croissance et de déclin pour comprendre l'impact de vos actions SEO
-                  passées.
-                </span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="mt-1 text-blue-600">•</span>
-                <span>
-                  Comparez l'évolution de votre profil avec celle de vos concurrents pour évaluer votre vitesse de
-                  progression.
-                </span>
-              </li>
-            </ul>
+      {/* Fonctionnalités clés */}
+      <Card className="border-primary/20 bg-primary/5">
+        <CardHeader>
+          <div className="flex items-start gap-3">
+            <div className="flex-1">
+              <CardTitle className="dashboard-heading-2">Fonctionnalités principales</CardTitle>
+            </div>
           </div>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {/* Section 1 */}
+          <Alert className="border-l-primary bg-primary/5 border-l-4">
+            <Calendar className="text-primary h-5 w-5" />
+            <AlertTitle className="dashboard-heading-4">
+              Visualisez l'historique complet de votre profil de backlinks
+            </AlertTitle>
+            <AlertDescription>
+              <ul className="dashboard-body-sm mt-2 space-y-2">
+                <li className="flex items-start gap-2">
+                  <span className="text-primary mt-1">•</span>
+                  <span>
+                    Consultez l'évolution jour par jour du nombre total de backlinks et de domaines référents sur les
+                    12 derniers mois.
+                  </span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-primary mt-1">•</span>
+                  <span>
+                    Identifiez les périodes de croissance et de déclin pour comprendre l'impact de vos actions SEO
+                    passées.
+                  </span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-primary mt-1">•</span>
+                  <span>
+                    Comparez l'évolution de votre profil avec celle de vos concurrents pour évaluer votre vitesse de
+                    progression.
+                  </span>
+                </li>
+              </ul>
+            </AlertDescription>
+          </Alert>
 
           {/* Section 2 */}
-          <div>
-            <h4 className="mb-3 flex items-center gap-2 text-base font-bold text-gray-900">
-              <Zap className="h-5 w-5 text-green-600" />
-              Détectez les nouveaux backlinks acquis chaque jour
-            </h4>
-            <ul className="space-y-2 text-sm text-gray-700">
-              <li className="flex items-start gap-2">
-                <span className="mt-1 text-green-600">•</span>
-                <span>
-                  Découvrez combien de nouveaux backlinks et domaines référents vous gagnez quotidiennement,
-                  hebdomadairement ou mensuellement.
-                </span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="mt-1 text-green-600">•</span>
-                <span>
-                  Identifiez les pics d'acquisition pour comprendre quelles campagnes (guest posting, PR, contenu viral)
-                  ont le mieux fonctionné.
-                </span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="mt-1 text-green-600">•</span>
-                <span>
-                  Suivez votre taux d'acquisition moyen et fixez-vous des objectifs mensuels basés sur vos performances
-                  passées.
-                </span>
-              </li>
-            </ul>
-          </div>
+          <Alert>
+            <Zap className="h-5 w-5 text-green-600" />
+            <AlertTitle className="dashboard-heading-4">Détectez les nouveaux backlinks acquis chaque jour</AlertTitle>
+            <AlertDescription>
+              <ul className="dashboard-body-sm mt-2 space-y-2">
+                <li className="flex items-start gap-2">
+                  <span className="mt-1 text-green-600">•</span>
+                  <span>
+                    Découvrez combien de nouveaux backlinks et domaines référents vous gagnez quotidiennement,
+                    hebdomadairement ou mensuellement.
+                  </span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="mt-1 text-green-600">•</span>
+                  <span>
+                    Identifiez les pics d'acquisition pour comprendre quelles campagnes (guest posting, PR, contenu
+                    viral) ont le mieux fonctionné.
+                  </span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="mt-1 text-green-600">•</span>
+                  <span>
+                    Suivez votre taux d'acquisition moyen et fixez-vous des objectifs mensuels basés sur vos
+                    performances passées.
+                  </span>
+                </li>
+              </ul>
+            </AlertDescription>
+          </Alert>
 
           {/* Section 3 */}
-          <div>
-            <h4 className="mb-3 flex items-center gap-2 text-base font-bold text-gray-900">
-              <AlertCircle className="h-5 w-5 text-red-600" />
+          <Alert>
+            <AlertCircle className="text-destructive h-5 w-5" />
+            <AlertTitle className="dashboard-heading-4">
               Surveillez les backlinks perdus et réagissez rapidement
-            </h4>
-            <ul className="space-y-2 text-sm text-gray-700">
-              <li className="flex items-start gap-2">
-                <span className="mt-1 text-red-600">•</span>
-                <span>
-                  Détectez immédiatement les baisses anormales de backlinks qui peuvent signaler un problème technique
-                  ou une attaque Negative SEO.
-                </span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="mt-1 text-red-600">•</span>
-                <span>
-                  Identifiez les jours où vous avez perdu le plus de backlinks et analysez les causes (site down, pages
-                  supprimées, migration).
-                </span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="mt-1 text-red-600">•</span>
-                <span>
-                  Comparez vos pertes avec vos acquisitions pour calculer votre taux de croissance net (nouveaux -
-                  perdus).
-                </span>
-              </li>
-            </ul>
-          </div>
+            </AlertTitle>
+            <AlertDescription>
+              <ul className="dashboard-body-sm mt-2 space-y-2">
+                <li className="flex items-start gap-2">
+                  <span className="text-destructive mt-1">•</span>
+                  <span>
+                    Détectez immédiatement les baisses anormales de backlinks qui peuvent signaler un problème
+                    technique ou une attaque Negative SEO.
+                  </span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-destructive mt-1">•</span>
+                  <span>
+                    Identifiez les jours où vous avez perdu le plus de backlinks et analysez les causes (site down,
+                    pages supprimées, migration).
+                  </span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-destructive mt-1">•</span>
+                  <span>
+                    Comparez vos pertes avec vos acquisitions pour calculer votre taux de croissance net (nouveaux -
+                    perdus).
+                  </span>
+                </li>
+              </ul>
+            </AlertDescription>
+          </Alert>
 
           {/* Section 4 */}
-          <div>
-            <h4 className="mb-3 flex items-center gap-2 text-base font-bold text-gray-900">
-              <BarChart3 className="h-5 w-5 text-purple-600" />
-              Analysez les tendances et patterns de votre profil
-            </h4>
-            <ul className="space-y-2 text-sm text-gray-700">
-              <li className="flex items-start gap-2">
-                <span className="mt-1 text-purple-600">•</span>
-                <span>
-                  Repérez les tendances saisonnières dans l'acquisition de backlinks (ex: baisse en été, hausse en fin
-                  d'année).
-                </span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="mt-1 text-purple-600">•</span>
-                <span>
-                  Identifiez les périodes de stagnation où vous n'acquérez pas de nouveaux domaines référents et ajustez
-                  votre stratégie.
-                </span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="mt-1 text-purple-600">•</span>
-                <span>
-                  Visualisez la corrélation entre vos actions marketing (lancement produit, campagne PR) et les pics
-                  d'acquisition de backlinks.
-                </span>
-              </li>
-            </ul>
-          </div>
+          <Alert>
+            <BarChart3 className="h-5 w-5 text-purple-600" />
+            <AlertTitle className="dashboard-heading-4">Analysez les tendances et patterns de votre profil</AlertTitle>
+            <AlertDescription>
+              <ul className="dashboard-body-sm mt-2 space-y-2">
+                <li className="flex items-start gap-2">
+                  <span className="mt-1 text-purple-600">•</span>
+                  <span>
+                    Repérez les tendances saisonnières dans l'acquisition de backlinks (ex: baisse en été, hausse en
+                    fin d'année).
+                  </span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="mt-1 text-purple-600">•</span>
+                  <span>
+                    Identifiez les périodes de stagnation où vous n'acquérez pas de nouveaux domaines référents et
+                    ajustez votre stratégie.
+                  </span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="mt-1 text-purple-600">•</span>
+                  <span>
+                    Visualisez la corrélation entre vos actions marketing (lancement produit, campagne PR) et les pics
+                    d'acquisition de backlinks.
+                  </span>
+                </li>
+              </ul>
+            </AlertDescription>
+          </Alert>
 
           {/* Section 5 */}
-          <div>
-            <h4 className="mb-3 flex items-center gap-2 text-base font-bold text-gray-900">
-              <Target className="h-5 w-5 text-orange-600" />
+          <Alert>
+            <Target className="h-5 w-5 text-orange-600" />
+            <AlertTitle className="dashboard-heading-4">
               Mesurez l'efficacité de vos campagnes de netlinking
-            </h4>
-            <ul className="space-y-2 text-sm text-gray-700">
-              <li className="flex items-start gap-2">
-                <span className="mt-1 text-orange-600">•</span>
-                <span>
-                  Calculez votre ROI netlinking en comparant les investissements (guest posts, outreach) avec
-                  l'acquisition réelle de backlinks.
-                </span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="mt-1 text-orange-600">•</span>
-                <span>
-                  Créez des rapports clients visuels montrant la croissance du profil de backlinks mois après mois avec
-                  graphiques d'évolution.
-                </span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="mt-1 text-orange-600">•</span>
-                <span>
-                  Exportez les données historiques pour analyser les corrélations avec votre trafic organique et vos
-                  positions dans les SERP.
-                </span>
-              </li>
-            </ul>
-          </div>
-        </div>
+            </AlertTitle>
+            <AlertDescription>
+              <ul className="dashboard-body-sm mt-2 space-y-2">
+                <li className="flex items-start gap-2">
+                  <span className="mt-1 text-orange-600">•</span>
+                  <span>
+                    Calculez votre ROI netlinking en comparant les investissements (guest posts, outreach) avec
+                    l'acquisition réelle de backlinks.
+                  </span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="mt-1 text-orange-600">•</span>
+                  <span>
+                    Créez des rapports clients visuels montrant la croissance du profil de backlinks mois après mois
+                    avec graphiques d'évolution.
+                  </span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="mt-1 text-orange-600">•</span>
+                  <span>
+                    Exportez les données historiques pour analyser les corrélations avec votre trafic organique et vos
+                    positions dans les SERP.
+                  </span>
+                </li>
+              </ul>
+            </AlertDescription>
+          </Alert>
 
-        {/* Bonus tip */}
-        <div className="mt-5 rounded-lg border-l-4 border-blue-500 bg-blue-100 p-4">
-          <div className="flex items-start gap-2">
-            <TrendingUp className="mt-0.5 h-5 w-5 flex-shrink-0 text-blue-700" />
-            <div className="text-sm">
-              <strong className="text-blue-900">💡 Indicateurs clés à surveiller :</strong>
-              <span className="text-blue-800">
-                {' '}
+          {/* Bonus tip */}
+          <Alert className="border-l-primary bg-primary/5 border-l-4">
+            <TrendingUp className="text-primary h-5 w-5" />
+            <AlertTitle className="dashboard-heading-4">Indicateurs clés à surveiller</AlertTitle>
+            <AlertDescription className="dashboard-body-sm">
+              <p className="mt-2">
                 Un profil sain devrait avoir un ratio nouveaux/perdus d'au moins <strong>2:1</strong> (2 backlinks
                 gagnés pour 1 perdu). Si vous perdez plus que vous n'acquérez pendant 2 mois consécutifs, c'est un
                 signal d'alarme qui nécessite une action immédiate. Objectif :{' '}
                 <strong>+10-20 nouveaux domaines référents/mois</strong> minimum pour une croissance constante.
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
+              </p>
+            </AlertDescription>
+          </Alert>
+        </CardContent>
+      </Card>
     </main>
   )
 }

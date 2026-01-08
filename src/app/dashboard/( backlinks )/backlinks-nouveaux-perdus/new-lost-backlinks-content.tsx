@@ -330,24 +330,11 @@ export function NewLostBacklinksContent() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-6 sm:px-6 lg:px-8">
+    <div className="container mx-auto ">
       {/* Header */}
-      <div className="mb-6">
-        <div className="flex items-center gap-3">
-          <div className="bg-primary/10 flex h-12 w-12 items-center justify-center rounded-xl">
-            <LineChart className="text-primary h-6 w-6" />
-          </div>
-          <div>
-            <h1 className="text-3xl font-bold">Backlinks Nouveaux & Perdus</h1>
-            <p className="text-muted-foreground text-sm">
-              Suivez l&apos;évolution temporelle de votre profil de backlinks
-            </p>
-          </div>
-        </div>
-      </div>
 
       {/* Formulaire */}
-      <Card className="mb-6">
+      <Card className="my-6">
         <CardHeader>
           <CardTitle>Analyser l&apos;évolution des backlinks</CardTitle>
           <CardDescription>
