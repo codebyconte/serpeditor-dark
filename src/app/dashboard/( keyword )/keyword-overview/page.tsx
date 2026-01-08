@@ -25,7 +25,7 @@ import { KeywordOverviewContent } from './keyword-overview-content'
 
 export default function Page() {
   return (
-    <div className="mx-auto max-w-7xl space-y-8">
+    <div className="mx-auto max-w-7xl space-y-8 ">
       <Card className="border-primary/20 bg-primary/5 my-8">
         <CardContent className="p-8">
           <div className="flex items-start gap-4">

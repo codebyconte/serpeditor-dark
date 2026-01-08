@@ -5,44 +5,62 @@ import { Heading } from '@/components/dashboard/heading'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/elements/button'
 import {
- Card,
- CardContent,
- CardDescription,
- CardHeader,
- CardTitle,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
 } from '@/components/ui/card'
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Progress } from '@/components/ui/progress'
 import {
- Select,
- SelectContent,
- SelectItem,
- SelectTrigger,
- SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from '@/components/ui/select'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import {
- BarChart3,
- Brain,
- Calendar,
- ChevronRight,
- ExternalLink,
- Link2,
- Loader2,
- MessageSquare,
- Search,
- Sparkles,
- TrendingUp,
- Zap,
+  BarChart3,
+  Brain,
+  Calendar,
+  ChevronRight,
+  ExternalLink,
+  Link2,
+  Loader2,
+  MessageSquare,
+  Search,
+  Sparkles,
+  TrendingUp,
+  Zap,
 } from 'lucide-react'
-import { useActionState, useState } from 'react'
+import { useActionState, useState, startTransition } from 'react'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
 import {
- fetchAIKeywordData,
- fetchLLMMentions,
- type AIKeywordDataState,
- type LLMMentionsState,
+  fetchAIKeywordData,
+  fetchLLMMentions,
+  type AIKeywordDataState,
+  type LLMMentionsState,
 } from './action'
+
+// Schémas de validation pour les formulaires
+const aiKeywordFormSchema = z.object({
+  keywords: z.string().min(1, { message: 'Veuillez saisir au moins un mot-clé' }),
+})
+
+const llmMentionsFormSchema = z.object({
+  target_type: z.enum(['keyword', 'domain']),
+  target_value: z.string().min(1, { message: 'Veuillez saisir une valeur de cible' }),
+  limit: z.number().min(1).max(1000).optional(),
+})
+
+type AIKeywordFormValues = z.infer<typeof aiKeywordFormSchema>
+type LLMMentionsFormValues = z.infer<typeof llmMentionsFormSchema>
 
 export default function VisibiliteIAPage() {
  const [activeTab, setActiveTab] = useState('ai-keywords')
@@ -64,6 +82,46 @@ export default function VisibiliteIAPage() {
  fetchLLMMentions,
  initialMentionsState,
  )
+
+
+  // Formulaire AI Keyword Data avec react-hook-form
+  const keywordForm = useForm<AIKeywordFormValues>({
+    resolver: zodResolver(aiKeywordFormSchema),
+    defaultValues: {
+      keywords: '',
+    },
+  })
+
+  // Formulaire LLM Mentions avec react-hook-form
+  const mentionsForm = useForm<LLMMentionsFormValues>({
+    resolver: zodResolver(llmMentionsFormSchema),
+    defaultValues: {
+      target_type: 'keyword',
+      target_value: '',
+      limit: 100,
+    },
+  })
+
+  // Fonctions de soumission
+  const onKeywordSubmit = (values: AIKeywordFormValues) => {
+    const formData = new FormData()
+    formData.set('keywords', values.keywords)
+    startTransition(() => {
+      keywordFormAction(formData)
+    })
+  }
+
+  const onMentionsSubmit = (values: LLMMentionsFormValues) => {
+    const formData = new FormData()
+    formData.set('target_type', values.target_type)
+    formData.set('target_value', values.target_value)
+    if (values.limit) {
+      formData.set('limit', values.limit.toString())
+    }
+    startTransition(() => {
+      mentionsFormAction(formData)
+    })
+  }
 
  return (
  <main className="mx-auto max-w-7xl space-y-6 p-6">
@@ -139,48 +197,55 @@ export default function VisibiliteIAPage() {
  </CardDescription>
  </CardHeader>
  <CardContent className="lg:px-8 lg:pb-8">
- <form action={keywordFormAction} className="space-y-6">
- <div className="space-y-2">
- <Label
- htmlFor="keywords"
- className="text-sm font-medium lg:text-base"
- >
- Mots clés *
- </Label>
- <textarea
- id="keywords"
- name="keywords"
- placeholder="Ex: SEO optimization, Référencement naturel, Marketing digital ; Séparez les mots-clés par des virgules, des points-virgules ou des retours à la ligne"
- required
- disabled={isKeywordPending}
- rows={6}
- className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 lg:h-auto lg:text-base"
- />
- <p className="text-xs text-muted-foreground">
- Analyse ciblée pour le marché français (France, langue
- française). Vous pouvez analyser jusqu&apos;à 100
- mots-clés à la fois.
- </p>
- </div>
+                <Form {...keywordForm}>
+                  <form
+                    onSubmit={keywordForm.handleSubmit(onKeywordSubmit)}
+                    className="space-y-6"
+                  >
+                    <FormField
+                      control={keywordForm.control}
+                      name="keywords"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-sm font-medium lg:text-base">Mots clés *</FormLabel>
+                          <FormControl>
+                            <textarea
+                              {...field}
+                              placeholder="Ex: SEO optimization, Référencement naturel, Marketing digital ; Séparez les mots-clés par des virgules, des points-virgules ou des retours à la ligne"
+                              disabled={isKeywordPending}
+                              rows={6}
+                              className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 lg:h-auto lg:text-base"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                          <p className="text-xs text-muted-foreground">
+                            Analyse ciblée pour le marché français (France, langue
+                            française). Vous pouvez analyser jusqu&apos;à 100
+                            mots-clés à la fois.
+                          </p>
+                        </FormItem>
+                      )}
+                    />
 
- <Button
- type="submit"
- className="h-11 w-full gap-2 lg:h-12 lg:text-base hover:cursor-pointer"
- disabled={isKeywordPending}
- >
- {isKeywordPending ? (
- <>
- <Loader2 className="h-5 w-5 animate-spin" />
- Analyse en cours...
- </>
- ) : (
- <>
- <Sparkles className="h-5 w-5" />
- Lancer l&apos;analyse IA
- </>
- )}
- </Button>
- </form>
+                    <Button
+                      type="submit"
+                      className="h-11 w-full gap-2 lg:h-12 lg:text-base hover:cursor-pointer"
+                      disabled={isKeywordPending}
+                    >
+                      {isKeywordPending ? (
+                        <>
+                          <Loader2 className="h-5 w-5 animate-spin" />
+                          Analyse en cours...
+                        </>
+                      ) : (
+                        <>
+                          <Sparkles className="h-5 w-5" />
+                          Lancer l&apos;analyse IA
+                        </>
+                      )}
+                    </Button>
+                  </form>
+                </Form>
 
  {/* Affichage des erreurs */}
  {keywordState?.error && (
@@ -429,102 +494,86 @@ export default function VisibiliteIAPage() {
  </CardDescription>
  </CardHeader>
  <CardContent className="w-full min-w-0 overflow-x-hidden lg:px-8 lg:pb-8">
- <form
- action={mentionsFormAction}
- className="w-full min-w-0 space-y-6 overflow-x-hidden"
- >
- <div className="space-y-2">
- <Label
- htmlFor="target_type"
- className="text-sm font-medium lg:text-base"
- >
- Type de cible *
- </Label>
- <Select
- name="target_type"
- defaultValue="keyword"
- disabled={isMentionsPending}
- required
- >
- <SelectTrigger className="h-11 lg:h-12 lg:text-base">
- <SelectValue placeholder="Sélectionner un type" />
- </SelectTrigger>
- <SelectContent>
- <SelectItem value="keyword">Mot-clé</SelectItem>
- <SelectItem value="domain">Domaine</SelectItem>
- </SelectContent>
- </Select>
- <p className="text-xs text-muted-foreground">
- Analyse ciblée pour le marché français (France, langue
- française) via Google
- </p>
- </div>
+                <Form {...mentionsForm}>
+                  <form
+                    onSubmit={mentionsForm.handleSubmit(onMentionsSubmit)}
+                    className="w-full min-w-0 space-y-6 overflow-x-hidden"
+                  >
+                    <FormField
+                      control={mentionsForm.control}
+                      name="target_type"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-sm font-medium lg:text-base">Type de cible *</FormLabel>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                            disabled={isMentionsPending}
+                          >
+                            <FormControl>
+                              <SelectTrigger className="h-11 lg:h-12 lg:text-base hover:cursor-pointer">
+                                <SelectValue placeholder="Sélectionner un type" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent className='bg-mist-600'>
+                              <SelectItem value="keyword" className="hover:bg-mist-500 hover:cursor-pointer">Mot-clé</SelectItem>
+                              <SelectItem value="domain" className="hover:bg-mist-500 hover:cursor-pointer">Domaine</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                          <p className="text-xs text-muted-foreground">
+                            Analyse ciblée pour le marché français (France, langue
+                            française) via Google
+                          </p>
+                        </FormItem>
+                      )}
+                    />
 
- <div className="space-y-2">
- <Label
- htmlFor="target_value"
- className="text-sm font-medium lg:text-base"
- >
- Valeur de la cible *
- </Label>
- <textarea
- id="target_value"
- name="target_value"
- placeholder="Ex: nom de votre marque, domaine (exemple.com), ou mot-clé"
- required
- disabled={isMentionsPending}
- rows={3}
- className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 lg:h-auto lg:text-base"
- />
- <p className="text-xs text-muted-foreground">
- Pour un domaine, saisissez-le sans https:// ou www. (ex:
- exemple.com)
- </p>
- </div>
+                    <FormField
+                      control={mentionsForm.control}
+                      name="target_value"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-sm font-medium lg:text-base">Valeur de la cible *</FormLabel>
+                          <FormControl>
+                            <textarea
+                              {...field}
+                              placeholder="Ex: nom de votre marque, domaine (exemple.com), ou mot-clé"
+                              disabled={isMentionsPending}
+                              rows={3}
+                              className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 lg:h-auto lg:text-base"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                          <p className="text-xs text-muted-foreground">
+                            Pour un domaine, saisissez-le sans https:// ou www. (ex:
+                            exemple.com)
+                          </p>
+                        </FormItem>
+                      )}
+                    />
 
- <div className="space-y-2">
- <Label
- htmlFor="limit"
- className="text-sm font-medium lg:text-base"
- >
- Nombre de résultats (optionnel)
- </Label>
- <Input
- id="limit"
- name="limit"
- type="number"
- min="1"
- max="1000"
- defaultValue="100"
- disabled={isMentionsPending}
- className="h-11 lg:h-12 lg:text-base"
- />
- <p className="text-xs text-muted-foreground">
- Entre 1 et 1000 (par défaut: 100). Analyse ciblée pour le
- marché français (France, langue française).
- </p>
- </div>
 
- <Button
- type="submit"
- className="h-11 w-full gap-2 lg:h-12 lg:text-base hover:cursor-pointer"
- disabled={isMentionsPending}
- >
- {isMentionsPending ? (
- <>
- <Loader2 className="h-5 w-5 animate-spin" />
- Analyse en cours...
- </>
- ) : (
- <>
- <MessageSquare className="h-5 w-5" />
- Lancer l&apos;analyse LLM Mentions
- </>
- )}
- </Button>
- </form>
 
- {/* Affichage des erreurs */}
+                    <Button
+                      type="submit"
+                      className="h-11 w-full gap-2 lg:h-12 lg:text-base hover:cursor-pointer"
+                      disabled={isMentionsPending}
+                    >
+                      {isMentionsPending ? (
+                        <>
+                          <Loader2 className="h-5 w-5 animate-spin" />
+                          Analyse en cours...
+                        </>
+                      ) : (
+                        <>
+                          <MessageSquare className="h-5 w-5" />
+                          Lancer l&apos;analyse LLM Mentions
+                        </>
+                      )}
+                    </Button>
+                  </form>
+                </Form>
  {mentionsState?.error && (
  <div className="mt-6 rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-800 dark:bg-red-950/20">
  <p className="text-sm font-semibold text-red-900 dark:text-red-200">
@@ -686,7 +735,7 @@ export default function VisibiliteIAPage() {
  dangerouslySetInnerHTML={{
  __html: (() => {
  let html = item.answer
-                                  
+
                                   // Supprimer les références de citation [[1]](url) car les sources sont déjà affichées en dessous
                                   // Cela nettoie des patterns comme [[1]](https://...) ou [[2]](http://...)
                                   html = html.replace(/\[\[(\d+)\]\]\([^)]+\)/g, '')
