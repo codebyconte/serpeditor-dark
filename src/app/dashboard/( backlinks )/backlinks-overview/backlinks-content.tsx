@@ -438,12 +438,37 @@ export function BacklinksContent() {
 
             {/* Onglets améliorés */}
             <Tabs defaultValue="overview" className="space-y-6">
-              <TabsList className="grid w-full grid-cols-2 lg:w-auto lg:grid-cols-5">
-                <TabsTrigger value="overview">Vue d&apos;ensemble</TabsTrigger>
-                <TabsTrigger value="domains">Domaines</TabsTrigger>
-                <TabsTrigger value="links">Types de liens</TabsTrigger>
-                <TabsTrigger value="geo">Géographie</TabsTrigger>
-                <TabsTrigger value="health">Santé</TabsTrigger>
+              <TabsList className="grid w-full grid-cols-2 bg-mist-600 lg:w-auto lg:grid-cols-5">
+                <TabsTrigger
+                  value="overview"
+                  className="hover:cursor-pointer data-[state=active]:bg-mist-100 data-[state=active]:text-mist-800 dark:data-[state=active]:bg-mist-900 dark:data-[state=active]:text-mist-100"
+                >
+                  Vue d&apos;ensemble
+                </TabsTrigger>
+                <TabsTrigger
+                  value="domains"
+                  className="hover:cursor-pointer data-[state=active]:bg-mist-100 data-[state=active]:text-mist-800 dark:data-[state=active]:bg-mist-900 dark:data-[state=active]:text-mist-100"
+                >
+                  Domaines
+                </TabsTrigger>
+                <TabsTrigger
+                  value="links"
+                  className="hover:cursor-pointer data-[state=active]:bg-mist-100 data-[state=active]:text-mist-800 dark:data-[state=active]:bg-mist-900 dark:data-[state=active]:text-mist-100"
+                >
+                  Types de liens
+                </TabsTrigger>
+                <TabsTrigger
+                  value="geo"
+                  className="hover:cursor-pointer data-[state=active]:bg-mist-100 data-[state=active]:text-mist-800 dark:data-[state=active]:bg-mist-900 dark:data-[state=active]:text-mist-100"
+                >
+                  Géographie
+                </TabsTrigger>
+                <TabsTrigger
+                  value="health"
+                  className="hover:cursor-pointer data-[state=active]:bg-mist-100 data-[state=active]:text-mist-800 dark:data-[state=active]:bg-mist-900 dark:data-[state=active]:text-mist-100"
+                >
+                  Santé
+                </TabsTrigger>
               </TabsList>
 
               {/* Vue d'ensemble */}

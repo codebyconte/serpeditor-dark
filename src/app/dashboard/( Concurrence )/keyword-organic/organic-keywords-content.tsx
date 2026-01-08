@@ -349,19 +349,22 @@ export function OrganicKeywordsContent() {
   return (
     <div className="container mx-auto px-4 py-6 sm:px-6 lg:px-8">
       {/* Header */}
-      <div className="mb-6">
-        <div className="flex items-center gap-3">
-          <div className="bg-primary/10 flex h-12 w-12 items-center justify-center rounded-xl">
-            <Search className="text-primary h-6 w-6" />
+
+      <Card className="border-primary/20 bg-primary/5 my-8">
+        <CardContent className="p-8">
+          <div className="flex items-start gap-4">
+            <div className="bg-primary flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl shadow-lg">
+              <Search className="text-primary-foreground h-8 w-8" />
+            </div>
+            <div className="flex-1">
+              <h1 className="dashboard-heading-1">Rechercher des mots-clés organiques</h1>
+              <p className="dashboard-body-lg text-muted-foreground mt-2">
+                Découvrez tous les mots-clés sur lesquels vos concurrents se positionne
+              </p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-3xl font-bold">Rechercher des mots-clés organiques</h1>
-            <p className="text-muted-foreground text-sm">
-              Découvrez tous les mots-clés sur lesquels vos concurrents se positionne
-            </p>
-          </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
 
       {/* Formulaire */}
       <Card className="mb-6">

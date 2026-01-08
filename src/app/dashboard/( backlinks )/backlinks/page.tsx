@@ -1,208 +1,157 @@
-'use client'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Eye, Filter, Target, TrendingUp } from 'lucide-react'
+import FormBacklinksAnalyzer from './FormBacklinksAnalyzer'
 
-import { ClientPageHeader } from '@/components/dashboard/client-page-header'
-import { AlertCircle, Link as LinkIcon, Loader2, Search } from 'lucide-react'
-import { useState } from 'react'
-import { getBacklinks, type BacklinksResponse } from './action'
-import BacklinksAnalyzer from './BacklinksAnalyzer'
+export default function Page() {
+  return (
+    <div className="mx-auto max-w-7xl space-y-6 p-6">
+      {/* Introduction */}
 
-export default function BacklinksAnalyzerPage() {
- const [target, setTarget] = useState('')
- const [loading, setLoading] = useState(false)
- const [error, setError] = useState<string | null>(null)
- const [backlinksData, setBacklinksData] = useState<BacklinksResponse | null>(
- null,
- )
+      <Card className="border-primary/20 bg-primary/5">
+        <CardContent className="p-8">
+          <div className="flex items-start gap-4">
+            <div className="bg-primary/10 flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl"></div>
+            <div className="flex-1">
+              <h1 className="dashboard-heading-1">Liste Détaillée des Backlinks</h1>
+              <p className="dashboard-body-lg mt-2">
+                Obtenez la <strong>liste complète de tous les backlinks</strong> pointant vers un domaine ou une URL
+                spécifique, avec détails sur chaque lien : source, anchor text, type, autorité, date de détection...
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
- const handleSearch = async (e: React.FormEvent) => {
- e.preventDefault()
+      <FormBacklinksAnalyzer />
 
- if (!target.trim()) {
- setError('Veuillez entrer un domaine ou une URL')
- return
- }
+      {/* Comment utiliser */}
+      <Card className="border-primary/20 bg-primary/5">
+        <CardHeader>
+          <CardTitle className="dashboard-heading-2">Fonctionnalités principales</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {/* Section 1 */}
+          <Alert className="border-l-primary bg-primary/5 border-l-4">
+            <Eye className="text-primary h-5 w-5" />
+            <AlertTitle className="dashboard-heading-4">Visualisez tous les détails de chaque backlink</AlertTitle>
+            <AlertDescription>
+              <ul className="dashboard-body-sm mt-2 space-y-2">
+                <li className="flex items-start gap-2">
+                  <span className="text-primary mt-1">•</span>
+                  <span>
+                    Consultez l&apos;URL source, l&apos;URL cible, l&apos;anchor text et le type de lien
+                    (dofollow/nofollow) pour chaque backlink.
+                  </span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-primary mt-1">•</span>
+                  <span>
+                    Identifiez le Domain Rank de chaque source pour prioriser les backlinks les plus puissants.
+                  </span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-primary mt-1">•</span>
+                  <span>
+                    Vérifiez l&apos;emplacement du lien (contenu, sidebar, footer) pour évaluer sa valeur SEO réelle.
+                  </span>
+                </li>
+              </ul>
+            </AlertDescription>
+          </Alert>
 
- setLoading(true)
- setError(null)
- setBacklinksData(null)
+          {/* Section 2 */}
+          <Alert className="border-l-primary bg-primary/5 border-l-4">
+            <Filter className="text-primary h-5 w-5" />
+            <AlertTitle className="dashboard-heading-4">
+              Filtrez et triez pour trouver exactement ce que vous cherchez
+            </AlertTitle>
+            <AlertDescription>
+              <ul className="dashboard-body-sm mt-2 space-y-2">
+                <li className="flex items-start gap-2">
+                  <span className="text-primary mt-1">•</span>
+                  <span>
+                    Filtrez par type de lien, Domain Rank minimum, anchor text ou date de détection pour affiner vos
+                    résultats.
+                  </span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-primary mt-1">•</span>
+                  <span>
+                    Triez par Domain Rank, date ou anchor text pour identifier rapidement les meilleurs backlinks.
+                  </span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-primary mt-1">•</span>
+                  <span>
+                    Créez des segments personnalisés (nouveaux backlinks, backlinks perdus, backlinks toxiques) pour
+                    différentes analyses.
+                  </span>
+                </li>
+              </ul>
+            </AlertDescription>
+          </Alert>
 
- try {
- const result = await getBacklinks(target.trim(), {
- includeSubdomains: true,
- includeIndirectLinks: true,
- excludeInternalBacklinks: true,
- orderBy: ['rank,desc'],
- })
+          {/* Section 3 */}
+          <Alert className="border-l-primary bg-primary/5 border-l-4">
+            <Target className="text-primary h-5 w-5" />
+            <AlertTitle className="dashboard-heading-4">Trouvez des opportunités cachées dans votre profil</AlertTitle>
+            <AlertDescription>
+              <ul className="dashboard-body-sm mt-2 space-y-2">
+                <li className="flex items-start gap-2">
+                  <span className="text-primary mt-1">•</span>
+                  <span>
+                    Identifiez vos pages les plus linkées pour reproduire leur succès et créer du contenu similaire.
+                  </span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-primary mt-1">•</span>
+                  <span>
+                    Analysez les anchor texts pour détecter les opportunités de mots-clés ou les risques de
+                    sur-optimisation.
+                  </span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-primary mt-1">•</span>
+                  <span>
+                    Découvrez les nouveaux backlinks acquis dans les 30 derniers jours et remerciez les webmasters.
+                  </span>
+                </li>
+              </ul>
+            </AlertDescription>
+          </Alert>
 
- if (result.success && result.data) {
- if (result.data.items.length === 0) {
- setError('Aucun backlink trouvé pour cette cible')
- } else {
- setBacklinksData(result.data)
- }
- } else {
- setError(result.error || 'Erreur lors de la récupération des backlinks')
- }
- } catch (err) {
- setError('Une erreur est survenue')
- console.error(err)
- } finally {
- setLoading(false)
- }
- }
-
- return (
- <div className="min-h-screen p-6">
- <div className="mx-auto max-w-7xl">
- <ClientPageHeader
- title="Analyseur de Backlinks"
- description="Analysez le profil de backlinks d'un domaine avec DataForSEO"
- icon={LinkIcon}
- iconClassName="border-blue-500/20 bg-gradient-to-br from-blue-500/10 to-indigo-500/10 text-blue-500"
- />
-
- {/* Formulaire */}
- <div className="mb-8 rounded-2xl border bg-card p-8 shadow-lg">
- <form onSubmit={handleSearch} className="space-y-6">
- {/* Target */}
- <div>
- <label className="mb-2 block text-sm font-semibold">
- Domaine ou URL à analyser
- </label>
- <div className="relative">
- <LinkIcon className="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
- <input
- type="text"
- value={target}
- onChange={(e) => setTarget(e.target.value)}
- placeholder="exemple.com ou https://exemple.com/page"
- className="w-full rounded-xl border-2-input bg-background py-3 pr-4 pl-12 text-lg focus:border-ring focus:ring-4 focus:ring-ring/20"
- disabled={loading}
- />
- </div>
- <p className="mt-2 text-sm text-muted-foreground">
- Pour un domaine, tapez sans https:// ni www. Pour une page,
- utilisez l&apos;URL complète.
- </p>
- </div>
-
- {/* Bouton */}
- <button
- type="submit"
- disabled={loading || !target.trim()}
- className="flex w-full items-center justify-center gap-3 rounded-xl bg-primary py-4 text-lg font-semibold text-primary-foreground shadow-lg hover:bg-primary/90 hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-50"
- >
- {loading ? (
- <>
- <Loader2 className="h-5 w-5 animate-spin" />
- Analyse en cours...
- </>
- ) : (
- <>
- <Search className="h-5 w-5" />
- Analyser les backlinks
- </>
- )}
- </button>
- </form>
-
- {error && (
- <div className="mt-6 flex items-start gap-3 rounded-xl border-2-destructive/50 bg-destructive/10 p-4">
- <AlertCircle className="h-5 w-5 flex-shrink-0 text-destructive" />
- <div>
- <p className="font-semibold text-destructive">Erreur</p>
- <p className="text-sm text-destructive/90">{error}</p>
- </div>
- </div>
- )}
- </div>
-
- {/* Résultats */}
- {loading && (
- <div className="flex flex-col items-center justify-center rounded-2xl border bg-card p-16">
- <Loader2 className="h-16 w-16 animate-spin text-primary" />
- <p className="mt-4 text-lg font-medium">
- Analyse des backlinks en cours...
- </p>
- <p className="mt-2 text-sm text-muted-foreground">
- Cela peut prendre quelques secondes
- </p>
- </div>
- )}
-
- {!loading && backlinksData && (
- <div>
- <div className="mb-6 flex items-center justify-between rounded-xl border bg-card p-6 shadow-sm">
- <div className="flex items-center gap-4">
- <div className="rounded-lg bg-primary/10 p-3">
- <LinkIcon className="h-6 w-6 text-primary" />
- </div>
- <div>
- <h2 className="text-xl font-bold">
- {backlinksData.target}
- </h2>
- <p className="text-sm text-muted-foreground">
- {backlinksData.total_count.toLocaleString()} backlinks
- trouvés • {backlinksData.items_count} affichés
- </p>
- </div>
- </div>
- <div className="rounded-lg bg-muted px-4 py-2">
- <span className="text-sm font-medium capitalize">
- Mode: {backlinksData.mode.replace(/_/g, ' ')}
- </span>
- </div>
- </div>
-
- <BacklinksAnalyzer
- data={backlinksData}
- target={backlinksData.target}
- />
- </div>
- )}
-
- {!loading && !backlinksData && !error && (
- <div className="flex flex-col items-center justify-center rounded-2xl border-2-dashed bg-card/50 p-16 text-center">
- <div className="rounded-full bg-primary/10 p-6">
- <LinkIcon className="h-12 w-12 text-primary" />
- </div>
- <h3 className="mt-6 text-xl font-semibold">
- Analysez votre profil de backlinks
- </h3>
- <p className="mt-2 max-w-md text-muted-foreground">
- Découvrez qui pointe vers votre site, analysez la qualité des
- liens et identifiez les opportunités d&apos;amélioration
- </p>
- <div className="mt-8 grid grid-cols-3 gap-6 text-left">
- <div className="rounded-xl border bg-card p-4">
- <div className="mb-2 text-2xl">🔗</div>
- <h4 className="font-semibold">Profil complet</h4>
- <p className="mt-1 text-sm text-muted-foreground">
- Tous les backlinks avec métadonnées détaillées
- </p>
- </div>
- <div className="rounded-xl border bg-card p-4">
- <div className="mb-2 text-2xl">📊</div>
- <h4 className="font-semibold">
- Statistiques avancées
- </h4>
- <p className="mt-1 text-sm text-muted-foreground">
- Domain Rank, Spam Score, pays, TLD
- </p>
- </div>
- <div className="rounded-xl border bg-card p-4">
- <div className="mb-2 text-2xl">🎯</div>
- <h4 className="font-semibold">
- Analyse des anchors
- </h4>
- <p className="mt-1 text-sm text-muted-foreground">
- Distribution et optimisation des textes d&apos;ancrage
- </p>
- </div>
- </div>
- </div>
- )}
- </div>
- </div>
- )
+          {/* Section 4 */}
+          <Alert className="border-l-primary bg-primary/5 border-l-4">
+            <TrendingUp className="text-primary h-5 w-5" />
+            <AlertTitle className="dashboard-heading-4">Surveillez et récupérez les backlinks perdus</AlertTitle>
+            <AlertDescription>
+              <ul className="dashboard-body-sm mt-2 space-y-2">
+                <li className="flex items-start gap-2">
+                  <span className="text-primary mt-1">•</span>
+                  <span>
+                    Détectez les backlinks inactifs depuis plus de 90 jours et vérifiez s&apos;ils sont définitivement
+                    perdus.
+                  </span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-primary mt-1">•</span>
+                  <span>
+                    Contactez les webmasters pour récupérer les backlinks perdus avant qu&apos;il ne soit trop tard.
+                  </span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-primary mt-1">•</span>
+                  <span>
+                    Suivez l&apos;évolution de votre profil de backlinks mois après mois et mesurez l&apos;impact de vos
+                    actions.
+                  </span>
+                </li>
+              </ul>
+            </AlertDescription>
+          </Alert>
+        </CardContent>
+      </Card>
+    </div>
+  )
 }

@@ -1,6 +1,5 @@
 'use client'
 
-import { PageHeader } from '@/components/dashboard/page-header'
 import { Button } from '@/components/elements/button'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Card, CardContent } from '@/components/ui/card'
@@ -85,12 +84,21 @@ export function DomainOverviewContent() {
   return (
     <div className="text-foreground p-6">
       <div className="mx-auto max-w-7xl">
-        <PageHeader
-          title="Vue d'Ensemble du Domaine"
-          description="Analysez la performance SEO globale de n'importe quel domaine en quelques secondes"
-          icon={Globe}
-          iconClassName="border-primary/20 bg-gradient-to-br from-primary/10 to-primary/5 text-primary"
-        />
+        <Card className="border-primary/20 bg-primary/5 my-8">
+          <CardContent className="p-8">
+            <div className="flex items-start gap-4">
+              <div className="bg-primary flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl shadow-lg">
+                <Globe className="text-primary-foreground h-8 w-8" />
+              </div>
+              <div className="flex-1">
+                <h1 className="dashboard-heading-1">Vue d&apos;Ensemble du Domaine</h1>
+                <p className="dashboard-body-lg text-muted-foreground mt-2">
+                  Analysez la performance SEO globale de n&apos;importe quel domaine en quelques secondes
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Formulaire */}
         <Card className="mb-8">

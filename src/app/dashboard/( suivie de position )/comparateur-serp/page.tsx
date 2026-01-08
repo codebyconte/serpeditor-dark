@@ -1,6 +1,5 @@
 'use client'
 
-import { ClientPageHeader } from '@/components/dashboard/client-page-header'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -86,12 +85,19 @@ export default function SERPAnalyzerPage() {
 
   return (
     <div className="mx-auto min-h-screen w-full max-w-7xl space-y-8 py-8">
-      <ClientPageHeader
-        title="Analyseur SERP Historique"
-        description="Analysez l'évolution des SERP sur 365 jours avec DataForSEO Labs"
-        icon={Search}
-        iconClassName="border-primary/20 bg-primary/10 text-primary"
-      />
+      <Card className="border-primary/20 bg-primary/5 my-8">
+        <CardContent className="p-8">
+          <div className="flex items-start gap-4">
+            <div className="bg-primary flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl shadow-lg">
+              <Search className="text-primary-foreground h-8 w-8" />
+            </div>
+            <div className="flex-1">
+              <h1 className="dashboard-heading-1">Analyseur SERP Historique</h1>
+              <p className="dashboard-body-lg text-muted-foreground mt-2">Analysez l&apos;évolution des SERP</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Formulaire */}
       <Card>

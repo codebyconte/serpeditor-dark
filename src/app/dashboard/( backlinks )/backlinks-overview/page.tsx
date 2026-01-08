@@ -1,25 +1,11 @@
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { Badge } from '@/components/ui/badge'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Progress } from '@/components/ui/progress'
-import {
-  AlertTriangle,
-  Award,
-  CheckCircle2,
-  Eye,
-  Globe,
-  Link2,
-  Server,
-  Shield,
-  TrendingUp,
-  Wrench,
-  XCircle,
-} from 'lucide-react'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { AlertTriangle, Globe, Link2, Shield, Target, TrendingUp } from 'lucide-react'
 import { BacklinksContent } from './backlinks-content'
 
 export default async function BacklinksPage() {
   return (
-    <main className="container mx-auto min-h-screen space-y-6 px-4 py-8">
+    <main className="mx-auto max-w-7xl space-y-6 p-6">
       {/* Hero Section */}
       <Card className="border-primary/20 bg-primary/5">
         <CardContent className="p-8">
@@ -42,349 +28,168 @@ export default async function BacklinksPage() {
 
       <BacklinksContent />
 
-      {/* Métriques clés */}
-      <Card>
+      {/* Fonctionnalités clés */}
+      <Card className="border-primary/20 bg-primary/5">
         <CardHeader>
-          <CardTitle className="dashboard-heading-3">Métriques Clés Analysées</CardTitle>
-          <CardDescription>Indicateurs essentiels pour évaluer votre profil de backlinks</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {/* Total Backlinks */}
-            <Card className="border-primary/20 bg-primary/5">
-              <CardContent className="p-4">
-                <div className="mb-2 flex items-center gap-2">
-                  <Link2 className="text-primary h-5 w-5" />
-                  <span className="dashboard-body-sm font-semibold">Total Backlinks</span>
-                </div>
-                <div className="dashboard-heading-2 mb-1">1 552 109</div>
-                <div className="mb-2 flex items-center gap-2">
-                  <Badge color="green">100% dofollow</Badge>
-                  <span className="text-muted-foreground text-xs">0 nofollow</span>
-                </div>
-                <p className="dashboard-text-xs text-muted-foreground">
-                  Nombre total de liens pointant vers votre site. Les <strong>dofollow transmettent du jus SEO</strong>.
-                </p>
-              </CardContent>
-            </Card>
-
-            {/* Domaines Référents */}
-            <Card className="border-accent/20 bg-accent/5">
-              <CardContent className="p-4">
-                <div className="mb-2 flex items-center gap-2">
-                  <Globe className="text-accent h-5 w-5" />
-                  <span className="dashboard-body-sm font-semibold">Domaines Référents</span>
-                </div>
-                <div className="dashboard-heading-2 mb-1">2 644</div>
-                <div className="text-muted-foreground mb-2 text-xs">2 470 domaines principaux</div>
-                <p className="dashboard-text-xs text-muted-foreground">
-                  Nombre de <strong>sites uniques</strong> qui font des liens vers vous. C&apos;est la{' '}
-                  <strong>métrique #1</strong> pour l&apos;autorité.
-                </p>
-              </CardContent>
-            </Card>
-
-            {/* Domain Rank */}
-            <Card className="">
-              <CardContent className="p-4">
-                <div className="mb-2 flex items-center gap-2">
-                  <Award className="h-5 w-5 text-orange-600" />
-                  <span className="dashboard-body-sm font-semibold">Domain Rank</span>
-                </div>
-                <div className="mb-1 flex items-baseline gap-2">
-                  <div className="dashboard-heading-2">49</div>
-                  <span className="text-muted-foreground text-sm">/100</span>
-                  <Badge color="green">Bon</Badge>
-                </div>
-                <p className="dashboard-text-xs text-muted-foreground">
-                  Score d&apos;autorité de votre domaine. <strong>0-30 :</strong> faible, <strong>31-50 :</strong>{' '}
-                  moyen, <strong>51-70 :</strong> bon, <strong>71+ :</strong> excellent.
-                </p>
-              </CardContent>
-            </Card>
-
-            {/* Spam Score */}
-            <Card className="">
-              <CardContent className="p-4">
-                <div className="mb-2 flex items-center gap-2">
-                  <Shield className="h-5 w-5 text-red-600" />
-                  <span className="dashboard-body-sm font-semibold">Spam Score</span>
-                </div>
-                <div className="mb-1 flex items-baseline gap-2">
-                  <div className="dashboard-heading-2">19</div>
-                  <span className="text-muted-foreground text-sm">/100</span>
-                  <Badge color="green">Faible</Badge>
-                </div>
-                <p className="dashboard-text-xs text-muted-foreground">
-                  Niveau de liens toxiques ou spam. <strong>0-30 :</strong> bon, <strong>31-60 :</strong> moyen,{' '}
-                  <strong>61+ :</strong> dangereux (pénalité Google).
-                </p>
-              </CardContent>
-            </Card>
-
-            {/* Infrastructure */}
-            <Card className="border-primary/20 bg-primary/5">
-              <CardContent className="p-4">
-                <div className="mb-2 flex items-center gap-2">
-                  <Server className="text-primary h-5 w-5" />
-                  <span className="dashboard-body-sm font-semibold">Diversité IPs</span>
-                </div>
-                <div className="mb-1 flex items-center gap-3">
-                  <div>
-                    <div className="dashboard-heading-3">2 055</div>
-                    <div className="text-muted-foreground text-xs">IPs uniques</div>
-                  </div>
-                  <div>
-                    <div className="dashboard-heading-3">1 394</div>
-                    <div className="text-muted-foreground text-xs">Sous-réseaux</div>
-                  </div>
-                </div>
-                <p className="dashboard-text-xs text-muted-foreground">
-                  Grande diversité d&apos;IPs = <strong>profil naturel</strong> et non manipulé.
-                </p>
-              </CardContent>
-            </Card>
-
-            {/* Score de santé */}
-            <Card>
-              <CardContent className="p-4">
-                <div className="mb-2 flex items-center gap-2">
-                  <CheckCircle2 className="h-5 w-5 text-green-600" />
-                  <span className="dashboard-body-sm font-semibold">Score de Santé</span>
-                </div>
-                <div className="mb-1 flex items-baseline gap-2">
-                  <div className="dashboard-heading-2">81</div>
-                  <span className="text-muted-foreground text-sm">/100</span>
-                  <Badge color="green">Excellent</Badge>
-                </div>
-                <p className="dashboard-text-xs text-muted-foreground">
-                  Évaluation globale de la qualité de votre profil basée sur tous les indicateurs.
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Problèmes détectés */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center gap-3">
-            <AlertTriangle className="h-6 w-6 text-red-600" />
-            <CardTitle className="dashboard-heading-3">Problèmes Détectés & Actions Prioritaires</CardTitle>
+          <div className="flex items-start gap-3">
+            <div className="bg-primary/10 flex h-12 w-12 shrink-0 items-center justify-center rounded-xl">
+              <Link2 className="text-primary h-6 w-6" />
+            </div>
+            <div className="flex-1">
+              <CardTitle className="dashboard-heading-2">Analysez la force de votre profil de backlinks</CardTitle>
+              <p className="text-muted-foreground dashboard-body-sm mt-1">
+                Obtenez une vue d&apos;ensemble complète de votre autorité SEO et identifiez les problèmes à corriger en
+                priorité.
+              </p>
+            </div>
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
-          {/* Backlinks cassés */}
-          <Card className="border-red-500/30 bg-red-500/5">
-            <CardContent className="p-4">
-              <div className="mb-2 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <XCircle className="h-5 w-5 text-red-600" />
-                  <span className="dashboard-body-sm font-semibold">1 746 Backlinks cassés</span>
-                </div>
-                <Badge color="red">URGENT</Badge>
-              </div>
-              <p className="dashboard-body-sm mb-3">
-                1 746 sites font des liens vers des pages qui <strong>n&apos;existent plus</strong> (erreur 404/500).
-                Ces liens ne transmettent <strong>aucun jus SEO</strong>.
-              </p>
-              <div className="rounded-lg border border-red-500/20 bg-red-500/5 p-3">
-                <div className="dashboard-body-sm mb-1 flex items-center gap-2 font-semibold">
-                  <Wrench className="h-4 w-4" />
-                  Actions recommandées :
-                </div>
-                <ul className="dashboard-text-xs space-y-1">
-                  <li>
-                    • <strong>Créez des redirections 301</strong> depuis les URLs cassées vers les pages appropriées
-                  </li>
-                  <li>
-                    • <strong>Contactez les webmasters</strong> pour qu&apos;ils mettent à jour les liens
-                  </li>
-                  <li>
-                    • <strong>Restaurez le contenu</strong> si la page avait beaucoup de backlinks
-                  </li>
-                </ul>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Pages cassées */}
-          <Card className="border-orange-500/30 bg-orange-500/5">
-            <CardContent className="p-4">
-              <div className="mb-2 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <AlertTriangle className="h-5 w-5 text-orange-600" />
-                  <span className="dashboard-body-sm font-semibold">82 Pages cassées</span>
-                </div>
-                <Badge color="orange">IMPORTANT</Badge>
-              </div>
-              <p className="dashboard-body-sm mb-2">
-                82 pages de votre site renvoient des erreurs. Mauvaise expérience utilisateur et pénalité SEO
-                potentielle.
-              </p>
-              <div className="dashboard-text-xs text-muted-foreground">
-                <strong>Action :</strong> Réparez les pages importantes (avec backlinks) ou créez des redirections 301.
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Spam backlinks */}
-          <Card className="border-green-500/30 bg-green-500/5">
-            <CardContent className="p-4">
-              <div className="mb-2 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="h-5 w-5 text-green-600" />
-                  <span className="dashboard-body-sm font-semibold">Spam backlinks : 20 points</span>
-                </div>
-                <Badge color="green">BON</Badge>
-              </div>
-              <p className="dashboard-body-sm">
-                Excellent ! Vos backlinks proviennent de <strong>sources fiables</strong>. Continuez à éviter les fermes
-                de liens et les sites douteux.
-              </p>
-            </CardContent>
-          </Card>
-
-          <Alert>
-            <AlertTriangle className="h-4 w-4" />
-            <AlertTitle className="dashboard-body-sm font-semibold">Impact SEO</AlertTitle>
-            <AlertDescription className="dashboard-text-xs">
-              <p>
-                Corriger ces problèmes peut récupérer <strong>jusqu&apos;à 20% de jus SEO perdu</strong> et améliorer
-                significativement votre ranking !
-              </p>
+          {/* Section 1 */}
+          <Alert className="border-l-primary bg-primary/5 border-l-4">
+            <TrendingUp className="text-primary h-5 w-5" />
+            <AlertTitle className="dashboard-heading-4">Évaluez votre autorité SEO en un coup d&apos;œil</AlertTitle>
+            <AlertDescription>
+              <ul className="dashboard-body-sm mt-2 space-y-2">
+                <li className="flex items-start gap-2">
+                  <span className="text-primary mt-1">•</span>
+                  <span>Consultez le nombre total de backlinks et de domaines référents pointant vers votre site.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-primary mt-1">•</span>
+                  <span>
+                    Comparez votre Domain Rank (0-100) avec vos concurrents pour évaluer votre position sur le marché.
+                  </span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-primary mt-1">•</span>
+                  <span>Visualisez le ratio dofollow/nofollow pour vérifier la qualité de votre profil de liens.</span>
+                </li>
+              </ul>
             </AlertDescription>
           </Alert>
-        </CardContent>
-      </Card>
 
-      {/* Géographie & Diversité */}
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        {/* Géographie */}
-        <Card>
-          <CardHeader>
-            <div className="flex items-center gap-2">
-              <Globe className="text-primary h-5 w-5" />
-              <CardTitle className="dashboard-heading-4">Géographie des Backlinks</CardTitle>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="flex items-center gap-2">
-              <div className="bg-muted flex h-8 w-8 shrink-0 items-center justify-center rounded-full">
-                <span className="text-sm">🇩🇪</span>
-              </div>
-              <div className="flex-1">
-                <div className="dashboard-text-xs mb-1 flex items-center justify-between">
-                  <span className="font-medium">Allemagne</span>
-                  <span className="font-bold">71%</span>
-                </div>
-                <Progress value={71} className="h-2" />
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="bg-muted flex h-8 w-8 shrink-0 items-center justify-center rounded-full">
-                <span className="text-sm">🌍</span>
-              </div>
-              <div className="flex-1">
-                <div className="dashboard-text-xs mb-1 flex items-center justify-between">
-                  <span className="font-medium">Inconnu</span>
-                  <span className="font-bold">19.3%</span>
-                </div>
-                <Progress value={19.3} className="h-2" />
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="bg-muted flex h-8 w-8 shrink-0 items-center justify-center rounded-full">
-                <span className="text-sm">🇺🇸</span>
-              </div>
-              <div className="flex-1">
-                <div className="dashboard-text-xs mb-1 flex items-center justify-between">
-                  <span className="font-medium">États-Unis</span>
-                  <span className="font-bold">0.1%</span>
-                </div>
-                <Progress value={0.1} className="h-2" />
-              </div>
-            </div>
-            <Alert className="mt-3">
-              <AlertTriangle className="h-4 w-4" />
-              <AlertDescription className="dashboard-text-xs">
-                Si vous ciblez la France mais 90% de vos BL viennent d&apos;Allemagne, cela peut limiter votre ranking
-                en France.
-              </AlertDescription>
-            </Alert>
-          </CardContent>
-        </Card>
-
-        {/* Types de plateformes */}
-        <Card>
-          <CardHeader>
-            <div className="flex items-center gap-2">
-              <Eye className="text-accent h-5 w-5" />
-              <CardTitle className="dashboard-heading-4">Types de Plateformes</CardTitle>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            <div className="bg-muted/30 flex items-center justify-between rounded-lg border p-2">
-              <span className="dashboard-body-sm">Organizations</span>
-              <Badge color="zinc">819k (52.8%)</Badge>
-            </div>
-            <div className="bg-muted/30 flex items-center justify-between rounded-lg border p-2">
-              <span className="dashboard-body-sm">Blogs</span>
-              <Badge color="zinc">5.7k (0.4%)</Badge>
-            </div>
-            <div className="bg-muted/30 flex items-center justify-between rounded-lg border p-2">
-              <span className="dashboard-body-sm">CMS (WordPress...)</span>
-              <Badge color="zinc">5k (0.3%)</Badge>
-            </div>
-            <div className="bg-muted/30 flex items-center justify-between rounded-lg border p-2">
-              <span className="dashboard-body-sm">News</span>
-              <Badge color="zinc">1.3k (0.1%)</Badge>
-            </div>
-            <Alert className="mt-3">
-              <CheckCircle2 className="h-4 w-4" />
-              <AlertDescription className="dashboard-text-xs">
-                Diversité = profil naturel. Si 100% viennent de forums/répertoires → suspect pour Google.
-              </AlertDescription>
-            </Alert>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Conseil final */}
-      <Card className="border-primary/20 bg-primary/5">
-        <CardContent className="p-6">
-          <div className="flex items-start gap-3">
-            <div className="bg-primary/10 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg">
-              <TrendingUp className="text-primary h-5 w-5" />
-            </div>
-            <div className="flex-1">
-              <h4 className="dashboard-heading-4 mb-3">Stratégie d&apos;Amélioration en 3 Étapes</h4>
-              <ol className="dashboard-body-sm space-y-2">
-                <li className="flex gap-2">
-                  <span className="font-bold">1.</span>
+          {/* Section 2 */}
+          <Alert className="border-l-destructive bg-destructive/5 border-l-4">
+            <AlertTriangle className="text-destructive h-5 w-5" />
+            <AlertTitle className="dashboard-heading-4">Détectez et corrigez les problèmes critiques</AlertTitle>
+            <AlertDescription>
+              <ul className="dashboard-body-sm mt-2 space-y-2">
+                <li className="flex items-start gap-2">
+                  <span className="text-destructive mt-1">•</span>
                   <span>
-                    <strong>Correction urgente :</strong> Fixez les 1 746 backlinks cassés et les 82 pages en erreur
-                    (redirections 301)
+                    Identifiez les backlinks cassés qui pointent vers des pages 404/500 et récupérez jusqu&apos;à 20% de
+                    jus SEO perdu.
                   </span>
                 </li>
-                <li className="flex gap-2">
-                  <span className="font-bold">2.</span>
+                <li className="flex items-start gap-2">
+                  <span className="text-destructive mt-1">•</span>
                   <span>
-                    <strong>Acquisition stratégique :</strong> Visez des domaines avec Domain Rank &gt; 40 et Spam Score
-                    &lt; 30
+                    Découvrez les pages de votre site en erreur qui reçoivent des backlinks et créez des redirections
+                    301.
                   </span>
                 </li>
-                <li className="flex gap-2">
-                  <span className="font-bold">3.</span>
+                <li className="flex items-start gap-2">
+                  <span className="text-destructive mt-1">•</span>
                   <span>
-                    <strong>Surveillance :</strong> Vérifiez mensuellement les nouveaux backlinks/perdus et le Spam
-                    Score
+                    Surveillez votre Spam Score pour détecter les attaques de Negative SEO et protéger votre
+                    référencement.
                   </span>
                 </li>
-              </ol>
-            </div>
-          </div>
+              </ul>
+            </AlertDescription>
+          </Alert>
+
+          {/* Section 3 */}
+          <Alert className="border-l-primary bg-primary/5 border-l-4">
+            <Globe className="text-primary h-5 w-5" />
+            <AlertTitle className="dashboard-heading-4">
+              Analysez la diversité et la géographie de vos backlinks
+            </AlertTitle>
+            <AlertDescription>
+              <ul className="dashboard-body-sm mt-2 space-y-2">
+                <li className="flex items-start gap-2">
+                  <span className="text-primary mt-1">•</span>
+                  <span>
+                    Vérifiez la diversité des IPs et sous-réseaux pour garantir un profil de backlinks naturel.
+                  </span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-primary mt-1">•</span>
+                  <span>
+                    Découvrez les pays d&apos;origine de vos backlinks et assurez-vous qu&apos;ils correspondent à votre
+                    marché cible.
+                  </span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-primary mt-1">•</span>
+                  <span>
+                    Identifiez les types de plateformes (blogs, médias, sites institutionnels) qui font des liens vers
+                    vous.
+                  </span>
+                </li>
+              </ul>
+            </AlertDescription>
+          </Alert>
+
+          {/* Section 4 */}
+          <Alert className="border-l-primary bg-primary/5 border-l-4">
+            <Target className="text-primary h-5 w-5" />
+            <AlertTitle className="dashboard-heading-4">
+              Benchmark vos concurrents et identifiez les opportunités
+            </AlertTitle>
+            <AlertDescription>
+              <ul className="dashboard-body-sm mt-2 space-y-2">
+                <li className="flex items-start gap-2">
+                  <span className="text-primary mt-1">•</span>
+                  <span>
+                    Comparez votre profil avec celui de vos concurrents pour comprendre pourquoi ils vous surpassent.
+                  </span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-primary mt-1">•</span>
+                  <span>
+                    Fixez-vous des objectifs d&apos;acquisition de backlinks basés sur l&apos;écart avec la concurrence.
+                  </span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-primary mt-1">•</span>
+                  <span>Suivez l&apos;évolution mensuelle de votre Domain Rank et nombre de domaines référents.</span>
+                </li>
+              </ul>
+            </AlertDescription>
+          </Alert>
+
+          {/* Section 5 */}
+          <Alert className="border-l-primary bg-primary/5 border-l-4">
+            <Shield className="text-primary h-5 w-5" />
+            <AlertTitle className="dashboard-heading-4">
+              Obtenez un score de santé et un plan d&apos;action clair
+            </AlertTitle>
+            <AlertDescription>
+              <ul className="dashboard-body-sm mt-2 space-y-2">
+                <li className="flex items-start gap-2">
+                  <span className="text-primary mt-1">•</span>
+                  <span>
+                    Consultez votre score de santé global (0-100) pour évaluer la qualité de votre profil en un coup
+                    d&apos;œil.
+                  </span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-primary mt-1">•</span>
+                  <span>
+                    Recevez des recommandations prioritaires et actionnables pour améliorer votre autorité SEO.
+                  </span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-primary mt-1">•</span>
+                  <span>
+                    Exportez les données pour créer des rapports clients professionnels et suivre vos progrès.
+                  </span>
+                </li>
+              </ul>
+            </AlertDescription>
+          </Alert>
         </CardContent>
       </Card>
     </main>
