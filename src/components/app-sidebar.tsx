@@ -146,7 +146,7 @@ export const data = {
         badge: 'New',
       },
       {
-        title: 'Analyse de domaine WHOIS',
+        title: 'Opportunités de domaines',
         url: '/dashboard/analyse-domaine',
         icon: GlobeIcon,
       },

@@ -28,6 +28,13 @@ import {
 import { Plan, PricingMultiTier } from '@/components/sections/pricing-multi-tier'
 import { Stat, StatsWithGraph } from '@/components/sections/stats-with-graph'
 import { Testimonial, TestimonialThreeColumnGrid } from '@/components/sections/testimonials-three-column-grid'
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Alternative Semrush : Outil SEO Français 3x Moins Cher (39€/mois) ',
+  description:
+    "Semrush à 159€/mois ? Découvrez l'alternative française : audit SEO, backlinks, mots-clés. Essai gratuit sans CB. 3600+ consultants nous font confiance. ",
+}
 
 export default function Page() {
   return (
@@ -37,15 +44,14 @@ export default function Page() {
         links={
           <>
             <NavbarLink href="/pricing">Pricing</NavbarLink>
-            <NavbarLink href="#">About</NavbarLink>
-            <NavbarLink href="#">Docs</NavbarLink>
-            <NavbarLink href="#" className="sm:hidden">
+            <NavbarLink href="/blog">Blog</NavbarLink>
+            <NavbarLink href="/login" className="sm:hidden">
               Log in
             </NavbarLink>
           </>
         }
         logo={
-          <NavbarLogo href="#">
+          <NavbarLogo href="/">
             <img
               src="https://assets.tailwindplus.com/logos/oatmeal-instrument.svg?color=mist-950"
               alt="Oatmeal"
@@ -64,10 +70,10 @@ export default function Page() {
         }
         actions={
           <>
-            <PlainButtonLink href="#" className="max-sm:hidden">
+            <PlainButtonLink href="/login" className="max-sm:hidden">
               Log in
             </PlainButtonLink>
-            <ButtonLink href="#">Get started</ButtonLink>
+            <ButtonLink href="/register">Get started</ButtonLink>
           </>
         }
       />

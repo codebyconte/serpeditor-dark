@@ -1,1175 +1,289 @@
-'use client'
-
-import { Divider } from '@/components/dashboard/divider'
-import { Heading } from '@/components/dashboard/heading'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/elements/button'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Progress } from '@/components/ui/progress'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import {
-  BarChart3,
-  Brain,
-  Calendar,
-  ChevronRight,
-  ExternalLink,
-  Link2,
-  Loader2,
-  MessageSquare,
-  Search,
-  Sparkles,
-  TrendingUp,
-  Zap,
-} from 'lucide-react'
-import { useActionState, useState, startTransition } from 'react'
-import { useForm } from 'react-hook-form'
-import { z } from 'zod'
-import {
-  fetchAIKeywordData,
-  fetchLLMMentions,
-  type AIKeywordDataState,
-  type LLMMentionsState,
-} from './action'
-
-// Schémas de validation pour les formulaires
-const aiKeywordFormSchema = z.object({
-  keywords: z.string().min(1, { message: 'Veuillez saisir au moins un mot-clé' }),
-})
-
-const llmMentionsFormSchema = z.object({
-  target_type: z.enum(['keyword', 'domain']),
-  target_value: z.string().min(1, { message: 'Veuillez saisir une valeur de cible' }),
-  limit: z.number().min(1).max(1000).optional(),
-})
-
-type AIKeywordFormValues = z.infer<typeof aiKeywordFormSchema>
-type LLMMentionsFormValues = z.infer<typeof llmMentionsFormSchema>
+import { Card, CardContent } from '@/components/ui/card'
+import { Award, Brain, Lightbulb, Target, TrendingUp, Zap } from 'lucide-react'
+import FormAi from './formAi'
 
 export default function VisibiliteIAPage() {
- const [activeTab, setActiveTab] = useState('ai-keywords')
+  return (
+    <div className="mx-auto max-w-7xl space-y-8 py-8 pb-12">
+      {/* Hero Section - Amélioré */}
+      <Card className="border-primary/20 from-primary/5 dark:from-primary/10 relative overflow-hidden bg-gradient-to-br via-purple-50/50 to-pink-50/50 shadow-lg dark:via-purple-950/20 dark:to-pink-950/20">
+        <CardContent className="relative p-8 lg:p-10">
+          <div className="flex flex-col items-start gap-6 sm:flex-row sm:gap-6">
+            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-purple-500 via-pink-500 to-purple-600 shadow-lg lg:h-20 lg:w-20">
+              <Brain className="h-8 w-8 text-white lg:h-10 lg:w-10" />
+            </div>
+            <div className="flex-1 space-y-3">
+              <h1 className="dashboard-heading-1 bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent dark:from-gray-100 dark:to-gray-300">
+                Optimisez votre visibilité dans l&apos;ère de l&apos;Intelligence Artificielle
+              </h1>
+              <p className="dashboard-body-lg text-muted-foreground max-w-3xl leading-relaxed">
+                L&apos;AIO (AI Optimization) est le nouveau SEO. Analysez comment les IA comme ChatGPT, Claude et
+                Perplexity citent votre contenu et optimisez votre stratégie pour la recherche conversationnelle.
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
- // États pour AI Keyword Data
- const initialKeywordState: AIKeywordDataState = {
- success: false,
- }
- const [keywordState, keywordFormAction, isKeywordPending] = useActionState(
- fetchAIKeywordData,
- initialKeywordState,
- )
+      <FormAi />
 
- // États pour LLM Mentions
- const initialMentionsState: LLMMentionsState = {
- success: false,
- }
- const [mentionsState, mentionsFormAction, isMentionsPending] = useActionState(
- fetchLLMMentions,
- initialMentionsState,
- )
+      <div className="space-y-8">
+        {/* Introduction AIO - Design amélioré */}
+        <div className="relative overflow-hidden rounded-2xl border-2 border-violet-200/60 bg-gradient-to-br from-violet-50/80 via-purple-50/80 to-pink-50/80 p-6 shadow-md backdrop-blur-sm lg:p-8 dark:border-violet-800/40 dark:from-violet-950/30 dark:via-purple-950/30 dark:to-pink-950/30">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(139,92,246,0.1),transparent)] opacity-50" />
+          {/* Stats rapides */}
+          <div className="relative grid grid-cols-1 gap-4 md:grid-cols-3">
+            <div className="rounded-xl border border-violet-200/80 bg-white/90 p-4 shadow-sm backdrop-blur-sm dark:border-violet-800/40 dark:bg-gray-900/50">
+              <div className="text-xs font-semibold text-gray-900 dark:text-gray-100">LLMs Analysés</div>
+              <div className="mt-1 text-sm font-bold text-violet-600 dark:text-violet-400">
+                ChatGPT, Claude, Perplexity
+              </div>
+            </div>
 
+            <div className="rounded-xl border border-purple-200/80 bg-white/90 p-4 shadow-sm backdrop-blur-sm dark:border-purple-800/40 dark:bg-gray-900/50">
+              <div className="text-xs font-semibold text-gray-900 dark:text-gray-100">Évolution Majeure</div>
+              <div className="mt-1 text-sm font-bold text-purple-600 dark:text-purple-400">
+                50% des recherches en 2026
+              </div>
+            </div>
 
-  // Formulaire AI Keyword Data avec react-hook-form
-  const keywordForm = useForm<AIKeywordFormValues>({
-    resolver: zodResolver(aiKeywordFormSchema),
-    defaultValues: {
-      keywords: '',
-    },
-  })
+            <div className="rounded-xl border border-pink-200/80 bg-white/90 p-4 shadow-sm backdrop-blur-sm dark:border-pink-800/40 dark:bg-gray-900/50">
+              <div className="text-xs font-semibold text-gray-900 dark:text-gray-100">Nouveau Critère</div>
+              <div className="mt-1 text-sm font-bold text-pink-600 dark:text-pink-400">Citations IA = Position #1</div>
+            </div>
+          </div>
+        </div>
 
-  // Formulaire LLM Mentions avec react-hook-form
-  const mentionsForm = useForm<LLMMentionsFormValues>({
-    resolver: zodResolver(llmMentionsFormSchema),
-    defaultValues: {
-      target_type: 'keyword',
-      target_value: '',
-      limit: 100,
-    },
-  })
+        {/* Pourquoi l'AIO est crucial - Design amélioré */}
+        <Card className="overflow-hidden border-2 border-gray-200/80 bg-white shadow-lg dark:border-gray-800/50 dark:bg-gray-900/50">
+          <CardContent className="p-6 lg:p-8">
+            <div className="mb-6 flex items-center gap-3">
+              <h3 className="dashboard-heading-3 text-gray-900 dark:text-gray-100">
+                Pourquoi l&apos;optimisation pour l&apos;IA est cruciale en 2026 ?
+              </h3>
+            </div>
 
-  // Fonctions de soumission
-  const onKeywordSubmit = (values: AIKeywordFormValues) => {
-    const formData = new FormData()
-    formData.set('keywords', values.keywords)
-    startTransition(() => {
-      keywordFormAction(formData)
-    })
-  }
+            <div className="grid gap-6 md:grid-cols-2">
+              {/* Point 1 */}
+              <div className="rounded-xl border border-blue-100 bg-gradient-to-br from-blue-50/50 to-transparent p-5 dark:border-blue-900/30 dark:from-blue-950/20">
+                <div className="mb-3 flex items-center gap-3">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-100 dark:bg-blue-900/40">
+                    <TrendingUp className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                  </div>
+                  <h4 className="text-base font-bold text-gray-900 dark:text-gray-100">
+                    L&apos;évolution du comportement de recherche
+                  </h4>
+                </div>
+                <ul className="space-y-2.5 text-sm text-gray-700 dark:text-gray-300">
+                  <li className="flex items-start gap-2.5">
+                    <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-blue-600 dark:bg-blue-400" />
+                    <span>
+                      50% des recherches passeront par des assistants IA en 2026 (ChatGPT, Perplexity, Bing Chat) selon
+                      Gartner.
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-blue-600 dark:bg-blue-400" />
+                    <span>
+                      Les utilisateurs posent des questions naturelles et longues au lieu de taper des mots-clés courts.
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-blue-600 dark:bg-blue-400" />
+                    <span>
+                      Les réponses IA remplacent progressivement le clic vers les sites web (zero-click search
+                      amplifié).
+                    </span>
+                  </li>
+                </ul>
+              </div>
 
-  const onMentionsSubmit = (values: LLMMentionsFormValues) => {
-    const formData = new FormData()
-    formData.set('target_type', values.target_type)
-    formData.set('target_value', values.target_value)
-    if (values.limit) {
-      formData.set('limit', values.limit.toString())
-    }
-    startTransition(() => {
-      mentionsFormAction(formData)
-    })
-  }
+              {/* Point 2 */}
+              <div className="rounded-xl border border-purple-100 bg-gradient-to-br from-purple-50/50 to-transparent p-5 dark:border-purple-900/30 dark:from-purple-950/20">
+                <div className="mb-3 flex items-center gap-3">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-purple-100 dark:bg-purple-900/40">
+                    <Award className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+                  </div>
+                  <h4 className="text-base font-bold text-gray-900 dark:text-gray-100">
+                    Les citations IA deviennent le nouveau ranking
+                  </h4>
+                </div>
+                <ul className="space-y-2.5 text-sm text-gray-700 dark:text-gray-300">
+                  <li className="flex items-start gap-2.5">
+                    <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-purple-600 dark:bg-purple-400" />
+                    <span>
+                      Être cité par ChatGPT ou Perplexity devient aussi crucial que ranker #1 sur Google en termes de
+                      visibilité.
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-purple-600 dark:bg-purple-400" />
+                    <span>
+                      Les sites non cités par les IA perdront jusqu&apos;à 70% de leur trafic organique d&apos;ici 2027.
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-purple-600 dark:bg-purple-400" />
+                    <span>
+                      La fréquence de citation détermine votre &quot;share of voice&quot; dans l&apos;espace
+                      conversationnel.
+                    </span>
+                  </li>
+                </ul>
+              </div>
 
- return (
- <main className="mx-auto max-w-7xl space-y-6 p-6">
- {/* Header */}
- <div className="mb-8 lg:mb-12">
- <div className="mb-4 flex items-center gap-4 lg:gap-6">
- <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 shadow-lg lg:h-16 lg:w-16">
- <Brain className="h-7 w-7 text-white lg:h-8 lg:w-8" />
- </div>
- <div>
- <Heading className="text-3xl sm:text-3xl lg:text-5xl">
- Visibilité IA & LLM
- </Heading>
- <p className="mt-2 text-base text-muted-foreground lg:text-lg">
- Analysez votre visibilité dans les outils d&apos;IA et les
- grands modèles de langage
- </p>
- </div>
- </div>
- </div>
+              {/* Point 3 */}
+              <div className="rounded-xl border border-green-100 bg-gradient-to-br from-green-50/50 to-transparent p-5 dark:border-green-900/30 dark:from-green-950/20">
+                <div className="mb-3 flex items-center gap-3">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-green-100 dark:bg-green-900/40">
+                    <Target className="h-5 w-5 text-green-600 dark:text-green-400" />
+                  </div>
+                  <h4 className="text-base font-bold text-gray-900 dark:text-gray-100">
+                    L&apos;E-E-A-T devient 10x plus important
+                  </h4>
+                </div>
+                <ul className="space-y-2.5 text-sm text-gray-700 dark:text-gray-300">
+                  <li className="flex items-start gap-2.5">
+                    <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-green-600 dark:bg-green-400" />
+                    <span>
+                      Les IA privilégient massivement les sites avec expertise démontrée, données originales et sources
+                      vérifiables.
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-green-600 dark:bg-green-400" />
+                    <span>
+                      Contenu structuré (FAQ, listes, tableaux), auteurs identifiés et dates de mise à jour sont
+                      indispensables.
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-green-600 dark:bg-green-400" />
+                    <span>
+                      Les sites avec E-E-A-T faible sont systématiquement ignorés par les LLMs, même avec bon ranking
+                      Google.
+                    </span>
+                  </li>
+                </ul>
+              </div>
 
- {/* Bannière informative */}
- <div className="mb-8 rounded-xl border bg-gradient-to-r from-purple-500/5 via-purple-500/10 to-pink-500/5 p-6 lg:mb-10 lg:rounded-2xl lg:p-8">
- <div className="flex items-start gap-4 lg:gap-6">
- <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-purple-500/20 lg:h-14 lg:w-14">
- <Sparkles className="h-6 w-6 text-purple-600 lg:h-7 lg:w-7 dark:text-purple-400" />
- </div>
- <div className="flex-1">
- <h3 className="mb-2 text-lg font-semibold lg:text-xl">
- Optimisez votre présence dans l&apos;écosystème IA
- </h3>
- <p className="text-sm leading-relaxed text-muted-foreground lg:text-base">
- Découvrez comment vos mots clés et votre marque sont perçus et
- mentionnés dans les outils d&apos;IA comme ChatGPT, Claude,
- Gemini et autres LLM. Obtenez des insights précieux sur le
- volume de recherche IA et optimisez votre stratégie de contenu.
- </p>
- </div>
- </div>
- </div>
+              {/* Point 4 */}
+              <div className="rounded-xl border border-orange-100 bg-gradient-to-br from-orange-50/50 to-transparent p-5 dark:border-orange-900/30 dark:from-orange-950/20">
+                <div className="mb-3 flex items-center gap-3">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-orange-100 dark:bg-orange-900/40">
+                    <Lightbulb className="h-5 w-5 text-orange-600 dark:text-orange-400" />
+                  </div>
+                  <h4 className="text-base font-bold text-gray-900 dark:text-gray-100">
+                    Anticipez maintenant pour un avantage compétitif
+                  </h4>
+                </div>
+                <ul className="space-y-2.5 text-sm text-gray-700 dark:text-gray-300">
+                  <li className="flex items-start gap-2.5">
+                    <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-orange-600 dark:bg-orange-400" />
+                    <span>
+                      Les sites qui optimisent dès aujourd&apos;hui pour l&apos;AIO auront un avantage de 12-18 mois sur
+                      leurs concurrents.
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-orange-600 dark:bg-orange-400" />
+                    <span>
+                      Il faut 6-12 mois pour que les LLMs intègrent vos nouvelles sources dans leurs bases de
+                      connaissances.
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-orange-600 dark:bg-orange-400" />
+                    <span>
+                      Créer du contenu AIO-optimized maintenant = dominer votre niche dans la recherche
+                      conversationnelle de demain.
+                    </span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
- {/* Tabs pour les deux APIs */}
- <Tabs
- value={activeTab}
- onValueChange={setActiveTab}
- className="w-full min-w-0 overflow-x-hidden"
- >
- <TabsList className="mb-6 grid w-full grid-cols-2 lg:mb-8 lg:w-auto">
- <TabsTrigger value="ai-keywords" className="gap-2 lg:px-8">
- <BarChart3 className="h-4 w-4 " />
- <span className="hidden sm:inline">AI Keyword Data</span>
- <span className="sm:hidden">Keywords</span>
-</TabsTrigger>
- <TabsTrigger value="llm-mentions" className="gap-2 lg:px-8">
- <MessageSquare className="h-4 w-4" />
- <span className="hidden sm:inline">LLM Mentions</span>
- <span className="sm:hidden">Mentions</span>
- </TabsTrigger>
- </TabsList>
+        {/* Guide rapide d'optimisation - Design amélioré */}
+        <Card className="relative overflow-hidden border-2 border-indigo-200/80 bg-gradient-to-br from-indigo-50/90 via-indigo-50/70 to-purple-50/50 shadow-lg dark:border-indigo-800/40 dark:from-indigo-950/40 dark:via-indigo-950/30 dark:to-purple-950/30">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(99,102,241,0.1),transparent)]" />
+          <CardContent className="relative p-6 lg:p-8">
+            <div className="mb-6 flex items-center gap-3">
+              <h3 className="dashboard-heading-3 text-indigo-900 dark:text-indigo-100">
+                5 Actions Concrètes pour Optimiser Votre Contenu pour l&apos;IA
+              </h3>
+            </div>
 
- {/* Tab: AI Keyword Data */}
- <TabsContent value="ai-keywords" className="space-y-6 lg:space-y-8">
- <Card className="border-2 shadow-lg">
- <CardHeader className="lg:px-8 lg:py-7">
- <CardTitle className="flex items-center gap-3 text-xl lg:text-2xl">
- <Search className="h-6 w-6 lg:h-7 lg:w-7" />
- Analyser des mots clés dans l&apos;IA
- </CardTitle>
- <CardDescription className="mt-2 lg:text-base">
- Obtenez le volume de recherche, l&apos;intention utilisateur
- et les tendances d&apos;utilisation dans les outils d&apos;IA.
- Analysez jusqu&apos;à 100 mots-clés simultanément.
- </CardDescription>
- </CardHeader>
- <CardContent className="lg:px-8 lg:pb-8">
-                <Form {...keywordForm}>
-                  <form
-                    onSubmit={keywordForm.handleSubmit(onKeywordSubmit)}
-                    className="space-y-6"
-                  >
-                    <FormField
-                      control={keywordForm.control}
-                      name="keywords"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-sm font-medium lg:text-base">Mots clés *</FormLabel>
-                          <FormControl>
-                            <textarea
-                              {...field}
-                              placeholder="Ex: SEO optimization, Référencement naturel, Marketing digital ; Séparez les mots-clés par des virgules, des points-virgules ou des retours à la ligne"
-                              disabled={isKeywordPending}
-                              rows={6}
-                              className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 lg:h-auto lg:text-base"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                          <p className="text-xs text-muted-foreground">
-                            Analyse ciblée pour le marché français (France, langue
-                            française). Vous pouvez analyser jusqu&apos;à 100
-                            mots-clés à la fois.
-                          </p>
-                        </FormItem>
-                      )}
-                    />
+            <div className="grid gap-4 md:grid-cols-2 lg:gap-5">
+              {[
+                {
+                  num: 1,
+                  title: 'Structurez en Questions-Réponses',
+                  desc: 'Format FAQ, listes numérotées, tableaux comparatifs, définitions concises. Les IA adorent extraire et citer les contenus structurés.',
+                },
+                {
+                  num: 2,
+                  title: 'Apportez des Données Originales',
+                  desc: 'Créez des études, sondages, statistiques uniques. Les IA citent massivement les sources avec données vérifiables et chiffrées (10x plus que le contenu générique).',
+                },
+                {
+                  num: 3,
+                  title: 'Démontrez Votre Expertise (E-E-A-T)',
+                  desc: "Auteurs identifiés avec bio, sources citées, dates de publication/mise à jour visibles, témoignages clients. Plus l'expertise est visible, plus les IA font confiance.",
+                },
+                {
+                  num: 4,
+                  title: 'Langage Naturel et Conversationnel',
+                  desc: 'Écrivez comme vous parlez. Optimisez pour "Comment faire X ?" plutôt que "faire X". Les requêtes IA sont plus longues et naturelles que sur Google.',
+                },
+                {
+                  num: 5,
+                  title: 'Mise à Jour Régulière et Récence',
+                  desc: 'Les IA privilégient les contenus récents (6-12 derniers mois). Ajoutez des dates de publication et "Mis à jour le [date]" bien visibles. Actualisez vos stats et exemples.',
+                },
+              ].map((item, idx) => (
+                <div
+                  key={idx}
+                  className="flex gap-4 rounded-xl border border-indigo-100/80 bg-white/80 p-4 backdrop-blur-sm dark:border-indigo-900/40 dark:bg-gray-900/50"
+                >
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-indigo-600 to-purple-600 text-sm font-bold text-white shadow-md">
+                    {item.num}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <h4 className="mb-1.5 text-sm font-semibold text-gray-900 dark:text-gray-100">{item.title}</h4>
+                    <p className="text-xs leading-relaxed text-gray-700 dark:text-gray-300">{item.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
 
-                    <Button
-                      type="submit"
-                      className="h-11 w-full gap-2 lg:h-12 lg:text-base hover:cursor-pointer"
-                      disabled={isKeywordPending}
-                    >
-                      {isKeywordPending ? (
-                        <>
-                          <Loader2 className="h-5 w-5 animate-spin" />
-                          Analyse en cours...
-                        </>
-                      ) : (
-                        <>
-                          <Sparkles className="h-5 w-5" />
-                          Lancer l&apos;analyse IA
-                        </>
-                      )}
-                    </Button>
-                  </form>
-                </Form>
-
- {/* Affichage des erreurs */}
- {keywordState?.error && (
- <div className="mt-6 rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-800 dark:bg-red-950/20">
- <p className="text-sm font-semibold text-red-900 dark:text-red-200">
- ❌ Erreur
- </p>
- {typeof keywordState.error === 'string' ? (
- <p className="mt-1 text-sm text-red-700 dark:text-red-300">
- {keywordState.error}
- </p>
- ) : (
- <div className="mt-2 space-y-1">
- {Object.entries(keywordState.error).map(
- ([field, errors]) => (
- <div key={field}>
- <p className="text-xs font-medium text-red-800 dark:text-red-300">
- {field}:
- </p>
- {Array.isArray(errors) &&
- errors.map((error: string, index: number) => (
- <p
- key={index}
- className="text-xs text-red-700 dark:text-red-400"
- >
- • {error}
- </p>
- ))}
- </div>
- ),
- )}
- </div>
- )}
- </div>
- )}
-
- {/* Résultats AI Keyword Data */}
- {keywordState?.success && keywordState?.result && (
- <div className="mt-8 space-y-6">
- <Divider />
-
- {/* Header des résultats */}
- <div className="flex items-center gap-4">
- <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 lg:h-14 lg:w-14">
- <Sparkles className="h-6 w-6 text-white lg:h-7 lg:w-7" />
- </div>
- <div>
- <h3 className="text-xl font-semibold lg:text-2xl">
- {keywordState.keywords &&
- keywordState.keywords.length === 1
- ? `Résultat pour "${keywordState.keywords[0]}"`
- : `Résultats pour ${keywordState.result?.items_count || keywordState.keywords?.length || 0} mot(s) clé(s)`}
- </h3>
- <p className="text-sm text-muted-foreground lg:text-base">
- {keywordState.keywords &&
- keywordState.keywords.length === 1
- ? "Analyse complète du mot clé dans l'écosystème IA"
- : `Analyse complète de ${keywordState.result?.items_count || keywordState.keywords?.length || 0} mot(s) clé(s) dans l'écosystème IA`}
- </p>
- {keywordState.keywords &&
- keywordState.keywords.length > 1 && (
- <div className="mt-3 flex flex-wrap gap-2">
- {keywordState.keywords
- .slice(0, 10)
- .map((kw, idx) => (
- <Badge
- key={idx}
- color="zinc"
- className="text-xs"
- >
- {kw}
- </Badge>
- ))}
- {keywordState.keywords.length > 10 && (
- <Badge color="zinc" className="text-xs">
- +{keywordState.keywords.length - 10} autres
- </Badge>
- )}
- </div>
- )}
- </div>
- </div>
-
- {keywordState.result.items.map((item, index) => (
- <div key={index} className="space-y-6">
- {/* Métriques principales */}
- <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-2 lg:gap-6">
- <Card className="border-2-purple-500/20 bg-gradient-to-br from-purple-500/5 to-transparent">
- <CardContent className="pt-6">
- <div className="flex items-start justify-between">
- <div className="flex-1">
- <p className="text-sm font-medium text-muted-foreground">
- Volume de recherche IA
- </p>
- <p className="mt-2 text-3xl font-bold text-purple-600 lg:text-3xl dark:text-purple-400">
- {item.ai_search_volume?.toLocaleString(
- 'fr-FR',
- ) || 'N/A'}
- </p>
- <p className="mt-2 text-xs text-muted-foreground">
- Recherches mensuelles estimées dans les IA
- </p>
- </div>
- <Brain className="h-10 w-10 text-purple-600 lg:h-12 lg:w-12" />
- </div>
- </CardContent>
- </Card>
-
- <Card className="border-2-blue-500/20 bg-gradient-to-br from-blue-500/5 to-transparent">
- <CardContent className="pt-6">
- <div>
- <p className="text-sm font-medium text-muted-foreground">
- Mot clé analysé
- </p>
- <div className="mt-3 flex items-center gap-2">
- <Badge
- className="px-4 py-2 text-base break-words lg:text-lg"
- color="blue"
- >
- {item.keyword}
- </Badge>
- </div>
- <p className="mt-3 text-xs text-muted-foreground">
- {item.ai_monthly_searches?.length || 0} mois
- de données historiques
- </p>
- </div>
- </CardContent>
- </Card>
- </div>
-
- {/* Graphique des recherches mensuelles */}
- {item.ai_monthly_searches &&
- item.ai_monthly_searches.length > 0 && (
- <Card className="border-2">
- <CardHeader>
- <CardTitle className="flex items-center gap-2 text-lg lg:text-xl">
- <BarChart3 className="h-5 w-5" />
- Évolution mensuelle du volume de recherche IA
- </CardTitle>
- </CardHeader>
- <CardContent>
- <div className="space-y-4">
- {item.ai_monthly_searches
- .slice(-12)
- .map((monthData, idx) => {
- const maxVolume = Math.max(
- ...item.ai_monthly_searches.map(
- (m) => m.ai_search_volume,
- ),
- )
- const percentage =
- (monthData.ai_search_volume /
- maxVolume) *
- 100
-
- const monthName = new Date(
- monthData.year,
- monthData.month - 1,
- ).toLocaleDateString('fr-FR', {
- month: 'long',
- year: 'numeric',
- })
-
- return (
- <div key={idx} className="space-y-2">
- <div className="flex items-center justify-between text-sm">
- <span className="font-medium capitalize">
- {monthName}
- </span>
- <span className="font-bold text-purple-600">
- {monthData.ai_search_volume.toLocaleString(
- 'fr-FR',
- )}
- </span>
- </div>
- <Progress
- value={percentage}
- className="h-2"
- />
- </div>
- )
- })}
- </div>
- </CardContent>
- </Card>
- )}
-
- {/* Recommandations */}
- <Card className="border-2-amber-500/20 bg-gradient-to-r from-amber-500/5 to-transparent">
- <CardHeader>
- <CardTitle className="flex items-center gap-2 text-lg lg:text-xl">
- <Zap className="h-5 w-5 text-amber-600" />
- Recommandations
- </CardTitle>
- </CardHeader>
- <CardContent>
- <ul className="space-y-3">
- <li className="flex items-start gap-3">
- <ChevronRight className="mt-0.5 h-5 w-5 shrink-0 text-amber-600" />
- <span className="text-sm break-words lg:text-base">
- {item.ai_search_volume > 10000
- ? `Volume élevé (${item.ai_search_volume.toLocaleString('fr-FR')}). Ce mot clé est très recherché dans les outils IA. Optimisez votre contenu pour apparaître dans les réponses des LLM.`
- : `Volume modéré (${item.ai_search_volume.toLocaleString('fr-FR')}). Opportunité intéressante avec moins de compétition.`}
- </span>
- </li>
- <li className="flex items-start gap-3">
- <ChevronRight className="mt-0.5 h-5 w-5 shrink-0 text-amber-600" />
- <span className="text-sm lg:text-base">
- Créez du contenu structuré et détaillé pour
- être cité par les IA comme source fiable.
- </span>
- </li>
- <li className="flex items-start gap-3">
- <ChevronRight className="mt-0.5 h-5 w-5 shrink-0 text-amber-600" />
- <span className="text-sm lg:text-base">
- Utilisez un balisage sémantique (schema.org)
- pour améliorer votre visibilité dans les LLM.
- </span>
- </li>
- </ul>
- </CardContent>
- </Card>
- </div>
- ))}
- </div>
- )}
- </CardContent>
- </Card>
- </TabsContent>
-
- {/* Tab: LLM Mentions */}
- <TabsContent
- value="llm-mentions"
- className="w-full min-w-0 space-y-6 overflow-x-hidden lg:space-y-8"
- >
- <Card className="w-full min-w-0 overflow-x-hidden border-2 shadow-lg">
- <CardHeader className="w-full min-w-0 overflow-x-hidden lg:px-8 lg:py-7">
- <CardTitle className="flex items-center gap-3 text-xl lg:text-2xl">
- <MessageSquare className="h-6 w-6 shrink-0 lg:h-7 lg:w-7" />
- Analyser les mentions LLM
- </CardTitle>
- <CardDescription className="mt-2 lg:text-base">
- Découvrez comment votre marque, domaine ou mots-clés sont
- mentionnés dans les réponses des LLM (Google Gemini, etc.)
- </CardDescription>
- </CardHeader>
- <CardContent className="w-full min-w-0 overflow-x-hidden lg:px-8 lg:pb-8">
-                <Form {...mentionsForm}>
-                  <form
-                    onSubmit={mentionsForm.handleSubmit(onMentionsSubmit)}
-                    className="w-full min-w-0 space-y-6 overflow-x-hidden"
-                  >
-                    <FormField
-                      control={mentionsForm.control}
-                      name="target_type"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-sm font-medium lg:text-base">Type de cible *</FormLabel>
-                          <Select
-                            onValueChange={field.onChange}
-                            defaultValue={field.value}
-                            disabled={isMentionsPending}
-                          >
-                            <FormControl>
-                              <SelectTrigger className="h-11 lg:h-12 lg:text-base hover:cursor-pointer">
-                                <SelectValue placeholder="Sélectionner un type" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent className='bg-mist-600'>
-                              <SelectItem value="keyword" className="hover:bg-mist-500 hover:cursor-pointer">Mot-clé</SelectItem>
-                              <SelectItem value="domain" className="hover:bg-mist-500 hover:cursor-pointer">Domaine</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                          <p className="text-xs text-muted-foreground">
-                            Analyse ciblée pour le marché français (France, langue
-                            française) via Google
-                          </p>
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={mentionsForm.control}
-                      name="target_value"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-sm font-medium lg:text-base">Valeur de la cible *</FormLabel>
-                          <FormControl>
-                            <textarea
-                              {...field}
-                              placeholder="Ex: nom de votre marque, domaine (exemple.com), ou mot-clé"
-                              disabled={isMentionsPending}
-                              rows={3}
-                              className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 lg:h-auto lg:text-base"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                          <p className="text-xs text-muted-foreground">
-                            Pour un domaine, saisissez-le sans https:// ou www. (ex:
-                            exemple.com)
-                          </p>
-                        </FormItem>
-                      )}
-                    />
-
-
-
-                    <Button
-                      type="submit"
-                      className="h-11 w-full gap-2 lg:h-12 lg:text-base hover:cursor-pointer"
-                      disabled={isMentionsPending}
-                    >
-                      {isMentionsPending ? (
-                        <>
-                          <Loader2 className="h-5 w-5 animate-spin" />
-                          Analyse en cours...
-                        </>
-                      ) : (
-                        <>
-                          <MessageSquare className="h-5 w-5" />
-                          Lancer l&apos;analyse LLM Mentions
-                        </>
-                      )}
-                    </Button>
-                  </form>
-                </Form>
- {mentionsState?.error && (
- <div className="mt-6 rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-800 dark:bg-red-950/20">
- <p className="text-sm font-semibold text-red-900 dark:text-red-200">
- ❌ Erreur
- </p>
- {typeof mentionsState.error === 'string' ? (
- <p className="mt-1 text-sm text-red-700 dark:text-red-300">
- {mentionsState.error}
- </p>
- ) : (
- <div className="mt-2 space-y-1">
- {Object.entries(mentionsState.error).map(
- ([field, errors]) => (
- <div key={field}>
- <p className="text-xs font-medium text-red-800 dark:text-red-300">
- {field}:
- </p>
- {Array.isArray(errors) &&
- errors.map((error: string, index: number) => (
- <p
- key={index}
- className="text-xs text-red-700 dark:text-red-400"
- >
- • {error}
- </p>
- ))}
- </div>
- ),
- )}
- </div>
- )}
- </div>
- )}
-
- {/* Résultats LLM Mentions */}
- {mentionsState?.success && mentionsState?.result && (
- <div className="mt-8 w-full max-w-full min-w-0 space-y-6 overflow-x-hidden">
- <Divider />
-
- {/* Header des résultats */}
- <div className="flex w-full max-w-full min-w-0 flex-col gap-4 sm:flex-row sm:items-center">
- <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-pink-500 to-purple-500 lg:h-14 lg:w-14">
- <MessageSquare className="h-6 w-6 text-white lg:h-7 lg:w-7" />
- </div>
- <div className="max-w-full min-w-0 flex-1 overflow-x-hidden">
- <h3 className="text-xl font-semibold break-words lg:text-2xl">
- Résultats pour{' '}
- {mentionsState.target_type === 'domain'
- ? `le domaine "${mentionsState.target_value}"`
- : `"${mentionsState.target_value}"`}
- </h3>
- <p className="text-sm text-muted-foreground lg:text-base">
- {mentionsState.result.items_count} mention(s) sur{' '}
- {mentionsState.result.total_count} total trouvé(s)
- </p>
- </div>
- </div>
-
- {/* Liste des mentions */}
- {mentionsState.result.items.map((item, index) => (
- <Card
- key={index}
- className="w-full max-w-full min-w-0 overflow-x-hidden border-2 shadow-sm transition-shadow hover:shadow-md"
- >
- <CardHeader className="w-full max-w-full min-w-0 overflow-x-hidden border-b">
- <div className="flex w-full max-w-full min-w-0 items-start justify-between gap-4">
- <div className="max-w-full min-w-0 flex-1 overflow-x-hidden">
- <div className="mb-2 flex w-full max-w-full min-w-0 items-center gap-2">
- <CardTitle className="min-w-0 flex-1 text-lg break-words lg:text-xl">
- Mention #{index + 1}
- </CardTitle>
- <Badge color="purple" className="shrink-0">
- {item.platform}
- </Badge>
- </div>
- <div className="mt-2 flex w-full max-w-full min-w-0 flex-wrap gap-2">
- {item.ai_search_volume && (
- <Badge
- color="blue"
- className="max-w-full shrink-0 gap-1"
- >
- <TrendingUp className="h-3 w-3 shrink-0" />
- <span className="truncate">
- Volume IA:{' '}
- {item.ai_search_volume.toLocaleString(
- 'fr-FR',
- )}
- </span>
- </Badge>
- )}
- {item.first_response_at && (
- <Badge
- color="zinc"
- className="max-w-full shrink-0 gap-1"
- >
- <Calendar className="h-3 w-3 shrink-0" />
- <span className="truncate">
- Première réponse:{' '}
- {new Date(
- item.first_response_at,
- ).toLocaleDateString('fr-FR', {
- day: 'numeric',
- month: 'short',
- year: 'numeric',
- })}
- </span>
- </Badge>
- )}
- {item.last_response_at && (
- <Badge
- color="zinc"
- className="max-w-full shrink-0 gap-1"
- >
- <Calendar className="h-3 w-3 shrink-0" />
- <span className="truncate">
- Dernière mise à jour:{' '}
- {new Date(
- item.last_response_at,
- ).toLocaleDateString('fr-FR', {
- day: 'numeric',
- month: 'short',
- year: 'numeric',
- })}
- </span>
- </Badge>
- )}
- </div>
- </div>
- </div>
- </CardHeader>
- <CardContent className="w-full max-w-full min-w-0 space-y-6 overflow-x-hidden pt-6">
- {/* Question */}
- {item.question && (
- <div className="w-full max-w-full min-w-0 overflow-x-hidden rounded-lg border border-blue-200 bg-blue-50/50 p-4 dark:border-blue-800 dark:bg-blue-950/20">
- <div className="mb-2 flex items-start gap-2">
- <Search className="mt-0.5 h-4 w-4 shrink-0 text-blue-600" />
- <p className="text-sm font-semibold text-blue-900 dark:text-blue-200">
- Question posée:
- </p>
- </div>
- <p className="text-sm break-words text-blue-800 lg:text-base dark:text-blue-300">
- {item.question}
- </p>
- </div>
- )}
-
- {/* Réponse avec meilleur rendu markdown */}
- {item.answer && (
- <div className="w-full max-w-full min-w-0 overflow-x-hidden">
- <div className="mb-3 flex items-start gap-2">
- <Brain className="mt-0.5 h-4 w-4 shrink-0 text-purple-600" />
- <p className="text-sm font-semibold text-muted-foreground">
- Réponse du LLM:
- </p>
- </div>
- <div className="w-full max-w-full min-w-0 overflow-x-auto rounded-lg border-2-purple-200 bg-gradient-to-br from-purple-50/50 to-pink-50/50 p-4 dark:border-purple-800 dark:from-purple-950/20 dark:to-pink-950/20">
- <div
- className="prose prose-sm dark:prose-invert w-full max-w-full min-w-0 overflow-x-auto text-sm lg:text-base [&_*]:max-w-full [&_*]:min-w-0 [&_*]:break-words [&_a]:break-all [&_a]:text-blue-600 [&_a]:underline [&_a]:hover:text-blue-800 [&_blockquote]:my-2 [&_blockquote]:border-l-4 [&_blockquote]:border-purple-300 [&_blockquote]:pl-4 [&_blockquote]:italic [&_code]:rounded [&_code]:bg-muted [&_code]:px-1 [&_code]:py-0.5 [&_code]:text-xs [&_code]:break-all [&_em]:italic [&_h1]:mt-4 [&_h1]:mb-2 [&_h1]:text-lg [&_h1]:font-bold [&_h1]:break-words [&_h2]:mt-3 [&_h2]:mb-2 [&_h2]:text-base [&_h2]:font-semibold [&_h2]:break-words [&_h3]:mt-2 [&_h3]:mb-1 [&_h3]:text-sm [&_h3]:font-semibold [&_h3]:break-words [&_img]:h-auto [&_img]:max-w-full [&_li]:my-1 [&_li]:break-words [&_ol]:my-2 [&_ol]:ml-4 [&_ol]:list-decimal [&_p]:my-2 [&_p]:leading-relaxed [&_p]:break-words [&_pre]:overflow-x-auto [&_pre]:rounded [&_pre]:bg-muted [&_pre]:p-2 [&_pre]:break-all [&_strong]:font-semibold [&_table]:w-full [&_table]:overflow-x-auto [&_ul]:my-2 [&_ul]:ml-4 [&_ul]:list-disc"
- dangerouslySetInnerHTML={{
- __html: (() => {
- let html = item.answer
-
-                                  // Supprimer les références de citation [[1]](url) car les sources sont déjà affichées en dessous
-                                  // Cela nettoie des patterns comme [[1]](https://...) ou [[2]](http://...)
-                                  html = html.replace(/\[\[(\d+)\]\]\([^)]+\)/g, '')
-                                  // Supprimer aussi les patterns comme [[1]] seuls ou (url)[[1]]
-                                  html = html.replace(/\[\[(\d+)\]\]/g, '').replace(/\([^)]+\)\[\[(\d+)\]\]/g, '')
- // Convertir les liens markdown [texte](url)
- html = html.replace(
- /\[([^\]]+)\]\(([^)]+)\)/g,
- '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline dark:text-blue-400">$1</a>',
- )
- // Convertir le gras **texte**
- html = html.replace(
- /\*\*([^*]+)\*\*/g,
- '<strong>$1</strong>',
- )
- // Convertir l'italique *texte* (mais pas si c'est déjà du gras)
- html = html.replace(
- /(?<!\*)\*([^*]+)\*(?!\*)/g,
- '<em>$1</em>',
- )
- // Convertir le code inline `code`
- html = html.replace(
- /`([^`]+)`/g,
- '<code class="bg-muted px-1 py-0.5 rounded text-xs">$1</code>',
- )
- // Convertir les titres
- html = html.replace(
- /^### (.*$)/gim,
- '<h3>$1</h3>',
- )
- html = html.replace(
- /^## (.*$)/gim,
- '<h2>$1</h2>',
- )
- html = html.replace(
- /^# (.*$)/gim,
- '<h1>$1</h1>',
- )
- // Convertir les listes à puces
- html = html.replace(
- /^\* (.*$)/gim,
- '<li>$1</li>',
- )
- html = html.replace(
- /^- (.*$)/gim,
- '<li>$1</li>',
- )
- // Encapsuler les listes dans <ul>
- html = html.replace(
- /(<li>.*<\/li>\n?)+/g,
- '<ul>$&</ul>',
- )
- // Convertir les blockquotes
- html = html.replace(
- /^> (.*$)/gim,
- '<blockquote>$1</blockquote>',
- )
- // Convertir les paragraphes (double saut de ligne)
- html = html.replace(/\n\n/g, '</p><p>')
- // Convertir les simples sauts de ligne en <br>
- html = html.replace(/\n/g, '<br />')
- // Encapsuler dans un paragraphe si nécessaire
- if (!html.startsWith('<')) {
- html = '<p>' + html + '</p>'
- }
- return html
- })(),
- }}
- />
- </div>
- </div>
- )}
-
- {/* Métriques de volume IA mensuel */}
- {item.ai_monthly_searches &&
- item.ai_monthly_searches.length > 0 && (
- <Card className="w-full max-w-full min-w-0 overflow-x-hidden border-2-purple-500/20 bg-gradient-to-br from-purple-500/5 to-transparent">
- <CardHeader className="w-full max-w-full min-w-0 overflow-x-hidden">
- <CardTitle className="flex items-center gap-2 text-base lg:text-lg">
- <BarChart3 className="h-4 w-4 shrink-0" />
- Évolution mensuelle du volume IA
- </CardTitle>
- </CardHeader>
- <CardContent className="w-full max-w-full min-w-0 overflow-x-hidden">
- <div className="w-full max-w-full min-w-0 space-y-3">
- {item.ai_monthly_searches
- .slice(-6)
- .map((monthData, idx) => {
- const maxVolume = Math.max(
- ...(
- item.ai_monthly_searches || []
- ).map((m) => m.ai_search_volume),
- )
- const percentage =
- (monthData.ai_search_volume /
- maxVolume) *
- 100
-
- const monthName = new Date(
- monthData.year,
- monthData.month - 1,
- ).toLocaleDateString('fr-FR', {
- month: 'short',
- year: 'numeric',
- })
-
- return (
- <div key={idx} className="space-y-1">
- <div className="flex items-center justify-between text-xs">
- <span className="font-medium">
- {monthName}
- </span>
- <span className="font-bold text-purple-600">
- {monthData.ai_search_volume.toLocaleString(
- 'fr-FR',
- )}
- </span>
- </div>
- <Progress
- value={percentage}
- className="h-1.5"
- />
- </div>
- )
- })}
- </div>
- </CardContent>
- </Card>
- )}
-
- {/* Sources avec thumbnails */}
- {item.sources && item.sources.length > 0 && (
- <div className="w-full max-w-full min-w-0 overflow-x-hidden">
- <div className="mb-3 flex items-center gap-2">
- <Link2 className="h-4 w-4 shrink-0 text-purple-600" />
- <p className="text-sm font-semibold text-muted-foreground">
- Sources citées ({item.sources.length}):
- </p>
- </div>
- <div className="grid w-full max-w-full min-w-0 gap-3 sm:grid-cols-2">
- {item.sources.slice(0, 6).map((source, idx) => (
- <div
- key={idx}
- className="group w-full min-w-0 rounded-lg border bg-card p-3 transition-all hover:border-purple-300 hover:shadow-sm"
- >
- <div className="flex w-full min-w-0 gap-3 overflow-x-hidden">
- {source.thumbnail && (
- <div className="shrink-0">
- <img
- src={source.thumbnail}
- alt={source.title || 'Source'}
- className="h-16 w-16 rounded object-cover"
- onError={(e) => {
- e.currentTarget.style.display =
- 'none'
- }}
- />
- </div>
- )}
- <div className="min-w-0 flex-1 overflow-x-hidden">
- {source.title && (
- <p className="line-clamp-2 text-sm font-medium break-words">
- {source.title}
- </p>
- )}
- {source.domain && (
- <p className="mt-1 text-xs break-all text-muted-foreground">
- {source.domain}
- </p>
- )}
- {source.snippet && (
- <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">
- {source.snippet}
- </p>
- )}
- {source.url && (
- <a
- href={source.url}
- target="_blank"
- rel="noopener noreferrer"
- className="mt-2 inline-flex items-center gap-1 text-xs break-all text-blue-600 hover:text-blue-800 hover:underline dark:text-blue-400"
- >
- <ExternalLink className="h-3 w-3 shrink-0" />
- <span className="truncate">
- {source.url.length > 50
- ? `${source.url.substring(0, 50)}...`
- : source.url}
- </span>
- </a>
- )}
- {source.publication_date && (
- <p className="mt-1 text-xs text-muted-foreground">
- {new Date(
- source.publication_date,
- ).toLocaleDateString('fr-FR')}
- </p>
- )}
- </div>
- </div>
- </div>
- ))}
- </div>
- {item.sources.length > 6 && (
- <p className="mt-3 text-center text-xs text-muted-foreground">
- +{item.sources.length - 6} autre(s) source(s)
- </p>
- )}
- </div>
- )}
-
- {/* Search Results */}
- {item.search_results &&
- item.search_results.length > 0 && (
- <div className="w-full max-w-full min-w-0 overflow-x-hidden">
- <div className="mb-3 flex items-center gap-2">
- <Search className="h-4 w-4 shrink-0 text-blue-600" />
- <p className="text-sm font-semibold text-muted-foreground">
- Résultats de recherche utilisés (
- {item.search_results.length}):
- </p>
- </div>
- <div className="max-h-60 w-full max-w-full min-w-0 space-y-2 overflow-x-hidden overflow-y-auto">
- {item.search_results
- .slice(0, 10)
- .map((result, idx) => (
- <div
- key={idx}
- className="w-full min-w-0 overflow-x-hidden rounded-md border bg-muted/30 p-2 text-xs"
- >
- {result.title && (
- <p className="font-medium break-words">
- {result.title}
- </p>
- )}
- {result.domain && (
- <p className="break-all text-muted-foreground">
- {result.domain}
- </p>
- )}
- {result.description && (
- <p className="mt-1 line-clamp-2 break-words text-muted-foreground">
- {result.description}
- </p>
- )}
- {result.url && (
- <a
- href={result.url}
- target="_blank"
- rel="noopener noreferrer"
- className="mt-1 inline-flex items-center gap-1 break-all text-blue-600 hover:underline"
- >
- <ExternalLink className="h-3 w-3 shrink-0" />
- <span className="truncate">
- {result.url.length > 60
- ? `${result.url.substring(0, 60)}...`
- : result.url}
- </span>
- </a>
- )}
- </div>
- ))}
- {item.search_results.length > 10 && (
- <p className="text-center text-xs text-muted-foreground">
- +{item.search_results.length - 10}{' '}
- autre(s) résultat(s)
- </p>
- )}
- </div>
- </div>
- )}
-
- {/* Fan-out queries */}
- {item.fan_out_queries &&
- item.fan_out_queries.length > 0 && (
- <div className="w-full max-w-full min-w-0 overflow-x-hidden">
- <div className="mb-3 flex items-center gap-2">
- <Sparkles className="h-4 w-4 shrink-0 text-purple-600" />
- <p className="text-sm font-semibold text-muted-foreground">
- Requêtes liées (
- {item.fan_out_queries.length}
- ):
- </p>
- </div>
- <div className="flex w-full max-w-full min-w-0 flex-wrap gap-2">
- {item.fan_out_queries.map((query, idx) => (
- <Badge
- key={idx}
- color="purple"
- className="max-w-full text-xs break-words"
- >
- <span className="truncate">{query}</span>
- </Badge>
- ))}
- </div>
- </div>
- )}
-
- {/* Entités de marque */}
- {item.brand_entities &&
- item.brand_entities.length > 0 && (
- <div className="w-full max-w-full min-w-0 overflow-x-hidden">
- <div className="mb-3 flex items-center gap-2">
- <Zap className="h-4 w-4 shrink-0 text-amber-600" />
- <p className="text-sm font-semibold text-muted-foreground">
- Entités de marque mentionnées:
- </p>
- </div>
- <div className="flex w-full max-w-full min-w-0 flex-wrap gap-2">
- {item.brand_entities.map((entity, idx) => (
- <Badge
- key={idx}
- color="amber"
- className="max-w-full break-words"
- >
- <span className="truncate">
- {entity.title}
- {entity.category && (
- <span className="ml-1 text-xs opacity-75">
- ({entity.category})
- </span>
- )}
- </span>
- </Badge>
- ))}
- </div>
- </div>
- )}
- </CardContent>
- </Card>
- ))}
-
- {mentionsState.result.items_count === 0 && (
- <Card className="border-2">
- <CardContent className="pt-6">
- <p className="text-center text-muted-foreground">
- Aucune mention trouvée pour cette cible.
- </p>
- </CardContent>
- </Card>
- )}
- </div>
- )}
- </CardContent>
- </Card>
- </TabsContent>
- </Tabs>
-
- <Divider className="my-8 lg:my-12" />
-
- {/* Section informative sur les APIs */}
- <section className="space-y-8 pb-12 lg:space-y-10">
- <div className="text-center">
- <h2 className="mb-3 text-2xl font-bold lg:text-3xl">
- Comprendre la visibilité IA
- </h2>
- <p className="mx-auto max-w-3xl text-muted-foreground lg:text-lg">
- Découvrez comment optimiser votre présence dans les outils
- d&apos;intelligence artificielle
- </p>
- </div>
-
- <div className="grid gap-6 lg:grid-cols-2 lg:gap-8">
- <Card className="border-2 transition-all hover:shadow-lg">
- <CardHeader className="lg:px-8 lg:py-7">
- <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-purple-500/10">
- <BarChart3 className="h-7 w-7 text-purple-600" />
- </div>
- <CardTitle className="text-xl lg:text-2xl">
- AI Keyword Data
- </CardTitle>
- </CardHeader>
- <CardContent className="lg:px-8">
- <p className="mb-4 text-sm leading-relaxed text-muted-foreground lg:text-base">
- Cette API analyse comment les mots clés sont utilisés dans les
- outils d&apos;IA comme ChatGPT, Claude et autres LLM. Elle
- fournit :
- </p>
- <ul className="space-y-2 text-sm lg:text-base">
- <li className="flex items-start gap-2">
- <div className="mt-1 h-1.5 w-1.5 rounded-full bg-purple-600" />
- <span>Volume de recherche estimé dans les IA</span>
- </li>
- <li className="flex items-start gap-2">
- <div className="mt-1 h-1.5 w-1.5 rounded-full bg-purple-600" />
- <span>Historique mensuel des recherches</span>
- </li>
- <li className="flex items-start gap-2">
- <div className="mt-1 h-1.5 w-1.5 rounded-full bg-purple-600" />
- <span>Tendances et évolution</span>
- </li>
- <li className="flex items-start gap-2">
- <div className="mt-1 h-1.5 w-1.5 rounded-full bg-purple-600" />
- <span>Recommandations d&apos;optimisation</span>
- </li>
- </ul>
- </CardContent>
- </Card>
-
- <Card className="border-2 transition-all hover:shadow-lg">
- <CardHeader className="lg:px-8 lg:py-7">
- <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-pink-500/10">
- <MessageSquare className="h-7 w-7 text-pink-600" />
- </div>
- <CardTitle className="text-xl lg:text-2xl">
- LLM Mentions
- </CardTitle>
- </CardHeader>
- <CardContent className="lg:px-8">
- <p className="mb-4 text-sm leading-relaxed text-muted-foreground lg:text-base">
- Cette API suit les mentions de votre marque, site web ou mots
- clés dans les grands modèles de langage. Elle offre :
- </p>
- <ul className="space-y-2 text-sm lg:text-base">
- <li className="flex items-start gap-2">
- <div className="mt-1 h-1.5 w-1.5 rounded-full bg-pink-600" />
- <span>Nombre total de mentions dans les LLM</span>
- </li>
- <li className="flex items-start gap-2">
- <div className="mt-1 h-1.5 w-1.5 rounded-full bg-pink-600" />
- <span>Volume d&apos;impressions générées</span>
- </li>
- <li className="flex items-start gap-2">
- <div className="mt-1 h-1.5 w-1.5 rounded-full bg-pink-600" />
- <span>Identification des sources principales</span>
- </li>
- <li className="flex items-start gap-2">
- <div className="mt-1 h-1.5 w-1.5 rounded-full bg-pink-600" />
- <span>Analyse de la croissance et tendances</span>
- </li>
- </ul>
- </CardContent>
- </Card>
- </div>
- </section>
- </main>
- )
+        {/* Warning box - Design amélioré */}
+        <Card className="relative overflow-hidden border-l-4 border-amber-500 bg-gradient-to-r from-amber-50 via-amber-50/90 to-orange-50/50 shadow-lg dark:border-amber-600 dark:from-amber-950/40 dark:via-amber-950/30 dark:to-orange-950/30">
+          <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(245,158,11,0.1),transparent)]" />
+          <CardContent className="relative p-6 lg:p-8">
+            <div className="flex items-start gap-4">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 shadow-md">
+                <Zap className="h-6 w-6 text-white" />
+              </div>
+              <div className="flex-1 space-y-2">
+                <strong className="block text-base font-bold text-amber-900 dark:text-amber-100">
+                  Point de bascule imminent :
+                </strong>
+                <p className="text-sm leading-relaxed text-amber-800 dark:text-amber-200">
+                  Nous sommes à un point de bascule historique. Les premiers sites qui maîtriseront l&apos;AIO
+                  domineront leur niche dans l&apos;ère post-Google. Ne ratez pas cette transition comme certains ont
+                  raté celle du mobile en 2010 ou du SEO en 2005. Les outils ci-dessous vous permettent d&apos;analyser
+                  votre visibilité IA et celle de vos concurrents{' '}
+                  <strong className="font-semibold">dès maintenant</strong>.
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  )
 }

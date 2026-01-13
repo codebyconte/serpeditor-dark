@@ -1,436 +1,494 @@
 'use client'
 
 import { ClientPageHeader } from '@/components/dashboard/client-page-header'
-import { AlertCircle, Calendar, Globe, Loader2, Search } from 'lucide-react'
+import { Button } from '@/components/elements/button'
+import { Card, CardContent } from '@/components/ui/card'
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { AlertCircle, Globe, Hourglass, Link, Loader2, Search, TimerOff, WholeWord } from 'lucide-react'
 import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
 import { getDomainWhoisOverview, type DomainWhoisResponse } from './action'
 import DomainWhoisAnalyzer from './DomainWhoisAnalyzer'
 
+// Schéma de validation avec validation conditionnelle
+const domainSearchSchema = z
+  .object({
+    searchType: z.enum(['expiring', 'expired', 'keywords', 'backlinks']),
+    daysUntilExpiration: z.number().min(1).max(365).optional(),
+    minKeywords: z.number().min(1).optional(),
+    minBacklinks: z.number().min(1).optional(),
+    tldFilter: z.string().optional(),
+    limit: z.number().min(1).max(1000).optional(),
+  })
+  .refine(
+    (data) => {
+      if (data.searchType === 'expiring') {
+        return data.daysUntilExpiration !== undefined
+      }
+      return true
+    },
+    {
+      message: 'Veuillez sélectionner un nombre de jours',
+      path: ['daysUntilExpiration'],
+    },
+  )
+  .refine(
+    (data) => {
+      if (data.searchType === 'keywords') {
+        return data.minKeywords !== undefined && data.minKeywords > 0
+      }
+      return true
+    },
+    {
+      message: 'Veuillez entrer un minimum de keywords',
+      path: ['minKeywords'],
+    },
+  )
+  .refine(
+    (data) => {
+      if (data.searchType === 'backlinks') {
+        return data.minBacklinks !== undefined && data.minBacklinks > 0
+      }
+      return true
+    },
+    {
+      message: 'Veuillez entrer un minimum de backlinks',
+      path: ['minBacklinks'],
+    },
+  )
+
+type DomainSearchFormValues = z.infer<typeof domainSearchSchema>
+
 export default function DomainWhoisAnalyzerPage() {
- const [searchType, setSearchType] = useState<
- 'expiring' | 'expired' | 'keywords' | 'backlinks'
- >('expiring')
- const [daysUntilExpiration, setDaysUntilExpiration] = useState(30)
- const [minKeywords, setMinKeywords] = useState(100)
- const [minBacklinks, setMinBacklinks] = useState(1000)
- const [tldFilter, setTldFilter] = useState('')
- const [limit, setLimit] = useState(100)
- const [loading, setLoading] = useState(false)
- const [error, setError] = useState<string | null>(null)
- const [domainsData, setDomainsData] = useState<DomainWhoisResponse | null>(
- null,
- )
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [domainsData, setDomainsData] = useState<DomainWhoisResponse | null>(null)
 
- const handleSearch = async (e: React.FormEvent) => {
- e.preventDefault()
+  const form = useForm<DomainSearchFormValues>({
+    resolver: zodResolver(domainSearchSchema),
+    defaultValues: {
+      searchType: 'expiring',
+      daysUntilExpiration: 30,
+      minKeywords: 100,
+      minBacklinks: 1000,
+      tldFilter: '',
+      limit: 100,
+    },
+  })
 
- setLoading(true)
- setError(null)
- setDomainsData(null)
+  const searchType = form.watch('searchType')
 
- try {
- let filters: Array<unknown> = []
- let orderBy: string[] = []
+  const onSubmit = async (values: DomainSearchFormValues) => {
+    setLoading(true)
+    setError(null)
+    setDomainsData(null)
 
- // Construire les filtres selon le type de recherche
- if (searchType === 'expiring') {
- // Domaines qui expirent bientôt (actifs avec expiration proche)
- const futureDate = new Date()
- futureDate.setDate(futureDate.getDate() + daysUntilExpiration)
+    try {
+      let filters: Array<unknown> = []
+      let orderBy: string[] = []
+      const limit = values.limit || 100
 
- filters = [
- ['registered', '=', true],
- 'and',
- ['expiration_datetime', '<', futureDate.toISOString()],
- 'and',
- ['expiration_datetime', '>', new Date().toISOString()],
- ]
- orderBy = ['expiration_datetime,asc']
- } else if (searchType === 'expired') {
- // Domaines expirés
- filters = [['registered', '=', false]]
- orderBy = ['metrics.organic.count,desc']
- } else if (searchType === 'keywords') {
- // Domaines avec beaucoup de keywords
- filters = [['metrics.organic.count', '>=', minKeywords]]
- orderBy = ['metrics.organic.count,desc']
- } else if (searchType === 'backlinks') {
- // Domaines avec beaucoup de backlinks
- filters = [['backlinks_info.backlinks', '>=', minBacklinks]]
- orderBy = ['backlinks_info.backlinks,desc']
- }
+      // Fonction helper pour formater les dates au format DataForSEO
+      // Format attendu: "YYYY-MM-DD HH:mm:ss +00:00"
+      const formatDateForAPI = (date: Date): string => {
+        const year = date.getUTCFullYear()
+        const month = String(date.getUTCMonth() + 1).padStart(2, '0')
+        const day = String(date.getUTCDate()).padStart(2, '0')
+        const hours = String(date.getUTCHours()).padStart(2, '0')
+        const minutes = String(date.getUTCMinutes()).padStart(2, '0')
+        const seconds = String(date.getUTCSeconds()).padStart(2, '0')
+        return `${year}-${month}-${day} ${hours}:${minutes}:${seconds} +00:00`
+      }
 
- // Ajouter le filtre TLD si spécifié
- if (tldFilter) {
- filters = [filters, 'and', ['tld', '=', tldFilter.replace('.', '')]]
- }
+      // Construire les filtres selon le type de recherche
+      if (values.searchType === 'expiring') {
+        // ⏰ Domaines qui expirent bientôt (actifs avec expiration proche)
+        // Filtre: domaines enregistrés (registered = true) qui expirent entre maintenant et X jours
+        const now = new Date()
+        const futureDate = new Date()
+        futureDate.setDate(futureDate.getDate() + (values.daysUntilExpiration || 30))
 
- const result = await getDomainWhoisOverview({
- filters,
- orderBy,
- limit,
- })
+        filters = [
+          ['registered', '=', true],
+          'and',
+          ['expiration_datetime', '<', formatDateForAPI(futureDate)],
+          'and',
+          ['expiration_datetime', '>', formatDateForAPI(now)],
+        ]
+        orderBy = ['expiration_datetime,asc']
+      } else if (values.searchType === 'expired') {
+        // 💀 Domaines déjà expirés (disponibles à racheter)
+        // Filtre: domaines non enregistrés (registered = false)
+        filters = [['registered', '=', false]]
+        orderBy = ['metrics.organic.count,desc']
+      } else if (values.searchType === 'keywords') {
+        // 📊 Domaines avec beaucoup de keywords
+        // Filtre: domaines avec un nombre minimum de keywords organiques
+        filters = [['metrics.organic.count', '>=', values.minKeywords || 100]]
+        orderBy = ['metrics.organic.count,desc']
+      } else if (values.searchType === 'backlinks') {
+        // 🔗 Domaines avec beaucoup de backlinks
+        // Filtre: domaines avec un nombre minimum de backlinks
+        filters = [['backlinks_info.backlinks', '>=', values.minBacklinks || 1000]]
+        orderBy = ['backlinks_info.backlinks,desc']
+      }
 
- if (result.success && result.data) {
- if (result.data.items.length === 0) {
- setError('Aucun domaine trouvé avec ces critères')
- } else {
- setDomainsData(result.data)
- }
- } else {
- setError(result.error || 'Erreur lors de la récupération des domaines')
- }
- } catch (err) {
- setError('Une erreur est survenue')
- console.error(err)
- } finally {
- setLoading(false)
- }
- }
+      // Ajouter le filtre TLD si spécifié
+      // Le TLD dans l'API est sans le point (ex: "com", "fr", "net")
+      if (values.tldFilter && values.tldFilter.trim()) {
+        const tldValue = values.tldFilter.trim().replace(/^\./, '').toLowerCase()
+        if (tldValue) {
+          filters = [filters, 'and', ['tld', '=', tldValue]]
+        }
+      }
 
- return (
- <div className="min-h-screen p-6">
- <div className="mx-auto max-w-7xl">
- <ClientPageHeader
- title="Analyseur de Domaines WHOIS"
- description="Trouvez des domaines expirés ou qui expirent bientôt avec leur historique SEO"
- icon={Globe}
- iconClassName="border-teal-500/20 bg-gradient-to-br from-teal-500/10 to-cyan-500/10 text-teal-500"
- />
+      const result = await getDomainWhoisOverview({
+        filters,
+        orderBy,
+        limit,
+      })
 
- {/* Formulaire */}
- <div className="mb-8 rounded-2xl border bg-card p-8 shadow-lg">
- <form onSubmit={handleSearch} className="space-y-6">
- {/* Type de recherche */}
- <div>
- <label className="mb-2 block text-sm font-semibold text-foreground">
- Type de recherche
- </label>
- <div className="grid grid-cols-1 gap-3 md:grid-cols-4">
- <button
- type="button"
- onClick={() => setSearchType('expiring')}
- disabled={loading}
- className={`rounded-xl border-2 p-4 text-left transition-all ${
- searchType === 'expiring'
- ? 'border-orange-500 bg-orange-50'
- : 'border bg-card hover:bg-card'
- }`}
- >
- <div className="mb-2 text-2xl">⏰</div>
- <div className="font-semibold text-foreground">
- Expirent bientôt
- </div>
- <div className="text-xs text-muted-foreground">
- Domaines actifs proches de l&apos;expiration
- </div>
- </button>
+      if (result.success && result.data) {
+        if (result.data.items.length === 0) {
+          setError('Aucun domaine trouvé avec ces critères')
+        } else {
+          setDomainsData(result.data)
+        }
+      } else {
+        setError(result.error || 'Erreur lors de la récupération des domaines')
+      }
+    } catch (err) {
+      setError('Une erreur est survenue')
+      console.error(err)
+    } finally {
+      setLoading(false)
+    }
+  }
 
- <button
- type="button"
- onClick={() => setSearchType('expired')}
- disabled={loading}
- className={`rounded-xl border-2 p-4 text-left transition-all ${
- searchType === 'expired'
- ? 'border-red-500 bg-red-50'
- : 'border bg-card hover:bg-card'
- }`}
- >
- <div className="mb-2 text-2xl">💀</div>
- <div className="font-semibold text-foreground">
- Déjà expirés
- </div>
- <div className="text-xs text-muted-foreground">
- Domaines disponibles à racheter
- </div>
- </button>
+  return (
+    <div className="mx-auto max-w-7xl space-y-8 py-8 pb-12">
+      <ClientPageHeader
+        title="Analyseur de Domaines WHOIS"
+        description="Trouvez des domaines expirés ou qui expirent bientôt avec leur historique SEO"
+        icon={Globe}
+        iconClassName="border-teal-500/20 bg-gradient-to-br from-teal-500/10 to-cyan-500/10 text-teal-500"
+      />
 
- <button
- type="button"
- onClick={() => setSearchType('keywords')}
- disabled={loading}
- className={`rounded-xl border-2 p-4 text-left transition-all ${
- searchType === 'keywords'
- ? 'border-purple-500 bg-purple-50'
- : 'border bg-card hover:bg-card'
- }`}
- >
- <div className="mb-2 text-2xl">📊</div>
- <div className="font-semibold text-foreground">
- Par Keywords
- </div>
- <div className="text-xs text-muted-foreground">
- Domaines avec beaucoup de mots-clés
- </div>
- </button>
+      {/* Formulaire */}
+      <Card className="overflow-hidden border-2 border-gray-200/80 bg-white shadow-lg dark:border-gray-800/50 dark:bg-gray-900/50">
+        <CardContent className="p-6 lg:p-8">
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              {/* Type de recherche */}
+              <FormField
+                control={form.control}
+                name="searchType"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="dashboard-heading-4 mb-4 block">Type de recherche</FormLabel>
+                    <FormControl>
+                      <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
+                        <button
+                          type="button"
+                          onClick={() => field.onChange('expiring')}
+                          disabled={loading}
+                          className={`rounded-xl border-2 p-4 text-left transition-all ${
+                            field.value === 'expiring'
+                              ? 'border-orange-500 bg-gradient-to-br from-orange-50/80 to-orange-100/50 dark:from-orange-950/30 dark:to-orange-900/20'
+                              : 'border border-gray-200 bg-white/80 dark:border-gray-800 dark:bg-gray-900/50'
+                          }`}
+                        >
+                          <div className="mb-2 text-2xl">
+                            <Hourglass />
+                          </div>
+                          <div className="dashboard-heading-4">Expirent bientôt</div>
+                          <div className="dashboard-body-sm mt-1">Domaines actifs proches de l&apos;expiration</div>
+                        </button>
 
- <button
- type="button"
- onClick={() => setSearchType('backlinks')}
- disabled={loading}
- className={`rounded-xl border-2 p-4 text-left transition-all ${
- searchType === 'backlinks'
- ? 'border-green-500 bg-green-50'
- : 'border bg-card hover:bg-card'
- }`}
- >
- <div className="mb-2 text-2xl">🔗</div>
- <div className="font-semibold text-foreground">
- Par Backlinks
- </div>
- <div className="text-xs text-muted-foreground">
- Domaines avec beaucoup de liens
- </div>
- </button>
- </div>
- </div>
+                        <button
+                          type="button"
+                          onClick={() => field.onChange('expired')}
+                          disabled={loading}
+                          className={`rounded-xl border-2 p-4 text-left transition-all ${
+                            field.value === 'expired'
+                              ? 'border-red-500 bg-gradient-to-br from-red-50/80 to-red-100/50 dark:from-red-950/30 dark:to-red-900/20'
+                              : 'border border-gray-200 bg-white/80 dark:border-gray-800 dark:bg-gray-900/50'
+                          }`}
+                        >
+                          <div className="mb-2 text-2xl">
+                            <TimerOff />
+                          </div>
+                          <div className="dashboard-heading-4">Déjà expirés</div>
+                          <div className="dashboard-body-sm mt-1">Domaines disponibles à racheter</div>
+                        </button>
 
- {/* Critères spécifiques */}
- <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
- {/* Jours jusqu'à expiration (si expiring) */}
- {searchType === 'expiring' && (
- <div>
- <label className="mb-2 block text-sm font-semibold text-foreground">
- Expire dans les prochains
- </label>
- <select
- value={daysUntilExpiration}
- onChange={(e) =>
- setDaysUntilExpiration(Number(e.target.value))
- }
- className="w-full rounded-xl border-2 px-4 py-3 focus:border-ring focus:ring-4 focus:ring-ring/20"
- disabled={loading}
- >
- <option value={7}>7 jours</option>
- <option value={15}>15 jours</option>
- <option value={30}>30 jours</option>
- <option value={60}>60 jours</option>
- <option value={90}>90 jours</option>
- </select>
- </div>
- )}
+                        <button
+                          type="button"
+                          onClick={() => field.onChange('keywords')}
+                          disabled={loading}
+                          className={`rounded-xl border-2 p-4 text-left transition-all ${
+                            field.value === 'keywords'
+                              ? 'border-purple-500 bg-gradient-to-br from-purple-50/80 to-purple-100/50 dark:from-purple-950/30 dark:to-purple-900/20'
+                              : 'border border-gray-200 bg-white/80 dark:border-gray-800 dark:bg-gray-900/50'
+                          }`}
+                        >
+                          <div className="mb-2 text-2xl">
+                            {' '}
+                            <WholeWord />{' '}
+                          </div>
+                          <div className="dashboard-heading-4">Par Keywords</div>
+                          <div className="dashboard-body-sm mt-1">Domaines avec beaucoup de mots-clés</div>
+                        </button>
 
- {/* Min Keywords (si keywords) */}
- {searchType === 'keywords' && (
- <div>
- <label className="mb-2 block text-sm font-semibold text-foreground">
- Minimum de keywords
- </label>
- <input
- type="number"
- value={minKeywords}
- onChange={(e) => setMinKeywords(Number(e.target.value))}
- min="1"
- className="w-full rounded-xl border-2 px-4 py-3 focus:border-ring focus:ring-4 focus:ring-ring/20"
- disabled={loading}
- />
- </div>
- )}
+                        <button
+                          type="button"
+                          onClick={() => field.onChange('backlinks')}
+                          disabled={loading}
+                          className={`rounded-xl border-2 p-4 text-left transition-all ${
+                            field.value === 'backlinks'
+                              ? 'border-green-500 bg-gradient-to-br from-green-50/80 to-green-100/50 dark:from-green-950/30 dark:to-green-900/20'
+                              : 'border border-gray-200 bg-white/80 dark:border-gray-800 dark:bg-gray-900/50'
+                          }`}
+                        >
+                          <div className="mb-2 text-2xl">
+                            <Link />
+                          </div>
+                          <div className="dashboard-heading-4">Par Backlinks</div>
+                          <div className="dashboard-body-sm mt-1">Domaines avec beaucoup de liens</div>
+                        </button>
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
- {/* Min Backlinks (si backlinks) */}
- {searchType === 'backlinks' && (
- <div>
- <label className="mb-2 block text-sm font-semibold text-foreground">
- Minimum de backlinks
- </label>
- <input
- type="number"
- value={minBacklinks}
- onChange={(e) => setMinBacklinks(Number(e.target.value))}
- min="1"
- className="w-full rounded-xl border-2 px-4 py-3 focus:border-ring focus:ring-4 focus:ring-ring/20"
- disabled={loading}
- />
- </div>
- )}
+              {/* Critères spécifiques */}
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+                {/* Jours jusqu'à expiration (si expiring) */}
+                {searchType === 'expiring' && (
+                  <FormField
+                    control={form.control}
+                    name="daysUntilExpiration"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="dashboard-heading-4">Expire dans les prochains</FormLabel>
+                        <Select
+                          onValueChange={(value) => field.onChange(Number(value))}
+                          value={field.value?.toString() || '30'}
+                          disabled={loading}
+                        >
+                          <FormControl>
+                            <SelectTrigger className="w-full rounded-xl border-2 border-gray-200 bg-white px-4 py-3 dark:border-gray-800 dark:bg-gray-900/50">
+                              <SelectValue placeholder="Sélectionner" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent className="bg-mist-600">
+                            <SelectItem value="7" className="hover:cursor-pointer hover:bg-mist-500">
+                              7 jours
+                            </SelectItem>
+                            <SelectItem value="15" className="hover:cursor-pointer hover:bg-mist-500">
+                              15 jours
+                            </SelectItem>
+                            <SelectItem value="30" className="hover:cursor-pointer hover:bg-mist-500">
+                              30 jours
+                            </SelectItem>
+                            <SelectItem value="60" className="hover:cursor-pointer hover:bg-mist-500">
+                              60 jours
+                            </SelectItem>
+                            <SelectItem value="90" className="hover:cursor-pointer hover:bg-mist-500">
+                              90 jours
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
 
- {/* TLD Filter */}
- <div>
- <label className="mb-2 block text-sm font-semibold text-foreground">
- Extension (TLD) - optionnel
- </label>
- <input
- type="text"
- value={tldFilter}
- onChange={(e) => setTldFilter(e.target.value)}
- placeholder="com, fr, net..."
- className="w-full rounded-xl border-2 px-4 py-3 focus:border-ring focus:ring-4 focus:ring-ring/20"
- disabled={loading}
- />
- </div>
+                {/* Min Keywords (si keywords) */}
+                {searchType === 'keywords' && (
+                  <FormField
+                    control={form.control}
+                    name="minKeywords"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="dashboard-heading-4">Minimum de keywords</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            {...field}
+                            value={field.value || ''}
+                            onChange={(e) => field.onChange(Number(e.target.value))}
+                            min="1"
+                            className="w-full rounded-xl border-2 border-gray-200 bg-white px-4 py-3 dark:border-gray-800 dark:bg-gray-900/50"
+                            disabled={loading}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
 
- {/* Limite */}
- <div>
- <label className="mb-2 block text-sm font-semibold text-foreground">
- Nombre de résultats
- </label>
- <select
- value={limit}
- onChange={(e) => setLimit(Number(e.target.value))}
- className="w-full rounded-xl border-2 px-4 py-3 focus:border-ring focus:ring-4 focus:ring-ring/20"
- disabled={loading}
- >
- <option value={50}>50</option>
- <option value={100}>100</option>
- <option value={250}>250</option>
- <option value={500}>500</option>
- <option value={1000}>1000</option>
- </select>
- </div>
- </div>
+                {/* Min Backlinks (si backlinks) */}
+                {searchType === 'backlinks' && (
+                  <FormField
+                    control={form.control}
+                    name="minBacklinks"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="dashboard-heading-4">Minimum de backlinks</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            {...field}
+                            value={field.value || ''}
+                            onChange={(e) => field.onChange(Number(e.target.value))}
+                            min="1"
+                            className="w-full rounded-xl border-2 border-gray-200 bg-white px-4 py-3 dark:border-gray-800 dark:bg-gray-900/50"
+                            disabled={loading}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
 
- {/* Info Box */}
- <div className="rounded-xl border-2-primary/30 bg-primary/5 p-4">
- <div className="flex items-start gap-3">
- <Globe className="h-5 w-5 flex-shrink-0 text-primary" />
- <div className="text-sm text-primary">
- <strong className="font-semibold">Astuce :</strong> Les
- domaines expirés avec un bon historique SEO (backlinks,
- keywords) peuvent être d&apos;excellentes opportunités pour
- créer des PBN ou lancer de nouveaux projets avec une autorité
- existante.
- </div>
- </div>
- </div>
+                {/* TLD Filter */}
+                <FormField
+                  control={form.control}
+                  name="tldFilter"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="dashboard-heading-4">Extension (TLD) - optionnel</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          placeholder="com, fr, net..."
+                          className="w-full rounded-xl border-2 border-gray-200 bg-white px-4 py-3 dark:border-gray-800 dark:bg-gray-900/50"
+                          disabled={loading}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
 
- {/* Bouton */}
- <button
- type="submit"
- disabled={loading}
- className="flex w-full items-center justify-center gap-3 rounded-xl bg-primary py-4 text-lg font-semibold text-primary-foreground shadow-lg hover:bg-primary/90 hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-50"
- >
- {loading ? (
- <>
- <Loader2 className="h-5 w-5 animate-spin" />
- Recherche en cours...
- </>
- ) : (
- <>
- <Search className="h-5 w-5" />
- Rechercher des domaines
- </>
- )}
- </button>
- </form>
+              {/* Info Box */}
+              <div className="border-primary/30 from-primary/5 via-primary/5 to-primary/10 dark:from-primary/10 dark:via-primary/10 dark:to-primary/20 rounded-xl border-2 bg-gradient-to-r p-4">
+                <div className="flex items-start gap-3">
+                  <div className="bg-primary/20 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg">
+                    <Globe className="text-primary h-5 w-5" />
+                  </div>
+                  <div className="dashboard-body-sm text-primary">
+                    <strong className="font-semibold">Astuce :</strong> Les domaines expirés avec un bon historique SEO
+                    (backlinks, keywords) peuvent être d&apos;excellentes opportunités pour créer des PBN ou lancer de
+                    nouveaux projets avec une autorité existante.
+                  </div>
+                </div>
+              </div>
 
- {error && (
- <div className="mt-6 flex items-start gap-3 rounded-xl border-2-destructive/50 bg-destructive/10 p-4">
- <AlertCircle className="h-5 w-5 flex-shrink-0 text-destructive" />
- <div>
- <p className="font-semibold text-destructive">Erreur</p>
- <p className="text-sm text-destructive/90">{error}</p>
- </div>
- </div>
- )}
- </div>
+              {/* Bouton */}
+              <Button
+                type="submit"
+                disabled={loading}
+                size="lg"
+                className="w-full gap-3 rounded-xl text-base font-semibold shadow-lg"
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                    Recherche en cours...
+                  </>
+                ) : (
+                  <>
+                    <Search className="h-5 w-5" />
+                    Rechercher des domaines
+                  </>
+                )}
+              </Button>
+            </form>
+          </Form>
 
- {/* Résultats */}
- {loading && (
- <div className="flex flex-col items-center justify-center rounded-2xl border bg-card p-16">
- <Loader2 className="h-16 w-16 animate-spin text-primary" />
- <p className="mt-4 text-lg font-medium">
- Recherche de domaines en cours...
- </p>
- <p className="mt-2 text-sm text-muted-foreground">
- Cela peut prendre quelques secondes
- </p>
- </div>
- )}
+          {error && (
+            <div className="border-destructive/50 bg-destructive/10 mt-6 flex items-start gap-3 rounded-xl border-2 p-4">
+              <AlertCircle className="text-destructive h-5 w-5 shrink-0" />
+              <div>
+                <p className="dashboard-heading-4 text-destructive">Erreur</p>
+                <p className="dashboard-body-sm text-destructive/90">{error}</p>
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
- {!loading && domainsData && (
- <div>
- <div className="mb-6 flex items-center justify-between rounded-xl border bg-card p-6 shadow-sm">
- <div className="flex items-center gap-4">
- <div className="rounded-lg bg-primary/10 p-3">
- <Globe className="h-6 w-6 text-primary" />
- </div>
- <div>
- <h2 className="text-xl font-bold text-foreground">
- {domainsData.total_count.toLocaleString()} domaines trouvés
- </h2>
- <p className="text-sm text-muted-foreground">
- {domainsData.items_count} affichés
- {searchType === 'expiring' &&
- ` • Expirent dans les ${daysUntilExpiration} jours`}
- {searchType === 'expired' &&
- ' • Domaines expirés disponibles'}
- {searchType === 'keywords' &&
- ` • Minimum ${minKeywords} keywords`}
- {searchType === 'backlinks' &&
- ` • Minimum ${minBacklinks} backlinks`}
- </p>
- </div>
- </div>
- <div className="flex items-center gap-2">
- {searchType === 'expiring' && (
- <span className="rounded-lg bg-orange-100 px-3 py-1 text-sm font-medium text-orange-700">
- ⏰ Expirent bientôt
- </span>
- )}
- {searchType === 'expired' && (
- <span className="rounded-lg bg-red-100 px-3 py-1 text-sm font-medium text-destructive/90">
- 💀 Expirés
- </span>
- )}
- {searchType === 'keywords' && (
- <span className="rounded-lg bg-purple-100 px-3 py-1 text-sm font-medium text-purple-700">
- 📊 Keywords
- </span>
- )}
- {searchType === 'backlinks' && (
- <span className="rounded-lg bg-green-100 px-3 py-1 text-sm font-medium text-green-700">
- 🔗 Backlinks
- </span>
- )}
- </div>
- </div>
+      {/* Résultats */}
+      {loading && (
+        <Card className="flex flex-col items-center justify-center border-2 p-16">
+          <Loader2 className="text-primary h-16 w-16 animate-spin" />
+          <p className="dashboard-body-lg mt-4">Recherche de domaines en cours...</p>
+          <p className="dashboard-body-sm mt-2">Cela peut prendre quelques secondes</p>
+        </Card>
+      )}
 
- <DomainWhoisAnalyzer data={domainsData} />
- </div>
- )}
+      {!loading && domainsData && (
+        <div className="space-y-6">
+          <Card className="overflow-hidden border-2 border-gray-200/80 bg-white shadow-lg dark:border-gray-800/50 dark:bg-gray-900/50">
+            <CardContent className="p-6">
+              <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
+                <div className="flex items-center gap-4">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-teal-500/10 to-cyan-500/10">
+                    <Globe className="h-6 w-6 text-teal-500" />
+                  </div>
+                  <div>
+                    <h2 className="dashboard-heading-2">{domainsData.total_count.toLocaleString()} domaines trouvés</h2>
+                    <p className="dashboard-body-sm mt-1">
+                      {domainsData.items_count} affichés
+                      {searchType === 'expiring' &&
+                        ` • Expirent dans les ${form.getValues('daysUntilExpiration')} jours`}
+                      {searchType === 'expired' && ' • Domaines expirés disponibles'}
+                      {searchType === 'keywords' && ` • Minimum ${form.getValues('minKeywords')} keywords`}
+                      {searchType === 'backlinks' && ` • Minimum ${form.getValues('minBacklinks')} backlinks`}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  {searchType === 'expiring' && (
+                    <span className="rounded-lg bg-orange-100 px-3 py-1 text-sm font-medium text-orange-700 dark:bg-orange-950/30 dark:text-orange-400">
+                      Expirent bientôt
+                    </span>
+                  )}
+                  {searchType === 'expired' && (
+                    <span className="text-destructive/90 rounded-lg bg-red-100 px-3 py-1 text-sm font-medium dark:bg-red-950/30 dark:text-red-400">
+                      Expirés
+                    </span>
+                  )}
+                  {searchType === 'keywords' && (
+                    <span className="rounded-lg bg-purple-100 px-3 py-1 text-sm font-medium text-purple-700 dark:bg-purple-950/30 dark:text-purple-400">
+                      Keywords
+                    </span>
+                  )}
+                  {searchType === 'backlinks' && (
+                    <span className="rounded-lg bg-green-100 px-3 py-1 text-sm font-medium text-green-700 dark:bg-green-950/30 dark:text-green-400">
+                      🔗 Backlinks
+                    </span>
+                  )}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
- {!loading && !domainsData && !error && (
- <div className="flex flex-col items-center justify-center rounded-2xl border-2-dashed border bg-card p-16 text-center">
- <div className="rounded-full bg-primary/10 p-6">
- <Calendar className="h-12 w-12 text-primary" />
- </div>
- <h3 className="mt-6 text-xl font-semibold text-foreground">
- Trouvez des opportunités de domaines
- </h3>
- <p className="mt-2 max-w-md text-muted-foreground">
- Recherchez des domaines expirés ou qui expirent bientôt avec leur
- historique SEO complet
- </p>
- <div className="mt-8 grid grid-cols-3 gap-6 text-left">
- <div className="rounded-xl border bg-card p-4">
- <div className="mb-2 text-2xl">💎</div>
- <h4 className="font-semibold text-foreground">
- Domaines à forte valeur
- </h4>
- <p className="mt-1 text-sm text-muted-foreground">
- Avec backlinks et keywords existants
- </p>
- </div>
- <div className="rounded-xl border bg-card p-4">
- <div className="mb-2 text-2xl">🎯</div>
- <h4 className="font-semibold text-foreground">Filtres avancés</h4>
- <p className="mt-1 text-sm text-muted-foreground">
- Par TLD, keywords, backlinks
- </p>
- </div>
- <div className="rounded-xl border bg-card p-4">
- <div className="mb-2 text-2xl">⚡</div>
- <h4 className="font-semibold text-foreground">
- Données en temps réel
- </h4>
- <p className="mt-1 text-sm text-muted-foreground">
- Informations WHOIS à jour
- </p>
- </div>
- </div>
- </div>
- )}
- </div>
- </div>
- )
+          <DomainWhoisAnalyzer data={domainsData} />
+        </div>
+      )}
+    </div>
+  )
 }
