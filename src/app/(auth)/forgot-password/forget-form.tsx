@@ -34,24 +34,27 @@ export function ForgotForm() {
 
   async function onSubmit(values: z.infer<typeof forgotPasswordSchema>) {
     startTransition(async () => {
-      await authClient.forgetPassword(
-        {
-          email: values.email,
-          redirectTo: '/reset-password',
-        },
-        {
-          onRequest: () => {},
-          onSuccess: () => {
-            toast.success('Lien envoyé avec succès', {
-              description:
-                'Si un compte est associé à cette adresse, vous recevrez un e-mail de réinitialisation dans quelques instants. Pensez à vérifier votre dossier de courrier indésirable',
-            })
-          },
-          onError: () => {
-            toast.error('Une erreur est survenue. Veuillez réessayer .')
-          },
-        },
-      )
+      try {
+        const response = await fetch('/api/auth/forget-password', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: values.email,
+            redirectTo: '/reset-password',
+          }),
+        })
+
+        if (response.ok) {
+          toast.success('Lien envoyé avec succès', {
+            description:
+              'Si un compte est associé à cette adresse, vous recevrez un e-mail de réinitialisation dans quelques instants. Pensez à vérifier votre dossier de courrier indésirable',
+          })
+        } else {
+          toast.error('Une erreur est survenue. Veuillez réessayer.')
+        }
+      } catch {
+        toast.error('Une erreur est survenue. Veuillez réessayer.')
+      }
     })
   }
 

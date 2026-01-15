@@ -2,6 +2,7 @@ import { GradientBackground } from '@/components/gradient'
 import { Button } from '@/components/ui/button'
 import { Check } from 'lucide-react'
 import type { Metadata } from 'next'
+import Link from 'next/link'
 
 export const metadata: Metadata = {
   title: 'Adresse e-mail vérifiée | Compte activé avec succès',
@@ -25,8 +26,8 @@ export default async function EmailVerifiedPage() {
             Votre compte est maintenant activé. Vous pouvez dès à présent vous
             connecter et commencer à utiliser nos services.
           </p>
-          <Button href="/dashboard" className="">
-            Accéder à votre espace
+          <Button asChild>
+            <Link href="/dashboard">Accéder à votre espace</Link>
           </Button>
         </div>
       </div>

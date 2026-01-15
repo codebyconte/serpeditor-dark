@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/form'
 import { Link } from '@/components/ui/link'
 import { authClient } from '@/lib/auth-client'
+import NextLink from 'next/link'
 import { resetPasswordSchema } from '@/lib/schema'
 import { Input } from '@headlessui/react'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -76,8 +77,8 @@ export function ResetPasswordForm() {
               demander un nouveau lien afin de réinitialiser votre mot de passe
               et accéder à votre compte.
             </p>
-            <Button href="/login" className="mx-auto mt-2 w-full">
-              Retour à la page de connexion
+            <Button asChild className="mx-auto mt-2 w-full">
+              <NextLink href="/login">Retour à la page de connexion</NextLink>
             </Button>
           </div>
         </div>

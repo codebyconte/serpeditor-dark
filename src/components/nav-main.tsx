@@ -1,11 +1,7 @@
 // 📁 components/nav-main.tsx
 'use client'
 
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from '@/components/ui/collapsible'
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import {
   SidebarGroup,
   SidebarGroupLabel,
@@ -34,13 +30,7 @@ interface NavItem {
   items?: NavSubItem[]
 }
 
-export function NavMain({
-  items,
-  label = 'Platform',
-}: {
-  items: NavItem[]
-  label?: string
-}) {
+export function NavMain({ items, label = 'Platform' }: { items: NavItem[]; label?: string }) {
   const pathname = usePathname()
 
   return (
@@ -49,20 +39,14 @@ export function NavMain({
       <SidebarMenu>
         {items.map((item) => {
           const hasSubItems = item.items && item.items.length > 0
-          const isSubItemActive = hasSubItems
-            ? item.items?.some((subItem) => pathname === subItem.url)
-            : false
+          const isSubItemActive = hasSubItems ? item.items?.some((subItem) => pathname === subItem.url) : false
           const isActive = pathname === item.url || isSubItemActive
 
           // Item simple sans sous-menu
           if (!hasSubItems) {
             return (
               <SidebarMenuItem key={item.title}>
-                <SidebarMenuButton
-                  asChild
-                  tooltip={item.title}
-                  isActive={isActive}
-                >
+                <SidebarMenuButton asChild tooltip={item.title} isActive={isActive}>
                   <Link href={item.url || '#'}>
                     {item.icon && <item.icon />}
                     <span>{item.title}</span>
@@ -82,7 +66,7 @@ export function NavMain({
             >
               <SidebarMenuItem>
                 <CollapsibleTrigger asChild>
-                  <SidebarMenuButton tooltip={item.title} isActive={isActive}>
+                  <SidebarMenuButton tooltip={item.title} isActive={isActive} className="hover:cursor-pointer">
                     {item.icon && <item.icon />}
                     <span>{item.title}</span>
                     <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
@@ -92,14 +76,9 @@ export function NavMain({
                   <SidebarMenuSub>
                     {item.items?.map((subItem) => (
                       <SidebarMenuSubItem key={subItem.title}>
-                        <SidebarMenuSubButton
-                          asChild
-                          isActive={pathname === subItem.url}
-                        >
+                        <SidebarMenuSubButton asChild isActive={pathname === subItem.url}>
                           <Link href={subItem.url}>
-                            {subItem.icon && (
-                              <subItem.icon className="h-4 w-4" />
-                            )}
+                            {subItem.icon && <subItem.icon className="h-4 w-4" />}
                             <span>{subItem.title}</span>
                           </Link>
                         </SidebarMenuSubButton>

@@ -1,5 +1,6 @@
 import { Main } from '@/components/elements/main'
 import { Toaster } from '@/components/ui/sonner'
+import 'easymde/dist/easymde.min.css'
 import type { Metadata } from 'next'
 import './globals.css'
 
