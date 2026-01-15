@@ -1,4 +1,5 @@
 import { clsx } from 'clsx/lite'
+import Link from 'next/link'
 import type { ComponentProps, ReactNode } from 'react'
 import { Section } from '../elements/section'
 
@@ -7,11 +8,15 @@ export function FeatureThreeColumnWithDemos({
   headline,
   subheadline,
   className,
+  cta,
+  ctaLink,
   ...props
 }: {
   demo: ReactNode
   headline: ReactNode
   subheadline: ReactNode
+  cta?: ReactNode
+  ctaLink?: string
 } & ComponentProps<'div'>) {
   return (
     <div className={clsx('rounded-lg bg-mist-950/2.5 p-2 dark:bg-white/5', className)} {...props}>
@@ -20,7 +25,12 @@ export function FeatureThreeColumnWithDemos({
       </div>
       <div className="p-6 sm:p-10 lg:p-6">
         <h3 className="text-base/8 font-medium text-mist-950 dark:text-white">{headline}</h3>
-        <div className="mt-2 flex flex-col gap-4 text-sm/7 text-mist-700 dark:text-mist-400">{subheadline}</div>
+        <div className="my-2 flex flex-col gap-4 text-sm/7 text-mist-700 dark:text-mist-400">{subheadline}</div>
+        {cta && ctaLink && (
+          <Link href={ctaLink} className="text-sm hover:underline">
+            {cta}
+          </Link>
+        )}
       </div>
     </div>
   )

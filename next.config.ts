@@ -9,6 +9,12 @@ const nextConfig: NextConfig = {
         port: '',
         pathname: '/images/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'assets.tailwindplus.com',
+        port: '',
+        pathname: '/**',
+      },
     ],
   },
 }

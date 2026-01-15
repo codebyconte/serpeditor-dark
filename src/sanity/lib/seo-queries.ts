@@ -249,3 +249,92 @@ export const RELATED_POSTS_QUERY = `
     }
   }
 `
+
+/**
+ * Requête pour les catégories avec comptage d'articles
+ */
+export const CATEGORIES_WITH_COUNT_QUERY = `
+  *[_type == "category" && isActive == true] | order(order asc, title asc) {
+    _id,
+    title,
+    slug,
+    color,
+    excerpt,
+    image,
+    featured,
+    "postCount": count(*[_type == "post" && status == "published" && references(^._id)])
+  }
+`
+
+/**
+ * Requête pour l'article mis en avant
+ */
+export const FEATURED_POST_QUERY = `
+  *[_type == "post" && defined(slug.current) && status == "published" && featured == true] | order(publishedAt desc) [0] {
+    _id,
+    title,
+    slug,
+    excerpt,
+    image,
+    publishedAt,
+    readingTime,
+    author->{
+      name,
+      image,
+      role
+    },
+    categories[]->{
+      title,
+      slug,
+      color
+    }
+  }
+`
+
+/**
+ * Requête pour les articles du blog avec filtrage par catégorie
+ */
+export const BLOG_POSTS_QUERY = `
+  *[_type == "post" && defined(slug.current) && status == "published"
+    && ($category == "" || $category in categories[]->slug.current)
+  ] | order(publishedAt desc) [$start...$end] {
+    _id,
+    title,
+    slug,
+    excerpt,
+    image,
+    publishedAt,
+    readingTime,
+    featured,
+    author->{
+      name,
+      image,
+      role
+    },
+    categories[]->{
+      title,
+      slug,
+      color
+    }
+  }
+`
+
+/**
+ * Requête pour compter le nombre total d'articles
+ */
+export const POSTS_COUNT_QUERY = `
+  count(*[_type == "post" && defined(slug.current) && status == "published"
+    && ($category == "" || $category in categories[]->slug.current)
+  ])
+`
+
+/**
+ * Requête pour les statistiques du blog
+ */
+export const BLOG_STATS_QUERY = `
+  {
+    "totalPosts": count(*[_type == "post" && status == "published"]),
+    "totalCategories": count(*[_type == "category" && isActive == true]),
+    "totalAuthors": count(*[_type == "author"])
+  }
+`
