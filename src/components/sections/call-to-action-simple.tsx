@@ -9,6 +9,7 @@ export function CallToActionSimple({
   eyebrow,
   headline,
   subheadline,
+
   cta,
   className,
   ...props

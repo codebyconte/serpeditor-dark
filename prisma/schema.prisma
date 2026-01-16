@@ -168,7 +168,88 @@ model project {
   keyword_alerts       keyword_alert[]
   keyword_annotations  keyword_annotation[]
   project_rank_metrics project_rank_metrics[]
+  site_audit           site_audit?
   user                 user                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// Audit SEO on-page sauvegardé
+model site_audit {
+  id                String   @id @default(cuid())
+  projectId         String   @unique
+  taskId            String   @unique
+
+  // Crawl info
+  crawlProgress     String?
+  maxCrawlPages     Int?
+  pagesInQueue      Int?
+  pagesCrawled      Int?
+  crawlStopReason   String?
+
+  // Domain info
+  domainName        String?
+  cms               String?
+  ip                String?
+  server            String?
+  crawlStart        DateTime?
+  crawlEnd          DateTime?
+  totalPages        Int?
+
+  // SSL info
+  sslValid          Boolean?
+  sslIssuer         String?
+  sslExpiration     DateTime?
+
+  // Checks techniques
+  hasSitemap        Boolean?
+  hasRobotsTxt      Boolean?
+  hasSsl            Boolean?
+  hasHttp2          Boolean?
+  testCanonicalization Boolean?
+  testWwwRedirect   Boolean?
+  testHttpsRedirect Boolean?
+  testPageNotFound  Boolean?
+
+  // Page metrics
+  linksExternal     Int?
+  linksInternal     Int?
+  duplicateTitle    Int?
+  duplicateDescription Int?
+  duplicateContent  Int?
+  brokenLinks       Int?
+  brokenResources   Int?
+  redirectLoop      Int?
+  onpageScore       Float?
+  nonIndexable      Int?
+
+  // Checks SEO détaillés
+  checkCanonical    Int?
+  checkNoDescription Int?
+  checkNoTitle      Int?
+  checkNoH1Tag      Int?
+  checkTitleTooLong Int?
+  checkTitleTooShort Int?
+  checkIsBroken     Int?
+  checkIs4xxCode    Int?
+  checkIs5xxCode    Int?
+  checkIsRedirect   Int?
+  checkNoImageAlt   Int?
+  checkLowContentRate Int?
+  checkHighLoadingTime Int?
+  checkHasMisspelling Int?
+  checkIrrelevantTitle Int?
+  checkIrrelevantDescription Int?
+
+  // Données brutes JSON pour les données non mappées
+  rawData           Json?
+
+  // Métadonnées
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  project           project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([taskId])
 }
 
 model session {

@@ -142,31 +142,40 @@ function extractHeadings(body: PortableTextBlock[] | null): Heading[] {
 
 // Get adjacent posts for navigation
 const getAdjacentPosts = async (currentSlug: string) => {
-  const query = `*[_type == "post" && defined(slug.current) && status == "published"] | order(publishedAt desc) {
-    _id,
-    title,
-    "slug": slug.current,
-    publishedAt
-  }`
-  const posts = await client.fetch(query, {}, options)
-  const currentIndex = posts.findIndex((p: { slug: string }) => p.slug === currentSlug)
+  try {
+    const query = `*[_type == "post" && defined(slug.current) && status == "published"] | order(publishedAt desc) {
+      _id,
+      title,
+      "slug": slug.current,
+      publishedAt
+    }`
+    const posts = await client.fetch(query, {}, options)
+    const currentIndex = posts.findIndex((p: { slug: string }) => p.slug === currentSlug)
 
-  return {
-    prev: currentIndex > 0 ? posts[currentIndex - 1] : null,
-    next: currentIndex < posts.length - 1 ? posts[currentIndex + 1] : null,
+    return {
+      prev: currentIndex > 0 ? posts[currentIndex - 1] : null,
+      next: currentIndex < posts.length - 1 ? posts[currentIndex + 1] : null,
+    }
+  } catch (error) {
+    console.error('❌ Erreur lors de la récupération des articles adjacents:', error)
+    return {
+      prev: null,
+      next: null,
+    }
   }
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
-  const { slug } = await params
-  const post = await client.fetch<Post>(POST_WITH_SEO_QUERY, { slug }, options)
+  try {
+    const { slug } = await params
+    const post = await client.fetch<Post>(POST_WITH_SEO_QUERY, { slug }, options)
 
-  if (!post) {
-    return {
-      title: 'Article non trouvé',
-      robots: { index: false, follow: false },
+    if (!post) {
+      return {
+        title: 'Article non trouvé',
+        robots: { index: false, follow: false },
+      }
     }
-  }
 
   const seoTitle = post.seo?.title || post.title
   const seoDescription = post.seo?.description || post.excerpt || ''
@@ -217,6 +226,13 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       'article:section': post.articleSection || post.categories?.[0]?.title || '',
       'article:tag': post.tags?.join(', ') || '',
     },
+  }
+  } catch (error) {
+    console.error('❌ Erreur lors de la génération des métadonnées:', error)
+    return {
+      title: 'Erreur de chargement',
+      robots: { index: false, follow: false },
+    }
   }
 }
 
@@ -457,11 +473,43 @@ const createPortableTextComponents = (): Partial<PortableTextReactComponents> =>
 
 export default async function PostPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
+  
+  // Fonction helper pour gérer les erreurs de fetch
+  const safeFetch = async <T,>(
+    fetchFn: () => Promise<T>,
+    fallback: T,
+    errorMessage: string,
+  ): Promise<T> => {
+    try {
+      return await fetchFn()
+    } catch (error) {
+      console.error(`❌ ${errorMessage}:`, error)
+      return fallback
+    }
+  }
+
+  // Récupérer les données avec gestion d'erreur pour chaque appel
   const [post, faqData, relatedData, adjacentPosts] = await Promise.all([
-    client.fetch<Post>(POST_WITH_SEO_QUERY, { slug }, options),
-    client.fetch(FAQ_SCHEMA_QUERY, { slug }, options),
-    client.fetch<{ relatedPosts: RelatedPost[] }>(RELATED_POSTS_QUERY, { slug }, options),
-    getAdjacentPosts(slug),
+    safeFetch(
+      () => client.fetch<Post>(POST_WITH_SEO_QUERY, { slug }, options),
+      null as Post | null,
+      `Erreur lors de la récupération de l'article ${slug}`,
+    ),
+    safeFetch(
+      () => client.fetch(FAQ_SCHEMA_QUERY, { slug }, options),
+      null,
+      `Erreur lors de la récupération des FAQ pour ${slug}`,
+    ),
+    safeFetch(
+      () => client.fetch<{ relatedPosts: RelatedPost[] }>(RELATED_POSTS_QUERY, { slug }, options),
+      { relatedPosts: [] },
+      `Erreur lors de la récupération des articles liés pour ${slug}`,
+    ),
+    safeFetch(
+      () => getAdjacentPosts(slug),
+      { prev: null, next: null },
+      `Erreur lors de la récupération des articles adjacents pour ${slug}`,
+    ),
   ])
 
   if (!post) {

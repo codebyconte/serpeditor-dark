@@ -1,4 +1,5 @@
 import { clsx } from 'clsx/lite'
+import Link from 'next/link'
 import type { ComponentProps, ReactNode } from 'react'
 import { Section } from '../elements/section'
 
@@ -8,11 +9,13 @@ export function Feature({
   subheadline,
   cta,
   className,
+  ctaLink,
 }: {
   demo: ReactNode
   headline: ReactNode
   subheadline: ReactNode
   cta: ReactNode
+  ctaLink?: string
 } & Omit<ComponentProps<'div'>, 'children'>) {
   return (
     <div className={clsx('rounded-lg bg-mist-800 p-2 dark:bg-white/5', className)}>
@@ -24,7 +27,11 @@ export function Feature({
           <h3 className="text-base/8 font-medium text-mist-950 dark:text-white">{headline}</h3>
           <div className="mt-2 flex flex-col gap-4 text-sm/7 text-mist-700 dark:text-mist-400">{subheadline}</div>
         </div>
-        {cta}
+        {cta && ctaLink && (
+          <Link href={ctaLink} className="text-sm hover:underline">
+            {cta}
+          </Link>
+        )}
       </div>
     </div>
   )
