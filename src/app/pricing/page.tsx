@@ -2,7 +2,6 @@ import { ButtonLink, PlainButtonLink, SoftButtonLink } from '@/components/elemen
 import { Logo, LogoGrid } from '@/components/elements/logo-grid'
 import { Main } from '@/components/elements/main'
 import { ChevronIcon } from '@/components/icons/chevron-icon'
-import { GitHubIcon } from '@/components/icons/social/github-icon'
 import { XIcon } from '@/components/icons/social/x-icon'
 import { YouTubeIcon } from '@/components/icons/social/youtube-icon'
 import { CallToActionSimpleCentered } from '@/components/sections/call-to-action-simple-centered'
@@ -22,6 +21,7 @@ import {
 import { PlanComparisonTable } from '@/components/sections/plan-comparison-table'
 import { Plan, PricingHeroMultiTier } from '@/components/sections/pricing-hero-multi-tier'
 import { TestimonialTwoColumnWithLargePhoto } from '@/components/sections/testimonial-two-column-with-large-photo'
+import Image from 'next/image'
 
 function plans(option: string) {
   return (
@@ -96,26 +96,20 @@ export default function Page() {
         id="navbar"
         links={
           <>
-            <NavbarLink href="#">Pricing</NavbarLink>
-            <NavbarLink href="#">About</NavbarLink>
-            <NavbarLink href="#">Docs</NavbarLink>
-            <NavbarLink href="#" className="sm:hidden">
-              Log in
+            <NavbarLink href="/features">Fonctionnalités</NavbarLink>
+            <NavbarLink href="/pricing">Tarifs</NavbarLink>
+            <NavbarLink href="/blog">Blog</NavbarLink>
+            <NavbarLink href="/login" className="sm:hidden">
+              Connexion
             </NavbarLink>
           </>
         }
         logo={
-          <NavbarLogo href="#">
-            <img
-              src="https://assets.tailwindplus.com/logos/oatmeal-instrument.svg?color=mist-950"
-              alt="Oatmeal"
-              className="dark:hidden"
-              width={85}
-              height={28}
-            />
-            <img
-              src="https://assets.tailwindplus.com/logos/oatmeal-instrument.svg?color=white"
-              alt="Oatmeal"
+          <NavbarLogo href="/">
+            <Image src="/serpeditor.svg" alt="SerpEditor Outil SEO" className="dark:hidden" width={85} height={28} />
+            <Image
+              src="/serpeditor-white.svg"
+              alt="SerpEditor Outil SEO"
               className="not-dark:hidden"
               width={85}
               height={28}
@@ -124,10 +118,10 @@ export default function Page() {
         }
         actions={
           <>
-            <PlainButtonLink href="#" className="max-sm:hidden">
-              Log in
+            <PlainButtonLink href="/login" className="max-sm:hidden">
+              Connexion
             </PlainButtonLink>
-            <ButtonLink href="#">Get started</ButtonLink>
+            <ButtonLink href="/register">Essai Gratuit</ButtonLink>
           </>
         }
       />
@@ -148,14 +142,14 @@ export default function Page() {
           footer={
             <LogoGrid>
               <Logo>
-                <img
+                <Image
                   src="https://assets.tailwindplus.com/logos/9.svg?color=black&height=32"
                   className="dark:hidden"
                   alt=""
                   width={51}
                   height={32}
                 />
-                <img
+                <Image
                   src="https://assets.tailwindplus.com/logos/9.svg?color=white&height=32"
                   className="not-dark:hidden"
                   alt=""
@@ -164,14 +158,14 @@ export default function Page() {
                 />
               </Logo>
               <Logo>
-                <img
+                <Image
                   src="https://assets.tailwindplus.com/logos/10.svg?color=black&height=32"
                   className="dark:hidden"
                   alt=""
                   width={70}
                   height={32}
                 />
-                <img
+                <Image
                   src="https://assets.tailwindplus.com/logos/10.svg?color=white&height=32"
                   className="not-dark:hidden"
                   alt=""
@@ -180,14 +174,14 @@ export default function Page() {
                 />
               </Logo>
               <Logo>
-                <img
+                <Image
                   src="https://assets.tailwindplus.com/logos/11.svg?color=black&height=32"
                   className="dark:hidden"
                   alt=""
                   width={100}
                   height={32}
                 />
-                <img
+                <Image
                   src="https://assets.tailwindplus.com/logos/11.svg?color=white&height=32"
                   className="not-dark:hidden"
                   alt=""
@@ -196,14 +190,14 @@ export default function Page() {
                 />
               </Logo>
               <Logo>
-                <img
+                <Image
                   src="https://assets.tailwindplus.com/logos/12.svg?color=black&height=32"
                   className="dark:hidden"
                   alt=""
                   width={85}
                   height={32}
                 />
-                <img
+                <Image
                   src="https://assets.tailwindplus.com/logos/12.svg?color=white&height=32"
                   className="not-dark:hidden"
                   alt=""
@@ -212,14 +206,14 @@ export default function Page() {
                 />
               </Logo>
               <Logo>
-                <img
+                <Image
                   src="https://assets.tailwindplus.com/logos/13.svg?color=black&height=32"
                   className="dark:hidden"
                   alt=""
                   width={75}
                   height={32}
                 />
-                <img
+                <Image
                   src="https://assets.tailwindplus.com/logos/13.svg?color=white&height=32"
                   className="not-dark:hidden"
                   alt=""
@@ -228,14 +222,14 @@ export default function Page() {
                 />
               </Logo>
               <Logo>
-                <img
+                <Image
                   src="https://assets.tailwindplus.com/logos/8.svg?color=black&height=32"
                   className="dark:hidden"
                   alt=""
                   width={85}
                   height={32}
                 />
-                <img
+                <Image
                   src="https://assets.tailwindplus.com/logos/8.svg?color=white&height=32"
                   className="not-dark:hidden"
                   alt=""
@@ -349,7 +343,7 @@ export default function Page() {
             </p>
           }
           img={
-            <img
+            <Image
               src="https://assets.tailwindplus.com/avatars/16.webp?w=1400&h=1000"
               alt=""
               className="not-dark:bg-white/75 dark:bg-black/75"
@@ -390,7 +384,7 @@ export default function Page() {
           id="call-to-action"
           headline="Have anymore questions?"
           subheadline={
-            <p>Chat to someone on our sales team, who will make promises about our roadmap that we won't keep.</p>
+            <p>Chat to someone on our sales team, who will make promises about our roadmap that we won&apos;t keep.</p>
           }
           cta={
             <div className="flex items-center gap-4">
@@ -410,11 +404,11 @@ export default function Page() {
         id="footer"
         cta={
           <NewsletterForm
-            headline="Stay in the loop"
+            headline="Restez en avance en SEO"
             subheadline={
               <p>
-                Get customer support tips, product updates and customer stories that you can archive as soon as they
-                arrive.
+                Recevez chaque semaine des conseils pratiques, des astuces SEO, et des mises à jour de notre outil pour
+                booster votre visibilité en ligne directement dans votre boîte mail.
               </p>
             }
             action="#"
@@ -422,38 +416,30 @@ export default function Page() {
         }
         links={
           <>
-            <FooterCategory title="Product">
-              <FooterLink href="#">Features</FooterLink>
-              <FooterLink href="#">Pricing</FooterLink>
-              <FooterLink href="#">Integrations</FooterLink>
-            </FooterCategory>
-            <FooterCategory title="Company">
-              <FooterLink href="#">About</FooterLink>
-              <FooterLink href="#">Careers</FooterLink>
-              <FooterLink href="#">Blog</FooterLink>
-              <FooterLink href="#">Press Kit</FooterLink>
+            <FooterCategory title="Fonctionnalités">
+              <FooterLink href="/features/recherche-mots-cles">Recherche de mots-clés</FooterLink>
+              <FooterLink href="/features/analyse-mots-cles-concurrents">Analyse Mots-Clés Concurrents</FooterLink>
+              <FooterLink href="/features/analyse-seo">Analyse SEO</FooterLink>
+              <FooterLink href="/features/suivi-position-seo">Suivi de position SEO</FooterLink>
+              <FooterLink href="/features/analyse-backlinks">Analyse de backlinks</FooterLink>
             </FooterCategory>
             <FooterCategory title="Resources">
-              <FooterLink href="#">Help Center</FooterLink>
-              <FooterLink href="#">API Docs</FooterLink>
-              <FooterLink href="#">Status</FooterLink>
-              <FooterLink href="#">Contact</FooterLink>
+              <FooterLink href="/blog">Blog</FooterLink>
+              <FooterLink href="/outils-seo-gratuits">Outils SEO Gratuits</FooterLink>
+              <FooterLink href="/contact">Contact</FooterLink>
             </FooterCategory>
             <FooterCategory title="Legal">
-              <FooterLink href="#">Privacy Policy</FooterLink>
-              <FooterLink href="#">Terms of Service</FooterLink>
-              <FooterLink href="#">Security</FooterLink>
+              <FooterLink href="/privacy-policy">Privacy Policy</FooterLink>
+              <FooterLink href="/mentions-legales">Mentions Légales</FooterLink>
+              <FooterLink href="/conditions-generales-vente">Conditions Générales de Vente</FooterLink>
             </FooterCategory>
           </>
         }
-        fineprint="© 2025 Oatmeal, Inc."
+        fineprint="© 2025 SerpEditor, Inc."
         socialLinks={
           <>
             <SocialLink href="https://x.com" name="X">
               <XIcon />
-            </SocialLink>
-            <SocialLink href="https://github.com" name="GitHub">
-              <GitHubIcon />
             </SocialLink>
             <SocialLink href="https://www.youtube.com" name="YouTube">
               <YouTubeIcon />

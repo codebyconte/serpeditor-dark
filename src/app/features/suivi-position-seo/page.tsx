@@ -6,10 +6,24 @@ import { Section } from '@/components/elements/section'
 import { Subheading } from '@/components/elements/subheading'
 import { Text } from '@/components/elements/text'
 import { ArrowNarrowRightIcon } from '@/components/icons/arrow-narrow-right-icon'
+import { XIcon } from '@/components/icons/social/x-icon'
+import { YouTubeIcon } from '@/components/icons/social/youtube-icon'
 import { CallToActionSimpleCentered } from '@/components/sections/call-to-action-simple-centered'
-import { FAQsTwoColumnAccordion, Faq } from '@/components/sections/faqs-two-column-accordion'
+import { FAQsAccordion, Faq } from '@/components/sections/faqs-accordion'
 import { Feature, FeaturesThreeColumn } from '@/components/sections/features-three-column'
-import { HeroLeftAlignedWithDemo } from '@/components/sections/hero-left-aligned-with-demo'
+import {
+  FooterCategory,
+  FooterLink,
+  FooterWithNewsletterFormCategoriesAndSocialIcons,
+  NewsletterForm,
+  SocialLink,
+} from '@/components/sections/footer-with-newsletter-form-categories-and-social-icons'
+import { HeroCenteredWithDemo } from '@/components/sections/hero-centered-with-demo'
+import {
+  NavbarLink,
+  NavbarLogo,
+  NavbarWithLinksActionsAndCenteredLogo,
+} from '@/components/sections/navbar-with-links-actions-and-centered-logo'
 import {
   Activity,
   BarChart3,
@@ -43,9 +57,42 @@ export const metadata: Metadata = {
 export default function SuiviPositionSEOPage() {
   return (
     <>
+      <NavbarWithLinksActionsAndCenteredLogo
+        id="navbar"
+        links={
+          <>
+            <NavbarLink href="/features">Fonctionnalités</NavbarLink>
+            <NavbarLink href="/pricing">Tarifs</NavbarLink>
+            <NavbarLink href="/blog">Blog</NavbarLink>
+            <NavbarLink href="/login" className="sm:hidden">
+              Connexion
+            </NavbarLink>
+          </>
+        }
+        logo={
+          <NavbarLogo href="/">
+            <Image src="/serpeditor.svg" alt="SerpEditor Outil SEO" className="dark:hidden" width={85} height={28} />
+            <Image
+              src="/serpeditor-white.svg"
+              alt="SerpEditor Outil SEO"
+              className="not-dark:hidden"
+              width={85}
+              height={28}
+            />
+          </NavbarLogo>
+        }
+        actions={
+          <>
+            <PlainButtonLink href="/login" className="max-sm:hidden">
+              Connexion
+            </PlainButtonLink>
+            <ButtonLink href="/register">Essai Gratuit</ButtonLink>
+          </>
+        }
+      />
       <Main>
         {/* Hero Section */}
-        <HeroLeftAlignedWithDemo
+        <HeroCenteredWithDemo
           id="hero"
           eyebrow={<AnnouncementBadge href="/pricing" text="Nouveau : Suivi en Temps Réel" cta="Voir l'offre" />}
           headline="Suivi Position SEO — Un Dashboard conçu pour la performance organique"
@@ -66,7 +113,7 @@ export default function SuiviPositionSEOPage() {
               <ButtonLink href="/register" size="lg">
                 Accéder à mon Dashboard (Essai 7 jours sans CB)
               </ButtonLink>
-              <PlainButtonLink href="#features" size="lg">
+              <PlainButtonLink href="/features" size="lg">
                 Découvrir les fonctionnalités <ArrowNarrowRightIcon />
               </PlainButtonLink>
             </div>
@@ -354,7 +401,7 @@ export default function SuiviPositionSEOPage() {
                     <td className="px-6 py-4 font-medium">Interface</td>
                     <td className="px-6 py-4 text-center text-mist-600 dark:text-mist-400">Austère</td>
                     <td className="px-6 py-4 text-center text-mist-600 dark:text-mist-400">Surchargée</td>
-                    <td className="text-primary px-6 py-4 text-center font-semibold">Moderne & Rapide (Next.js)</td>
+                    <td className="text-primary px-6 py-4 text-center font-semibold">Moderne & Rapide</td>
                   </tr>
                   <tr className="border-b border-mist-100 dark:border-mist-900">
                     <td className="px-6 py-4 font-medium">Prix / mois</td>
@@ -381,7 +428,7 @@ export default function SuiviPositionSEOPage() {
         </Section>
 
         {/* FAQs */}
-        <FAQsTwoColumnAccordion
+        <FAQsAccordion
           id="faqs"
           headline="Questions fréquentes sur le suivi position SEO"
           subheadline={<p>Tout ce que vous devez savoir sur notre outil de suivi de positions</p>}
@@ -422,7 +469,7 @@ export default function SuiviPositionSEOPage() {
               </>
             }
           />
-        </FAQsTwoColumnAccordion>
+        </FAQsAccordion>
 
         {/* Final CTA */}
         <CallToActionSimpleCentered
@@ -438,22 +485,65 @@ export default function SuiviPositionSEOPage() {
           }
           cta={
             <div className="flex flex-col items-center gap-4">
-              <ButtonLink href="/register" size="lg">
-                Démarrer l&apos;essai gratuit (Sans CB)
-              </ButtonLink>
-              <Text className="text-sm text-mist-600 dark:text-mist-500">
-                Suivez jusqu&apos;à 1000 mots-clés, analysez vos pages principales et explorez l&apos;historique SERP.
-              </Text>
-              <Text className="text-sm text-mist-600 dark:text-mist-500">
-                ✅ Installation en 30 secondes - ✅ Rapports personnalisables - ✅ Support en France
-              </Text>
-              <Text className="text-sm text-mist-600 dark:text-mist-500">
-                Déjà client ? <PlainButtonLink href="/login">Connectez-vous ici</PlainButtonLink>
-              </Text>
+              <div className="flex flex-wrap items-center gap-4">
+                <ButtonLink href="/register" size="lg">
+                  Démarrer l&apos;essai gratuit (Sans CB)
+                </ButtonLink>
+                <PlainButtonLink href="/pricing" size="lg">
+                  Voir les tarifs
+                </PlainButtonLink>
+              </div>
             </div>
           }
         />
       </Main>
+      <FooterWithNewsletterFormCategoriesAndSocialIcons
+        id="footer"
+        cta={
+          <NewsletterForm
+            headline="Restez en avance en SEO"
+            subheadline={
+              <p>
+                Recevez chaque semaine des conseils pratiques, des astuces SEO, et des mises à jour de notre outil pour
+                booster votre visibilité en ligne directement dans votre boîte mail.
+              </p>
+            }
+            action="#"
+          />
+        }
+        links={
+          <>
+            <FooterCategory title="Fonctionnalités">
+              <FooterLink href="/features/recherche-mots-cles">Recherche de mots-clés</FooterLink>
+              <FooterLink href="/features/analyse-mots-cles-concurrents">Analyse Mots-Clés Concurrents</FooterLink>
+              <FooterLink href="/features/analyse-seo">Analyse SEO</FooterLink>
+              <FooterLink href="/features/suivi-position-seo">Suivi de position SEO</FooterLink>
+              <FooterLink href="/features/analyse-backlinks">Analyse de backlinks</FooterLink>
+            </FooterCategory>
+            <FooterCategory title="Resources">
+              <FooterLink href="/blog">Blog</FooterLink>
+              <FooterLink href="/outils-seo-gratuits">Outils SEO Gratuits</FooterLink>
+              <FooterLink href="/contact">Contact</FooterLink>
+            </FooterCategory>
+            <FooterCategory title="Legal">
+              <FooterLink href="/privacy-policy">Privacy Policy</FooterLink>
+              <FooterLink href="/mentions-legales">Mentions Légales</FooterLink>
+              <FooterLink href="/conditions-generales-vente">Conditions Générales de Vente</FooterLink>
+            </FooterCategory>
+          </>
+        }
+        fineprint="© 2025 SerpEditor, Inc."
+        socialLinks={
+          <>
+            <SocialLink href="https://x.com" name="X">
+              <XIcon />
+            </SocialLink>
+            <SocialLink href="https://www.youtube.com" name="YouTube">
+              <YouTubeIcon />
+            </SocialLink>
+          </>
+        }
+      />
     </>
   )
 }

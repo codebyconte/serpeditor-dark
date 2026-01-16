@@ -2,7 +2,6 @@ import { ButtonLink, PlainButtonLink } from '@/components/elements/button'
 import { Container } from '@/components/elements/container'
 import { Main } from '@/components/elements/main'
 import { Section } from '@/components/elements/section'
-import { GitHubIcon } from '@/components/icons/social/github-icon'
 import { XIcon } from '@/components/icons/social/x-icon'
 import { YouTubeIcon } from '@/components/icons/social/youtube-icon'
 import { CallToActionSimple } from '@/components/sections/call-to-action-simple'
@@ -58,7 +57,7 @@ export default function AuditSeoPage() {
           <>
             <NavbarLink href="/features">Fonctionnalités</NavbarLink>
             <NavbarLink href="/pricing">Tarifs</NavbarLink>
-            <NavbarLink href="/blog">Conseils SEO</NavbarLink>
+            <NavbarLink href="/blog">Blog</NavbarLink>
             <NavbarLink href="/login" className="sm:hidden">
               Connexion
             </NavbarLink>
@@ -66,9 +65,9 @@ export default function AuditSeoPage() {
         }
         logo={
           <NavbarLogo href="/">
-            <Image src="serpeditor.svg" alt="SerpEditor Outil SEO" className="dark:hidden" width={85} height={28} />
+            <Image src="/serpeditor.svg" alt="SerpEditor Outil SEO" className="dark:hidden" width={85} height={28} />
             <Image
-              src="serpeditor-white.svg"
+              src="/serpeditor-white.svg"
               alt="SerpEditor Outil SEO"
               className="not-dark:hidden"
               width={85}
@@ -794,11 +793,11 @@ export default function AuditSeoPage() {
         id="footer"
         cta={
           <NewsletterForm
-            headline="Stay in the loop"
+            headline="Restez en avance en SEO"
             subheadline={
               <p>
-                Get customer support tips, product updates and customer stories that you can archive as soon as they
-                arrive.
+                Recevez chaque semaine des conseils pratiques, des astuces SEO, et des mises à jour de notre outil pour
+                booster votre visibilité en ligne directement dans votre boîte mail.
               </p>
             }
             action="#"
@@ -806,38 +805,30 @@ export default function AuditSeoPage() {
         }
         links={
           <>
-            <FooterCategory title="Product">
-              <FooterLink href="#">Features</FooterLink>
-              <FooterLink href="#">Pricing</FooterLink>
-              <FooterLink href="#">Integrations</FooterLink>
-            </FooterCategory>
-            <FooterCategory title="Company">
-              <FooterLink href="#">About</FooterLink>
-              <FooterLink href="#">Careers</FooterLink>
-              <FooterLink href="#">Blog</FooterLink>
-              <FooterLink href="#">Press Kit</FooterLink>
+            <FooterCategory title="Fonctionnalités">
+              <FooterLink href="/features/recherche-mots-cles">Recherche de mots-clés</FooterLink>
+              <FooterLink href="/features/analyse-mots-cles-concurrents">Analyse Mots-Clés Concurrents</FooterLink>
+              <FooterLink href="/features/analyse-seo">Analyse SEO</FooterLink>
+              <FooterLink href="/features/suivi-position-seo">Suivi de position SEO</FooterLink>
+              <FooterLink href="/features/analyse-backlinks">Analyse de backlinks</FooterLink>
             </FooterCategory>
             <FooterCategory title="Resources">
-              <FooterLink href="#">Help Center</FooterLink>
-              <FooterLink href="#">API Docs</FooterLink>
-              <FooterLink href="#">Status</FooterLink>
-              <FooterLink href="#">Contact</FooterLink>
+              <FooterLink href="/blog">Blog</FooterLink>
+              <FooterLink href="/outils-seo-gratuits">Outils SEO Gratuits</FooterLink>
+              <FooterLink href="/contact">Contact</FooterLink>
             </FooterCategory>
             <FooterCategory title="Legal">
-              <FooterLink href="#">Privacy Policy</FooterLink>
-              <FooterLink href="#">Terms of Service</FooterLink>
-              <FooterLink href="#">Security</FooterLink>
+              <FooterLink href="/privacy-policy">Privacy Policy</FooterLink>
+              <FooterLink href="/mentions-legales">Mentions Légales</FooterLink>
+              <FooterLink href="/conditions-generales-vente">Conditions Générales de Vente</FooterLink>
             </FooterCategory>
           </>
         }
-        fineprint="© 2025 Oatmeal, Inc."
+        fineprint="© 2025 SerpEditor, Inc."
         socialLinks={
           <>
             <SocialLink href="https://x.com" name="X">
               <XIcon />
-            </SocialLink>
-            <SocialLink href="https://github.com" name="GitHub">
-              <GitHubIcon />
             </SocialLink>
             <SocialLink href="https://www.youtube.com" name="YouTube">
               <YouTubeIcon />

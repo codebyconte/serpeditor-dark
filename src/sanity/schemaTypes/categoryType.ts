@@ -95,20 +95,6 @@ export const categoryType = defineType({
     }),
 
     defineField({
-      name: 'description',
-      title: 'Description SEO (Contenu Principal)',
-      type: 'array',
-      of: [{ type: 'block' }],
-      description:
-        'Contenu affiché en haut de la page catégorie. 300-500 mots recommandés pour le SEO. Inclure mots-clés naturellement.',
-      group: 'content',
-      validation: (rule) => rule.required(),
-      options: {
-        search: { weight: 5 }, // Recherche dans Portable Text
-      },
-    }),
-
-    defineField({
       name: 'excerpt',
       title: 'Résumé Court',
       type: 'text',

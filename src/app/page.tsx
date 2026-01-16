@@ -6,7 +6,6 @@ import { Section } from '@/components/elements/section'
 import { Subheading } from '@/components/elements/subheading'
 import { Text } from '@/components/elements/text'
 import { ArrowNarrowRightIcon } from '@/components/icons/arrow-narrow-right-icon'
-import { GitHubIcon } from '@/components/icons/social/github-icon'
 import { XIcon } from '@/components/icons/social/x-icon'
 import { YouTubeIcon } from '@/components/icons/social/youtube-icon'
 import { CallToActionSimple } from '@/components/sections/call-to-action-simple'
@@ -33,6 +32,7 @@ import {
   NavbarLogo,
   NavbarWithLinksActionsAndCenteredLogo,
 } from '@/components/sections/navbar-with-links-actions-and-centered-logo'
+import { StatsFourColumns } from '@/components/sections/stats-four-columns'
 import { Stat, StatsWithGraph } from '@/components/sections/stats-with-graph'
 import { Testimonial, TestimonialThreeColumnGrid } from '@/components/sections/testimonials-three-column-grid'
 import { Card, CardContent } from '@/components/ui/card'
@@ -63,7 +63,7 @@ export default function Page() {
           <>
             <NavbarLink href="/features">Fonctionnalités</NavbarLink>
             <NavbarLink href="/pricing">Tarifs</NavbarLink>
-            <NavbarLink href="/blog">Conseils SEO</NavbarLink>
+            <NavbarLink href="/blog">Blog</NavbarLink>
             <NavbarLink href="/login" className="sm:hidden">
               Connexion
             </NavbarLink>
@@ -71,9 +71,9 @@ export default function Page() {
         }
         logo={
           <NavbarLogo href="/">
-            <Image src="serpeditor.svg" alt="SerpEditor Outil SEO" className="dark:hidden" width={85} height={28} />
+            <Image src="/serpeditor.svg" alt="SerpEditor Outil SEO" className="dark:hidden" width={85} height={28} />
             <Image
-              src="serpeditor-white.svg"
+              src="/serpeditor-white.svg"
               alt="SerpEditor Outil SEO"
               className="not-dark:hidden"
               width={85}
@@ -109,12 +109,12 @@ export default function Page() {
           subheadline={
             <>
               <p>
-                Ne jonglez plus entre 5 logiciels. SerpEditor est l&apos;<strong>outil SEO complet</strong> qui
+                Ne jonglez plus entre 5 outils SEO. SerpEditor est l&apos;<strong>outil SEO complet</strong> qui
                 centralise tout ce dont vous avez besoin pour ranker 1er : recherche de mots-clés, analyse de backlinks,
                 audit technique et suivi de positions.
               </p>
               <p>
-                Rejoignez 3600+ consultants qui ont remplacé Semrush pour économiser 1200€/an sans sacrifier la
+                Rejoignez les consultants qui ont remplacé Semrush pour économiser 1200€/an sans sacrifier la
                 performance.
               </p>
             </>
@@ -122,9 +122,9 @@ export default function Page() {
           cta={
             <div className="flex flex-wrap items-center gap-4">
               <ButtonLink href="/register" size="lg">
-                Lancer mon audit gratuit
+                Démarrer mon essai gratuit de 7 jours
               </ButtonLink>
-              <PlainButtonLink href="#features-demos" size="lg">
+              <PlainButtonLink href="/features" size="lg">
                 Découvrir les fonctionnalités <ArrowNarrowRightIcon />
               </PlainButtonLink>
             </div>
@@ -153,15 +153,16 @@ export default function Page() {
         />
 
         {/* OPTIMISATION 3 : PREUVE D'AUTORITÉ IMMÉDIATE
-           DataForSEO est un gage de qualité technique pour Google.
+            est un gage de qualité technique pour Google.
         */}
         <StatsWithGraph
           id="database"
           headline="La puissance d'un outil SEO Enterprise, au prix freelance"
           subheadline={
             <p>
-              Pour être le <strong>meilleur outil SEO</strong>, il faut les meilleures données. Nous nous appuyons sur
-              l&apos;infrastructure DataForSEO pour vous garantir une précision chirurgicale sur le marché français.
+              Pour être le <strong>meilleur outil SEO</strong>, SerpEditor s’appuie sur une infrastructure de collecte
+              et d’analyse propriétaire optimisée pour le marché français, afin de vous fournir des données précises,
+              fraîches et exploitables pour prendre de meilleures décisions SEO.
             </p>
           }
         >
@@ -177,7 +178,7 @@ export default function Page() {
         */}
         <FeaturesTwoColumnWithDemos
           id="features-demos"
-          headline="Pilotez les 3 piliers du référencement avec un seul logiciel"
+          headline="Pilotez les 5 piliers du référencement avec un seul logiciel"
           subheadline={
             <p>
               SerpEditor n&apos;est pas juste une alternative, c&apos;est votre nouveau QG pour gérer le SEO technique,
@@ -198,7 +199,7 @@ export default function Page() {
                     />
                   </Screenshot>
                 }
-                headline="1. Sémantique & Mots-clés"
+                headline="1. Recherche de Mots-Clés"
                 subheadline={
                   <p>
                     Accédez à la plus grande base de données française (213M+). Détectez les opportunités de longue
@@ -206,8 +207,8 @@ export default function Page() {
                     clic.
                   </p>
                 }
-                cta="Tester le générateur de mots-clés →"
-                ctaLink="/register"
+                cta="Découvrir l’outil de recherche de mots-clés →"
+                ctaLink="/features/recherche-mots-cles"
               />
               <FeatureTwoColumnWithDemos
                 demo={
@@ -229,8 +230,8 @@ export default function Page() {
                     trillions de liens.
                   </p>
                 }
-                cta="Analyser mes backlinks →"
-                ctaLink="/register"
+                cta="Découvrir l’analyse de backlinks →"
+                ctaLink="/features/analyse-backlinks"
               />
             </>
           }
@@ -244,7 +245,7 @@ export default function Page() {
                   <Screenshot wallpaper="purple" placement="top-right">
                     <Image
                       src="/audit-de-site.webp"
-                      alt="Logiciel d'audit SEO technique"
+                      alt="Outil d'analyse SEO"
                       className="bg-black/75"
                       width={1800}
                       height={1250}
@@ -258,8 +259,8 @@ export default function Page() {
                     et de vitesse pour optimiser votre santé technique.
                   </p>
                 }
-                cta="Lancer un audit technique"
-                ctaLink="/features/audit-seo-technique"
+                cta="Découvrir l’outil d’audit SEO"
+                ctaLink="/features/analyse-seo"
               />
 
               <FeatureThreeColumnWithDemos
@@ -267,7 +268,7 @@ export default function Page() {
                   <Screenshot wallpaper="brown" placement="top">
                     <Image
                       src="/suivie-position.webp"
-                      alt="Suivi de positionnement Google précis"
+                      alt="Outil de suivi de position SEO"
                       className="bg-black/75"
                       width={1800}
                       height={1250}
@@ -281,14 +282,14 @@ export default function Page() {
                     quotidienne et un historique précis.
                   </p>
                 }
-                cta="Voir mes positions"
-                ctaLink="/features/suivi-de-positions-google"
+                cta="Découvrir l’outil de suivi de positions SEO"
+                ctaLink="/features/suivi-position-seo"
               />
               <FeatureThreeColumnWithDemos
                 demo={
                   <Screenshot wallpaper="yellow" placement="top-left">
                     <Image
-                      src="/suivie-position.webp"
+                      src="/analyse-concurence.webp"
                       alt="Analyse de la concurrence SEO"
                       className="bg-black/75"
                       width={1800}
@@ -303,8 +304,8 @@ export default function Page() {
                     trafic.
                   </p>
                 }
-                cta="Espionner un concurrent"
-                ctaLink="/features/recherche-de-mots-cles"
+                cta="Découvrir l’analyse des mots-clés concurrents"
+                ctaLink="/features/analyse-mots-cles-concurrents"
               />
             </>
           }
@@ -362,27 +363,45 @@ export default function Page() {
           headline="Calculez votre ROI immédiatement"
           subheadline={<p>L&apos;outil SEO le plus rentable du marché français.</p>}
         >
-          <div className="rounded-2xl border border-mist-200 bg-mist-50 p-6 dark:border-mist-800 dark:bg-mist-950">
-            <Subheading className="mb-4 text-2xl">Comparatif des coûts annuels</Subheading>
-            <ul className="space-y-2 text-mist-700 dark:text-mist-400">
-              <li>
-                🔴 <strong>Semrush :</strong> 1668€ / an
-              </li>
-              <li>
-                🔴 <strong>Ahrefs :</strong> ~1550€ / an
-              </li>
-              <li>
-                🔴 <strong>Haloscan :</strong> 708€ / an
-              </li>
-              <li className="text-primary text-lg font-bold">
-                🟢 <strong>SerpEditor :</strong> 468€ / an (Tout inclus)
-              </li>
-            </ul>
-            <Text className="mt-4">
-              Investissez l&apos;argent économisé dans la rédaction de contenu ou le netlinking. C&apos;est ça, une
-              stratégie SEO intelligente.
-            </Text>
-          </div>
+          <Subheading className="mb-4 text-2xl">Comparatif des coûts annuels</Subheading>
+          <StatsFourColumns>
+            <Stat
+              stat={<span className="text-2xl font-bold text-red-600">1668€ / an</span>}
+              text={
+                <span>
+                  <strong>Semrush</strong>
+                </span>
+              }
+            />
+            <Stat
+              stat={<span className="text-2xl font-bold text-red-600">~1550€ / an</span>}
+              text={
+                <span>
+                  <strong>Ahrefs</strong>
+                </span>
+              }
+            />
+            <Stat
+              stat={<span className="text-2xl font-bold text-red-600">708€ / an</span>}
+              text={
+                <span>
+                  <strong>Haloscan</strong>
+                </span>
+              }
+            />
+            <Stat
+              stat={<span className="text-2xl font-bold text-green-600">468€ / an</span>}
+              text={
+                <span>
+                  <strong>SerpEditor</strong> <span className="text-xs">(Tout inclus)</span>
+                </span>
+              }
+            />
+          </StatsFourColumns>
+          <Text className="mt-4">
+            Investissez l&apos;argent économisé dans la rédaction de contenu ou le netlinking. C&apos;est ça, une
+            stratégie SEO intelligente.
+          </Text>
         </Section>
 
         {/* OPTIMISATION 6 : CLUSTERING DE CONTENU & RAISONS
@@ -394,7 +413,7 @@ export default function Page() {
           subheadline={<p>Performance, Précision, Prix. Le tiercé gagnant.</p>}
         >
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-            <Card className="bg-mist-800">
+            <Card className="bg-mist-900">
               <CardContent className="p-6">
                 <Subheading className="mb-4 text-xl">Base de Mots-clés Massive</Subheading>
                 <p className="mb-4">
@@ -404,7 +423,7 @@ export default function Page() {
               </CardContent>
             </Card>
 
-            <Card className="bg-mist-800">
+            <Card className="bg-mist-900">
               <CardContent className="p-6">
                 <Subheading className="mb-4 text-xl">Données Temps Réel</Subheading>
                 <p className="mb-4">
@@ -414,7 +433,7 @@ export default function Page() {
               </CardContent>
             </Card>
 
-            <Card className="bg-mist-800">
+            <Card className="bg-mist-900">
               <CardContent className="p-6">
                 <Subheading className="mb-4 text-xl">100% Made in France 🇫🇷</Subheading>
                 <p className="mb-4">
@@ -424,7 +443,7 @@ export default function Page() {
               </CardContent>
             </Card>
 
-            <Card className="bg-mist-800">
+            <Card className="bg-mist-900">
               <CardContent className="p-6">
                 <Subheading className="mb-4 text-xl">UX/UI Moderne</Subheading>
                 <p className="mb-4">
@@ -434,17 +453,17 @@ export default function Page() {
               </CardContent>
             </Card>
 
-            <Card className="bg-mist-800">
+            <Card className="bg-mist-900">
               <CardContent className="p-6">
                 <Subheading className="mb-4 text-xl">Support Client 7j/7</Subheading>
                 <p className="mb-4">
-                  Bloqué sur une analyse ? Notre équipe d&apos;experts SEO vous répond en moins de 2h via le chat
+                  Bloqué sur une analyse ? Notre équipe d&apos;experts SEO vous répond en moins de 24h via le chat
                   intégré.
                 </p>
               </CardContent>
             </Card>
 
-            <Card className="bg-mist-800">
+            <Card className="bg-mist-900">
               <CardContent className="p-6">
                 <Subheading className="mb-4 text-xl">Liberté Totale</Subheading>
                 <p className="mb-4">
@@ -524,7 +543,7 @@ export default function Page() {
         {/* OPTIMISATION 7 : FAQ SÉMANTIQUE (Targeting Featured Snippets)
            On répond aux questions "C'est quoi un outil SEO ?" indirectement.
         */}
-        <FAQsTwoColumnAccordion id="faqs" headline="Questions fréquentes sur notre logiciel de référencement">
+        <FAQsTwoColumnAccordion id="faqs" headline="Questions fréquentes sur notre outil de référencement">
           <Faq
             id="faq-1"
             question="Qu'est-ce qu'un outil SEO tout-en-un ?"
@@ -543,7 +562,7 @@ export default function Page() {
           <Faq
             id="faq-4"
             question="Les données sont-elles fiables pour le marché français ?"
-            answer="Absolument. Nous utilisons DataForSEO, le leader mondial de la donnée SEO via API. Nous disposons de 213 millions de mots-clés spécifiquement pour la France, ce qui nous rend souvent plus précis que les outils américains sur les requêtes locales."
+            answer="Oui. SerpEditor s’appuie sur une base de données SEO optimisée pour le marché français, avec plus de 200 millions de mots-clés et des millions de pages analysées en continu. Nos données sont recalculées et recoupées régulièrement pour offrir une précision bien supérieure aux outils généralistes internationaux."
           />
           <Faq
             id="faq-5"
@@ -556,7 +575,11 @@ export default function Page() {
           eyebrow="Prêt à booster votre trafic Google ?"
           headline="Rejoignez les experts SEO qui ont choisi la performance au juste prix."
           subheadline="Rejoignez les experts SEO qui ont choisi la performance au juste prix."
-          cta="Commencer mon essai gratuit"
+          cta={
+            <ButtonLink href="/register" size="lg">
+              Commencer mon essai gratuit de 7 jours (Sans CB)
+            </ButtonLink>
+          }
         />
       </Main>
 
@@ -564,11 +587,11 @@ export default function Page() {
         id="footer"
         cta={
           <NewsletterForm
-            headline="Stay in the loop"
+            headline="Restez en avance en SEO"
             subheadline={
               <p>
-                Get customer support tips, product updates and customer stories that you can archive as soon as they
-                arrive.
+                Recevez chaque semaine des conseils pratiques, des astuces SEO, et des mises à jour de notre outil pour
+                booster votre visibilité en ligne directement dans votre boîte mail.
               </p>
             }
             action="#"
@@ -576,38 +599,30 @@ export default function Page() {
         }
         links={
           <>
-            <FooterCategory title="Product">
-              <FooterLink href="#">Features</FooterLink>
-              <FooterLink href="#">Pricing</FooterLink>
-              <FooterLink href="#">Integrations</FooterLink>
-            </FooterCategory>
-            <FooterCategory title="Company">
-              <FooterLink href="#">About</FooterLink>
-              <FooterLink href="#">Careers</FooterLink>
-              <FooterLink href="#">Blog</FooterLink>
-              <FooterLink href="#">Press Kit</FooterLink>
+            <FooterCategory title="Fonctionnalités">
+              <FooterLink href="/features/recherche-mots-cles">Recherche de mots-clés</FooterLink>
+              <FooterLink href="/features/analyse-mots-cles-concurrents">Analyse Mots-Clés Concurrents</FooterLink>
+              <FooterLink href="/features/analyse-seo">Analyse SEO</FooterLink>
+              <FooterLink href="/features/suivi-position-seo">Suivi de position SEO</FooterLink>
+              <FooterLink href="/features/analyse-backlinks">Analyse de backlinks</FooterLink>
             </FooterCategory>
             <FooterCategory title="Resources">
-              <FooterLink href="#">Help Center</FooterLink>
-              <FooterLink href="#">API Docs</FooterLink>
-              <FooterLink href="#">Status</FooterLink>
-              <FooterLink href="#">Contact</FooterLink>
+              <FooterLink href="/blog">Blog</FooterLink>
+              <FooterLink href="/outils-seo-gratuits">Outils SEO Gratuits</FooterLink>
+              <FooterLink href="/contact">Contact</FooterLink>
             </FooterCategory>
             <FooterCategory title="Legal">
-              <FooterLink href="#">Privacy Policy</FooterLink>
-              <FooterLink href="#">Terms of Service</FooterLink>
-              <FooterLink href="#">Security</FooterLink>
+              <FooterLink href="/privacy-policy">Privacy Policy</FooterLink>
+              <FooterLink href="/mentions-legales">Mentions Légales</FooterLink>
+              <FooterLink href="/conditions-generales-vente">Conditions Générales de Vente</FooterLink>
             </FooterCategory>
           </>
         }
-        fineprint="© 2025 Oatmeal, Inc."
+        fineprint="© 2025 SerpEditor, Inc."
         socialLinks={
           <>
             <SocialLink href="https://x.com" name="X">
               <XIcon />
-            </SocialLink>
-            <SocialLink href="https://github.com" name="GitHub">
-              <GitHubIcon />
             </SocialLink>
             <SocialLink href="https://www.youtube.com" name="YouTube">
               <YouTubeIcon />

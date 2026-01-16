@@ -1,6 +1,5 @@
 import { ButtonLink, PlainButtonLink } from '@/components/elements/button'
 import { Main } from '@/components/elements/main'
-import { GitHubIcon } from '@/components/icons/social/github-icon'
 import { XIcon } from '@/components/icons/social/x-icon'
 import { YouTubeIcon } from '@/components/icons/social/youtube-icon'
 import { DocumentCentered } from '@/components/sections/document-centered'
@@ -16,6 +15,7 @@ import {
   NavbarLogo,
   NavbarWithLinksActionsAndCenteredLogo,
 } from '@/components/sections/navbar-with-links-actions-and-centered-logo'
+import Image from 'next/image'
 
 export default function Page() {
   return (
@@ -24,26 +24,20 @@ export default function Page() {
         id="navbar"
         links={
           <>
-            <NavbarLink href="#">Pricing</NavbarLink>
-            <NavbarLink href="#">About</NavbarLink>
-            <NavbarLink href="#">Docs</NavbarLink>
-            <NavbarLink href="#" className="sm:hidden">
-              Log in
+            <NavbarLink href="/features">Fonctionnalités</NavbarLink>
+            <NavbarLink href="/pricing">Tarifs</NavbarLink>
+            <NavbarLink href="/blog">Blog</NavbarLink>
+            <NavbarLink href="/login" className="sm:hidden">
+              Connexion
             </NavbarLink>
           </>
         }
         logo={
-          <NavbarLogo href="#">
-            <img
-              src="https://assets.tailwindplus.com/logos/oatmeal-instrument.svg?color=mist-950"
-              alt="Oatmeal"
-              className="dark:hidden"
-              width={85}
-              height={28}
-            />
-            <img
-              src="https://assets.tailwindplus.com/logos/oatmeal-instrument.svg?color=white"
-              alt="Oatmeal"
+          <NavbarLogo href="/">
+            <Image src="/serpeditor.svg" alt="SerpEditor Outil SEO" className="dark:hidden" width={85} height={28} />
+            <Image
+              src="/serpeditor-white.svg"
+              alt="SerpEditor Outil SEO"
               className="not-dark:hidden"
               width={85}
               height={28}
@@ -52,10 +46,10 @@ export default function Page() {
         }
         actions={
           <>
-            <PlainButtonLink href="#" className="max-sm:hidden">
-              Log in
+            <PlainButtonLink href="/login" className="max-sm:hidden">
+              Connexion
             </PlainButtonLink>
-            <ButtonLink href="#">Get started</ButtonLink>
+            <ButtonLink href="/register">Essai Gratuit</ButtonLink>
           </>
         }
       />
@@ -67,11 +61,12 @@ export default function Page() {
           subheadline={<p>Last updated on December 19, 2025.</p>}
         >
           <p>
-            Company Inc. ("<strong>Company</strong>," "<strong>we</strong>," "<strong>us</strong>
-            ," or "<strong>our</strong>") respects your privacy and is committed to protecting your personal
-            information. This Privacy Policy describes, in general terms, how we collect, use, store, and protect
-            information when you interact with our websites, products, or services (collectively, the "
-            <strong>Services</strong>"). This policy is provided for informational purposes and is intended to be a
+            Company Inc. (&quot;<strong>Company</strong>&quot;, &quot;<strong>we</strong>&quot;, &quot;
+            <strong>us</strong>&quot; , or &quot;<strong>our</strong>&quot;) respects your privacy and is committed to
+            protecting your personal information. This Privacy Policy describes, in general terms, how we collect, use,
+            store, and protect information when you interact with our websites, products, or services (collectively, the
+            &quot;
+            <strong>Services</strong>&quot;). This policy is provided for informational purposes and is intended to be a
             general example only.
           </p>
           <h2>Information We Collect and How We Use It</h2>
@@ -115,9 +110,9 @@ export default function Page() {
             information under applicable laws.
           </p>
           <p>
-            We may update this Privacy Policy from time to time. Any changes will be reflected by updating the "
-            <strong>Last updated</strong>" date at the top of this page. Continued use of the Services after any changes
-            indicates acceptance of the updated policy.
+            We may update this Privacy Policy from time to time. Any changes will be reflected by updating the &quot;
+            <strong>Last updated</strong>&quot; date at the top of this page. Continued use of the Services after any
+            changes indicates acceptance of the updated policy.
           </p>
           <p>If you have any questions about this Privacy Policy, please contact us at:</p>
           <p>
@@ -134,11 +129,11 @@ export default function Page() {
         id="footer"
         cta={
           <NewsletterForm
-            headline="Stay in the loop"
+            headline="Restez en avance en SEO"
             subheadline={
               <p>
-                Get customer support tips, product updates and customer stories that you can archive as soon as they
-                arrive.
+                Recevez chaque semaine des conseils pratiques, des astuces SEO, et des mises à jour de notre outil pour
+                booster votre visibilité en ligne directement dans votre boîte mail.
               </p>
             }
             action="#"
@@ -146,38 +141,30 @@ export default function Page() {
         }
         links={
           <>
-            <FooterCategory title="Product">
-              <FooterLink href="#">Features</FooterLink>
-              <FooterLink href="#">Pricing</FooterLink>
-              <FooterLink href="#">Integrations</FooterLink>
-            </FooterCategory>
-            <FooterCategory title="Company">
-              <FooterLink href="#">About</FooterLink>
-              <FooterLink href="#">Careers</FooterLink>
-              <FooterLink href="#">Blog</FooterLink>
-              <FooterLink href="#">Press Kit</FooterLink>
+            <FooterCategory title="Fonctionnalités">
+              <FooterLink href="/features/recherche-mots-cles">Recherche de mots-clés</FooterLink>
+              <FooterLink href="/features/analyse-mots-cles-concurrents">Analyse Mots-Clés Concurrents</FooterLink>
+              <FooterLink href="/features/analyse-seo">Analyse SEO</FooterLink>
+              <FooterLink href="/features/suivi-position-seo">Suivi de position SEO</FooterLink>
+              <FooterLink href="/features/analyse-backlinks">Analyse de backlinks</FooterLink>
             </FooterCategory>
             <FooterCategory title="Resources">
-              <FooterLink href="#">Help Center</FooterLink>
-              <FooterLink href="#">API Docs</FooterLink>
-              <FooterLink href="#">Status</FooterLink>
-              <FooterLink href="#">Contact</FooterLink>
+              <FooterLink href="/blog">Blog</FooterLink>
+              <FooterLink href="/outils-seo-gratuits">Outils SEO Gratuits</FooterLink>
+              <FooterLink href="/contact">Contact</FooterLink>
             </FooterCategory>
             <FooterCategory title="Legal">
-              <FooterLink href="#">Privacy Policy</FooterLink>
-              <FooterLink href="#">Terms of Service</FooterLink>
-              <FooterLink href="#">Security</FooterLink>
+              <FooterLink href="/privacy-policy">Privacy Policy</FooterLink>
+              <FooterLink href="/mentions-legales">Mentions Légales</FooterLink>
+              <FooterLink href="/conditions-generales-vente">Conditions Générales de Vente</FooterLink>
             </FooterCategory>
           </>
         }
-        fineprint="© 2025 Oatmeal, Inc."
+        fineprint="© 2025 SerpEditor, Inc."
         socialLinks={
           <>
             <SocialLink href="https://x.com" name="X">
               <XIcon />
-            </SocialLink>
-            <SocialLink href="https://github.com" name="GitHub">
-              <GitHubIcon />
             </SocialLink>
             <SocialLink href="https://www.youtube.com" name="YouTube">
               <YouTubeIcon />

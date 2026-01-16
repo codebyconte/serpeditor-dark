@@ -1,7 +1,6 @@
 import { BlogCategoryFilter, BlogPostsGrid, FeaturedPost } from '@/components/blog'
 import { ButtonLink, PlainButtonLink } from '@/components/elements/button'
 import { Main } from '@/components/elements/main'
-import { GitHubIcon } from '@/components/icons/social/github-icon'
 import { XIcon } from '@/components/icons/social/x-icon'
 import { YouTubeIcon } from '@/components/icons/social/youtube-icon'
 import {
@@ -11,6 +10,7 @@ import {
   NewsletterForm,
   SocialLink,
 } from '@/components/sections/footer-with-newsletter-form-categories-and-social-icons'
+import { HeroSimpleCentered } from '@/components/sections/hero-simple-centered'
 import {
   NavbarLink,
   NavbarLogo,
@@ -40,9 +40,18 @@ import { Suspense } from 'react'
 const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
 
 export const metadata: Metadata = {
-  title: 'Blog - Articles SEO et Marketing Digital | SerpEditor',
+  title: 'Blog SEO : Actualités, Stratégies IA & Guides Référencement 2026',
   description:
-    "Découvrez nos articles sur le SEO, le marketing digital et les meilleures pratiques pour améliorer votre visibilité en ligne. Guides, tutoriels et conseils d'experts.",
+    'Le blog SEO n°1 pour maîtriser le référencement naturel. News Google, tutoriels techniques, stratégies GEO et IA. Boostez votre visibilité avec SerpEditor.',
+  keywords: [
+    'blog seo',
+    'actualité seo',
+    'veille seo',
+    'conseils référencement',
+    'stratégie seo 2026',
+    'tutoriel seo',
+    'seo ia blog',
+  ],
   alternates: {
     canonical: `${baseUrl}/blog`,
   },
@@ -265,25 +274,20 @@ export default async function BlogPage({ searchParams }: PageProps) {
         id="navbar"
         links={
           <>
-            <NavbarLink href="/pricing">Pricing</NavbarLink>
+            <NavbarLink href="/features">Fonctionnalités</NavbarLink>
+            <NavbarLink href="/pricing">Tarifs</NavbarLink>
             <NavbarLink href="/blog">Blog</NavbarLink>
             <NavbarLink href="/login" className="sm:hidden">
-              Log in
+              Connexion
             </NavbarLink>
           </>
         }
         logo={
           <NavbarLogo href="/">
+            <Image src="/serpeditor.svg" alt="SerpEditor Outil SEO" className="dark:hidden" width={85} height={28} />
             <Image
-              src="https://assets.tailwindplus.com/logos/oatmeal-instrument.svg?color=mist-950"
-              alt="SerpEditor"
-              className="dark:hidden"
-              width={85}
-              height={28}
-            />
-            <Image
-              src="https://assets.tailwindplus.com/logos/oatmeal-instrument.svg?color=white"
-              alt="SerpEditor"
+              src="/serpeditor-white.svg"
+              alt="SerpEditor Outil SEO"
               className="not-dark:hidden"
               width={85}
               height={28}
@@ -293,52 +297,21 @@ export default async function BlogPage({ searchParams }: PageProps) {
         actions={
           <>
             <PlainButtonLink href="/login" className="max-sm:hidden">
-              Log in
+              Connexion
             </PlainButtonLink>
-            <ButtonLink href="/register">Get started</ButtonLink>
+            <ButtonLink href="/register">Essai Gratuit</ButtonLink>
           </>
         }
       />
-
       <Main>
         {/* Hero Section - Simple comme les autres pages */}
-        <section className="py-16">
-          <div className="mx-auto max-w-7xl px-6 lg:px-8">
-            {/* Breadcrumb amélioré */}
-            <nav aria-label="Breadcrumb" className="mb-8">
-              <ol className="flex items-center gap-2 text-sm">
-                <li>
-                  <Link
-                    href="/"
-                    className="hover:text-primary dark:hover:text-primary text-mist-700 transition-colors dark:text-mist-400"
-                  >
-                    Accueil
-                  </Link>
-                </li>
-                <li className="text-mist-500 dark:text-mist-600">/</li>
-                <li className="font-medium text-mist-950 dark:text-white">Blog</li>
-                {currentCategory && (
-                  <>
-                    <li className="text-mist-500 dark:text-mist-600">/</li>
-                    <li className="text-primary font-medium">
-                      {categories.find((c) => c.slug.current === currentCategory)?.title}
-                    </li>
-                  </>
-                )}
-              </ol>
-            </nav>
-
-            {/* Hero Content amélioré */}
-            <div className="mx-auto max-w-4xl text-center">
-              <h1 className="font-display text-4xl font-bold tracking-tight text-mist-950 sm:text-5xl lg:text-6xl dark:text-white">
-                Notre <span className="text-primary">Blog</span>
-              </h1>
-              <p className="mt-6 text-lg leading-relaxed text-mist-700 sm:text-xl dark:text-mist-400">
-                Découvrez nos articles, guides et tutoriels sur le SEO, le marketing digital et les meilleures pratiques
-                pour booster votre visibilité en ligne.
-              </p>
-            </div>
-
+        <HeroSimpleCentered
+          eyebrow="Blog SEO"
+          headline="Blog SEO — Le Guide Ultime de la Visibilité Organique en 2026"
+          subheadline="Le monde du référencement naturel évolue plus vite que jamais. Entre les mises à jour d’algorithmes de Google et l’émergence des moteurs de réponse comme Perplexity ou ChatGPT Search, rester informé est une nécessité vitale. Notre blog SEO est conçu pour vous offrir une veille stratégique, des tests techniques réels et des guides actionnables pour dominer la SERP."
+        />
+        <section className="mx-auto max-w-7xl px-6 py-16 lg:px-8">
+          <div className="mx-auto max-w-4xl text-center">
             {/* Stats améliorées */}
             <div className="mx-auto mt-16 grid max-w-4xl gap-6 sm:grid-cols-3">
               <StatCard icon={BookOpen} value={stats.totalPosts} label="Articles publiés" />
@@ -478,34 +451,34 @@ export default async function BlogPage({ searchParams }: PageProps) {
         id="footer"
         cta={
           <NewsletterForm
-            headline="Restez informé"
+            headline="Restez en avance en SEO"
             subheadline={
-              <p>Recevez nos derniers articles sur le SEO et le marketing digital directement dans votre boîte mail.</p>
+              <p>
+                Recevez chaque semaine des conseils pratiques, des astuces SEO, et des mises à jour de notre outil pour
+                booster votre visibilité en ligne directement dans votre boîte mail.
+              </p>
             }
             action="#"
           />
         }
         links={
           <>
-            <FooterCategory title="Product">
-              <FooterLink href="/pricing">Pricing</FooterLink>
-              <FooterLink href="#">Features</FooterLink>
-              <FooterLink href="#">Integrations</FooterLink>
-            </FooterCategory>
-            <FooterCategory title="Company">
-              <FooterLink href="#">About</FooterLink>
-              <FooterLink href="#">Careers</FooterLink>
-              <FooterLink href="/blog">Blog</FooterLink>
+            <FooterCategory title="Fonctionnalités">
+              <FooterLink href="/features/recherche-mots-cles">Recherche de mots-clés</FooterLink>
+              <FooterLink href="/features/analyse-mots-cles-concurrents">Analyse Mots-Clés Concurrents</FooterLink>
+              <FooterLink href="/features/analyse-seo">Analyse SEO</FooterLink>
+              <FooterLink href="/features/suivi-position-seo">Suivi de position SEO</FooterLink>
+              <FooterLink href="/features/analyse-backlinks">Analyse de backlinks</FooterLink>
             </FooterCategory>
             <FooterCategory title="Resources">
-              <FooterLink href="#">Help Center</FooterLink>
-              <FooterLink href="#">API Docs</FooterLink>
-              <FooterLink href="#">Contact</FooterLink>
+              <FooterLink href="/blog">Blog</FooterLink>
+              <FooterLink href="/outils-seo-gratuits">Outils SEO Gratuits</FooterLink>
+              <FooterLink href="/contact">Contact</FooterLink>
             </FooterCategory>
             <FooterCategory title="Legal">
               <FooterLink href="/privacy-policy">Privacy Policy</FooterLink>
-              <FooterLink href="#">Terms of Service</FooterLink>
-              <FooterLink href="#">Security</FooterLink>
+              <FooterLink href="/mentions-legales">Mentions Légales</FooterLink>
+              <FooterLink href="/conditions-generales-vente">Conditions Générales de Vente</FooterLink>
             </FooterCategory>
           </>
         }
@@ -514,9 +487,6 @@ export default async function BlogPage({ searchParams }: PageProps) {
           <>
             <SocialLink href="https://x.com" name="X">
               <XIcon />
-            </SocialLink>
-            <SocialLink href="https://github.com" name="GitHub">
-              <GitHubIcon />
             </SocialLink>
             <SocialLink href="https://www.youtube.com" name="YouTube">
               <YouTubeIcon />
