@@ -7,7 +7,7 @@ import { Plus } from 'lucide-react'
 import { useState } from 'react'
 
 export function OpenModal() {
-  let [isOpen, setIsOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(false)
 
   const requestGoogleAccess = async () => {
     await authClient.linkSocial({
