@@ -61,9 +61,13 @@ function plans(option: string) {
           'Support prioritaire',
         ]}
         cta={
-          <ButtonLink href="/register" size="lg">
+           <form action="/api/checkout_sessions" method="POST">
+      <section>
+            <SoftButtonLink href="/register" size="lg">
           Commencer le plan Pro →
-          </ButtonLink>
+       </SoftButtonLink>
+           </section>
+    </form>
         }
       />
       <Plan

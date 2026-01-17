@@ -3,6 +3,7 @@ import { betterAuth } from 'better-auth'
 import { prismaAdapter } from 'better-auth/adapters/prisma'
 import { nextCookies } from 'better-auth/next-js'
 import { Resend } from 'resend'
+import { createFreeSubscription } from './subscription-utils'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
@@ -234,5 +235,26 @@ export const auth = betterAuth({
       allowDifferentEmails: true,
     },
   },
-  plugins: [nextCookies()],
+  plugins: [
+    nextCookies(),
+    {
+      id: 'create-free-subscription',
+      hooks: {
+        user: {
+          created: {
+            after: async ({ user }) => {
+              try {
+                // Créer un abonnement Free par défaut pour le nouvel utilisateur
+                await createFreeSubscription(user.id)
+                console.log(`Free subscription created for user ${user.id}`)
+              } catch (error) {
+                console.error('Error creating free subscription on user creation:', error)
+                // Ne pas bloquer la création de l'utilisateur si l'abonnement échoue
+              }
+            },
+          },
+        },
+      },
+    },
+  ],
 })

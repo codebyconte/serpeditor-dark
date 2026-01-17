@@ -14,6 +14,7 @@ import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@/c
 import { authClient, useSession } from '@/lib/auth-client'
 import { BadgeCheck, Bell, ChevronsUpDown, CreditCard, LogOut, Sparkles } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 
 export function NavUser() {
   const { isMobile } = useSidebar()
@@ -71,33 +72,30 @@ export function NavUser() {
                 </div>
               </div>
             </DropdownMenuLabel>
-            <DropdownMenuSeparator />
+            <DropdownMenuSeparator className="border-mist-400 border" />
             <DropdownMenuGroup>
-              <DropdownMenuItem className="hover:cursor-pointer hover:bg-mist-500">
+              <DropdownMenuItem className="hover:cursor-pointer hover:bg-mist-500" asChild>
+                <Link href="/dashboard/abonnement">
                 <Sparkles />
-                Upgrade to Pro
+               Passez au niveau supérieur
+                </Link>
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem className="hover:cursor-pointer hover:bg-mist-500">
+              <DropdownMenuItem className="hover:cursor-pointer hover:bg-mist-500" asChild>
+                <Link href="/dashboard/account">
                 <BadgeCheck />
-                Account
+                Compte
+                </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem className="hover:cursor-pointer hover:bg-mist-500">
-                <CreditCard />
-                Billing
-              </DropdownMenuItem>
-              <DropdownMenuItem className="hover:cursor-pointer hover:bg-mist-500">
-                <Bell />
-                Notifications
-              </DropdownMenuItem>
+           
+            
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleSignOut} className="hover:cursor-pointer hover:bg-mist-500">
               <LogOut />
-              Log out
-            </DropdownMenuItem>
+Deconnexion            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>

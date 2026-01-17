@@ -265,16 +265,36 @@ model session {
 }
 
 model user {
-  id            String    @id
+  id            String        @id
   name          String
-  email         String    @unique
-  emailVerified Boolean   @default(false)
+  email         String        @unique
+  emailVerified Boolean       @default(false)
   image         String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @default(now())
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @default(now())
   account       account[]
   project       project[]
   session       session[]
+  subscription  subscription?
+}
+
+model subscription {
+  id                String    @id @default(cuid())
+  userId            String    @unique
+  plan              String    @default("Free") // Free, Pro, Agency
+  stripeCustomerId  String?
+  stripeSubscriptionId String?
+  stripePriceId     String?
+  status            String?   // active, canceled, past_due, etc.
+  currentPeriodStart DateTime?
+  currentPeriodEnd   DateTime?
+  cancelAtPeriodEnd  Boolean  @default(false)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  user              user      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([stripeSubscriptionId])
 }
 
 model verification {
