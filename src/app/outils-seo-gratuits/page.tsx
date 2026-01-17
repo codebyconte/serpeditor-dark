@@ -25,6 +25,8 @@ import { Divider } from '@/components/ui/divider'
 import { ExternalLink } from 'lucide-react'
 import type { Metadata } from 'next'
 import Image from 'next/image'
+import { FacebookIcon } from '@/components/icons/social/facebook-icon'
+import { TiktokIcon } from '@/components/icons/social/tiktok-icon'
 
 export const metadata: Metadata = {
   title: 'Outils SEO Gratuit 2026 : La Liste Ultime (Audit, Mots-Clés, IA)',
@@ -550,10 +552,9 @@ export default function OutilsSeoGratuitPage() {
             <FooterCategory title="Resources">
               <FooterLink href="/blog">Blog</FooterLink>
               <FooterLink href="/outils-seo-gratuits">Outils SEO Gratuits</FooterLink>
-              <FooterLink href="/contact">Contact</FooterLink>
             </FooterCategory>
             <FooterCategory title="Legal">
-              <FooterLink href="/privacy-policy">Privacy Policy</FooterLink>
+              <FooterLink href="/privacy-policy">Politique de confidentialité</FooterLink>
               <FooterLink href="/mentions-legales">Mentions Légales</FooterLink>
               <FooterLink href="/conditions-generales-vente">Conditions Générales de Vente</FooterLink>
             </FooterCategory>
@@ -562,11 +563,17 @@ export default function OutilsSeoGratuitPage() {
         fineprint="© 2025 SerpEditor, Inc."
         socialLinks={
           <>
-            <SocialLink href="https://x.com" name="X">
+          <SocialLink href="https://x.com/serpeditor" name="X">
               <XIcon />
             </SocialLink>
-            <SocialLink href="https://www.youtube.com" name="YouTube">
+            <SocialLink href="https://www.facebook.com/profile.php?id=61586300626787" name="Facebook">
+              <FacebookIcon />
+            </SocialLink>
+            <SocialLink href="https://www.youtube.com/channel/UCClqn8e1fy2SFNPRJZXpp3Q" name="YouTube">
               <YouTubeIcon />
+            </SocialLink>
+            <SocialLink href="https://www.tiktok.com/@serpeditor" name="TikTok">
+              <TiktokIcon />
             </SocialLink>
           </>
         }

@@ -5,6 +5,7 @@ import { Main } from '@/components/elements/main'
 import { Screenshot } from '@/components/elements/screenshot'
 import { XIcon } from '@/components/icons/social/x-icon'
 import { YouTubeIcon } from '@/components/icons/social/youtube-icon'
+import { FacebookIcon } from '@/components/icons/social/facebook-icon'
 import { Faq, FAQsTwoColumnAccordion } from '@/components/sections/faqs-two-column-accordion'
 import {
   Feature,
@@ -26,6 +27,7 @@ import {
 import { Check } from 'lucide-react'
 import type { Metadata } from 'next'
 import Image from 'next/image'
+import { TiktokIcon } from '@/components/icons/social/tiktok-icon'
 
 // SEO OPTIMISÉ POUR "LOGICIEL SEO" & "SOLUTION SEO"
 export const metadata: Metadata = {
@@ -417,10 +419,9 @@ export default function FeaturesPage() {
             <FooterCategory title="Resources">
               <FooterLink href="/blog">Blog</FooterLink>
               <FooterLink href="/outils-seo-gratuits">Outils SEO Gratuits</FooterLink>
-              <FooterLink href="/contact">Contact</FooterLink>
             </FooterCategory>
             <FooterCategory title="Legal">
-              <FooterLink href="/privacy-policy">Privacy Policy</FooterLink>
+              <FooterLink href="/privacy-policy">Politique de confidentialité</FooterLink>
               <FooterLink href="/mentions-legales">Mentions Légales</FooterLink>
               <FooterLink href="/conditions-generales-vente">Conditions Générales de Vente</FooterLink>
             </FooterCategory>
@@ -429,11 +430,17 @@ export default function FeaturesPage() {
         fineprint="© 2025 SerpEditor, Inc."
         socialLinks={
           <>
-            <SocialLink href="https://x.com" name="X">
+            <SocialLink href="https://x.com/serpeditor" name="X">
               <XIcon />
             </SocialLink>
-            <SocialLink href="https://www.youtube.com" name="YouTube">
+            <SocialLink href="https://www.facebook.com/profile.php?id=61586300626787" name="Facebook">
+              <FacebookIcon />
+            </SocialLink>
+            <SocialLink href="https://www.youtube.com/channel/UCClqn8e1fy2SFNPRJZXpp3Q" name="YouTube">
               <YouTubeIcon />
+            </SocialLink>
+            <SocialLink href="https://www.tiktok.com/@serpeditor" name="TikTok">
+              <TiktokIcon />
             </SocialLink>
           </>
         }

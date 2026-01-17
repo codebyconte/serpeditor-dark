@@ -10,9 +10,10 @@ import {
 } from '@/components/blog'
 import { ButtonLink, PlainButtonLink } from '@/components/elements/button'
 import { Main } from '@/components/elements/main'
-import { GitHubIcon } from '@/components/icons/social/github-icon'
 import { XIcon } from '@/components/icons/social/x-icon'
 import { YouTubeIcon } from '@/components/icons/social/youtube-icon'
+import { FacebookIcon } from '@/components/icons/social/facebook-icon'
+import { TiktokIcon } from '@/components/icons/social/tiktok-icon'
 import {
   FooterCategory,
   FooterLink,
@@ -971,7 +972,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
               <FooterLink href="#">Contact</FooterLink>
             </FooterCategory>
             <FooterCategory title="Legal">
-              <FooterLink href="/privacy-policy">Privacy Policy</FooterLink>
+              <FooterLink href="/privacy-policy">Politique de confidentialité</FooterLink>
               <FooterLink href="#">Terms of Service</FooterLink>
               <FooterLink href="#">Security</FooterLink>
             </FooterCategory>
@@ -980,14 +981,17 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
         fineprint="© 2025 SerpEditor, Inc."
         socialLinks={
           <>
-            <SocialLink href="https://x.com" name="X">
+            <SocialLink href="https://x.com/serpeditor" name="X">
               <XIcon />
             </SocialLink>
-            <SocialLink href="https://github.com" name="GitHub">
-              <GitHubIcon />
+            <SocialLink href="https://www.facebook.com/profile.php?id=61586300626787" name="Facebook">
+              <FacebookIcon />
             </SocialLink>
-            <SocialLink href="https://www.youtube.com" name="YouTube">
+            <SocialLink href="https://www.youtube.com/channel/UCClqn8e1fy2SFNPRJZXpp3Q" name="YouTube">
               <YouTubeIcon />
+            </SocialLink>
+            <SocialLink href="https://www.tiktok.com/@serpeditor" name="TikTok">
+              <TiktokIcon />
             </SocialLink>
           </>
         }

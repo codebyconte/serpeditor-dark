@@ -1,7 +1,6 @@
 'use client'
 
-import { GradientBackground } from '@/components/gradient'
-import { Mark } from '@/components/logo'
+
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -23,6 +22,7 @@ import { useTransition } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
+import Image from 'next/image'
 
 export function ResetPasswordForm() {
   const [isPending, startTransition] = useTransition()
@@ -65,7 +65,6 @@ export function ResetPasswordForm() {
   if (!token || error === 'Invalid token') {
     return (
       <main className="overflow-hidden bg-gray-50 dark:bg-gray-950">
-        <GradientBackground />
         <div className="isolate flex min-h-dvh items-center justify-center p-6 lg:p-8">
           <div className="w-full max-w-md space-y-4 rounded-xl bg-white p-7 shadow-md ring-1 ring-black/5 dark:bg-gray-900 dark:ring-white/10">
             <h1 className="text-base/6 font-medium text-gray-900 dark:text-white">
@@ -88,14 +87,20 @@ export function ResetPasswordForm() {
 
   return (
     <main className="overflow-hidden bg-gray-50 dark:bg-gray-950">
-      <GradientBackground />
       <div className="isolate flex min-h-dvh items-center justify-center p-6 lg:p-8">
         <div className="w-full max-w-md rounded-xl bg-white shadow-md ring-1 ring-black/5 dark:bg-gray-900 dark:ring-white/10">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="p-7">
               <div className="flex items-start">
                 <Link href="/" title="Home">
-                  <Mark className="h-9 fill-black dark:fill-white" />
+                  <Image src="/serpeditor.svg" alt="SerpEditor Outil SEO" className="dark:hidden" width={85} height={28} />
+                  <Image
+                    src="/serpeditor-white.svg"
+                    alt="SerpEditor Outil SEO"
+                    className="not-dark:hidden"
+                    width={85}
+                    height={28}
+                  />
                 </Link>
               </div>
               <h1 className="mt-8 text-base/6 font-medium text-gray-900 dark:text-white">

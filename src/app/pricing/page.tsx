@@ -4,6 +4,8 @@ import { Main } from '@/components/elements/main'
 import { ChevronIcon } from '@/components/icons/chevron-icon'
 import { XIcon } from '@/components/icons/social/x-icon'
 import { YouTubeIcon } from '@/components/icons/social/youtube-icon'
+import { FacebookIcon } from '@/components/icons/social/facebook-icon'
+import { TiktokIcon } from '@/components/icons/social/tiktok-icon'
 import { CallToActionSimpleCentered } from '@/components/sections/call-to-action-simple-centered'
 import { FAQsAccordion, Faq } from '@/components/sections/faqs-accordion'
 import {
@@ -426,10 +428,9 @@ export default function Page() {
             <FooterCategory title="Resources">
               <FooterLink href="/blog">Blog</FooterLink>
               <FooterLink href="/outils-seo-gratuits">Outils SEO Gratuits</FooterLink>
-              <FooterLink href="/contact">Contact</FooterLink>
             </FooterCategory>
             <FooterCategory title="Legal">
-              <FooterLink href="/privacy-policy">Privacy Policy</FooterLink>
+              <FooterLink href="/privacy-policy">Politique de confidentialité</FooterLink>
               <FooterLink href="/mentions-legales">Mentions Légales</FooterLink>
               <FooterLink href="/conditions-generales-vente">Conditions Générales de Vente</FooterLink>
             </FooterCategory>
@@ -438,11 +439,17 @@ export default function Page() {
         fineprint="© 2025 SerpEditor, Inc."
         socialLinks={
           <>
-            <SocialLink href="https://x.com" name="X">
+            <SocialLink href="https://x.com/serpeditor" name="X">
               <XIcon />
             </SocialLink>
-            <SocialLink href="https://www.youtube.com" name="YouTube">
+            <SocialLink href="https://www.facebook.com/profile.php?id=61586300626787" name="Facebook">
+              <FacebookIcon />
+            </SocialLink>
+            <SocialLink href="https://www.youtube.com/channel/UCClqn8e1fy2SFNPRJZXpp3Q" name="YouTube">
               <YouTubeIcon />
+            </SocialLink>
+            <SocialLink href="https://www.tiktok.com/@serpeditor" name="TikTok">
+              <TiktokIcon />
             </SocialLink>
           </>
         }

@@ -1,6 +1,5 @@
 'use client'
 
-import { Mark } from '@/components/logo'
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -23,6 +22,7 @@ import { useForm } from 'react-hook-form'
 import { FcGoogle } from 'react-icons/fc'
 import { toast } from 'sonner'
 import { z } from 'zod'
+import Image from 'next/image'
 
 export function LoginForm() {
   const router = useRouter()
@@ -108,7 +108,14 @@ export function LoginForm() {
             <form onSubmit={form.handleSubmit(onSubmit)} className="p-7">
               <div className="flex items-start">
                 <Link href="/" title="Home">
-                  <Mark className="h-9 fill-black dark:fill-white" />
+                  <Image src="/serpeditor.svg" alt="SerpEditor Outil SEO" className="dark:hidden" width={85} height={28} />
+                  <Image
+                    src="/serpeditor-white.svg"
+                    alt="SerpEditor Outil SEO"
+                    className="not-dark:hidden"
+                    width={85}
+                    height={28}
+                  />
                 </Link>
               </div>
               <h1 className="mt-8 text-base/6 font-medium text-gray-900 dark:text-white">

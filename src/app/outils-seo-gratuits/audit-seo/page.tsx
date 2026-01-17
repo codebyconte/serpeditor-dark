@@ -7,6 +7,7 @@ import { YouTubeIcon } from '@/components/icons/social/youtube-icon'
 import { CallToActionSimple } from '@/components/sections/call-to-action-simple'
 import { Faq, FAQsTwoColumnAccordion } from '@/components/sections/faqs-two-column-accordion'
 import { Feature, FeaturesThreeColumn } from '@/components/sections/features-three-column'
+import { TiktokIcon } from '@/components/icons/social/tiktok-icon'
 import {
   FooterCategory,
   FooterLink,
@@ -39,6 +40,7 @@ import {
 import type { Metadata } from 'next'
 import Image from 'next/image'
 import { AuditSeoForm } from './audit-seo-form'
+import { FacebookIcon } from '@/components/icons/social/facebook-icon'
 
 export const metadata: Metadata = {
   title: 'Audit SEO Gratuit : Analysez votre Site en 60s',
@@ -815,10 +817,9 @@ export default function AuditSeoPage() {
             <FooterCategory title="Resources">
               <FooterLink href="/blog">Blog</FooterLink>
               <FooterLink href="/outils-seo-gratuits">Outils SEO Gratuits</FooterLink>
-              <FooterLink href="/contact">Contact</FooterLink>
             </FooterCategory>
             <FooterCategory title="Legal">
-              <FooterLink href="/privacy-policy">Privacy Policy</FooterLink>
+              <FooterLink href="/privacy-policy">Politique de confidentialité</FooterLink>
               <FooterLink href="/mentions-legales">Mentions Légales</FooterLink>
               <FooterLink href="/conditions-generales-vente">Conditions Générales de Vente</FooterLink>
             </FooterCategory>
@@ -827,11 +828,17 @@ export default function AuditSeoPage() {
         fineprint="© 2025 SerpEditor, Inc."
         socialLinks={
           <>
-            <SocialLink href="https://x.com" name="X">
+            <SocialLink href="https://x.com/serpeditor" name="X">
               <XIcon />
             </SocialLink>
-            <SocialLink href="https://www.youtube.com" name="YouTube">
+            <SocialLink href="https://www.facebook.com/profile.php?id=61586300626787" name="Facebook">
+              <FacebookIcon />
+            </SocialLink>
+            <SocialLink href="https://www.youtube.com/channel/UCClqn8e1fy2SFNPRJZXpp3Q" name="YouTube">
               <YouTubeIcon />
+            </SocialLink>
+            <SocialLink href="https://www.tiktok.com/@serpeditor" name="TikTok">
+              <TiktokIcon />
             </SocialLink>
           </>
         }

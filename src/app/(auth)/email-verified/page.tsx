@@ -1,4 +1,3 @@
-import { GradientBackground } from '@/components/gradient'
 import { Button } from '@/components/ui/button'
 import { Check } from 'lucide-react'
 import type { Metadata } from 'next'
@@ -13,7 +12,6 @@ export const metadata: Metadata = {
 export default async function EmailVerifiedPage() {
   return (
     <main className="overflow-hidden bg-gray-50 dark:bg-gray-950">
-      <GradientBackground />
       <div className="mx-auto flex min-h-screen flex-col items-center justify-center px-4 text-center">
         <div className="flex w-full max-w-md flex-col items-center justify-center space-y-6 rounded-xl bg-white p-12 shadow-md ring-1 ring-black/5 dark:bg-gray-900 dark:ring-white/10">
           <div className="rounded-full bg-green-100 p-4 dark:bg-green-900/30">
