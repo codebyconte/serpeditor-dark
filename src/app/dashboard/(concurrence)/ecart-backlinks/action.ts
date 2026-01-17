@@ -1,6 +1,7 @@
 'use server'
 
 import { auth } from '@/lib/auth'
+import { checkAndIncrementUsage } from '@/lib/usage-utils'
 import { headers } from 'next/headers'
 
 // Types pour Domain Intersection
@@ -82,6 +83,8 @@ export async function getDomainIntersection(options: {
   success: boolean
   data?: DomainIntersectionResponse
   error?: string
+  limitReached?: boolean
+  upgradeRequired?: boolean
 }> {
   try {
     // Authentification avec Better Auth
@@ -89,8 +92,19 @@ export async function getDomainIntersection(options: {
       headers: await headers(),
     })
 
-    if (!session?.user) {
+    if (!session?.user?.id) {
       return { success: false, error: 'Non authentifié' }
+    }
+
+    // Vérification des limites d'usage
+    const usageCheck = await checkAndIncrementUsage(session.user.id, 'backlinkAnalyses')
+    if (!usageCheck.allowed) {
+      return {
+        success: false,
+        error: usageCheck.message,
+        limitReached: true,
+        upgradeRequired: true,
+      }
     }
 
     // Valider qu'on a au moins 2 targets

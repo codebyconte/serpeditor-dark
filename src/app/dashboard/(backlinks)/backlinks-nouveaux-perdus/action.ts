@@ -1,6 +1,9 @@
 // 📁 app/dashboard/backlinks/nouveaux-perdus/action.ts
 'use server'
 
+import { auth } from '@/lib/auth'
+import { checkAndIncrementUsage } from '@/lib/usage-utils'
+import { headers } from 'next/headers'
 import { z } from 'zod'
 
 const newLostBacklinksSchema = z.object({
@@ -12,6 +15,8 @@ export interface NewLostBacklinksState {
   error?: string
   result?: NewLostBacklinksResult
   cost?: number
+  limitReached?: boolean
+  upgradeRequired?: boolean
 }
 
 export interface NewLostBacklinksResult {
@@ -39,6 +44,29 @@ export async function fetchNewLostBacklinks(
   formData: FormData,
 ): Promise<NewLostBacklinksState> {
   try {
+    // Vérifier l'authentification
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    })
+
+    if (!session?.user?.id) {
+      return {
+        success: false,
+        error: 'Vous devez être connecté pour effectuer cette action',
+      }
+    }
+
+    // Vérification des limites d'usage
+    const usageCheck = await checkAndIncrementUsage(session.user.id, 'backlinkAnalyses')
+    if (!usageCheck.allowed) {
+      return {
+        success: false,
+        error: usageCheck.message,
+        limitReached: true,
+        upgradeRequired: true,
+      }
+    }
+
     // Extraction des données
     const rawTarget = formData.get('target')
 

@@ -1,6 +1,7 @@
 'use server'
 
 import { auth } from '@/lib/auth'
+import { checkAndIncrementUsage } from '@/lib/usage-utils'
 import { headers } from 'next/headers'
 
 // Types pour Domain WHOIS
@@ -94,7 +95,7 @@ export async function getDomainWhoisOverview(options?: {
   limit?: number
   offset?: number
   tag?: string
-}): Promise<{ success: boolean; data?: DomainWhoisResponse; error?: string }> {
+}): Promise<{ success: boolean; data?: DomainWhoisResponse; error?: string; limitReached?: boolean }> {
   try {
     // Authentification avec Better Auth
     const session = await auth.api.getSession({
@@ -103,6 +104,16 @@ export async function getDomainWhoisOverview(options?: {
 
     if (!session?.user) {
       return { success: false, error: 'Non authentifié' }
+    }
+
+    // Vérification des limites d'usage pour les analyses de domaines
+    const usageCheck = await checkAndIncrementUsage(session.user.id, 'domainAnalyses')
+    if (!usageCheck.allowed) {
+      return {
+        success: false,
+        error: usageCheck.message || 'Limite d\'analyses de domaines atteinte',
+        limitReached: true,
+      }
     }
 
     // Validations

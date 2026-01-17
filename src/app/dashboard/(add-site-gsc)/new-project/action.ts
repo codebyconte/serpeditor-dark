@@ -2,6 +2,7 @@
 
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { checkUsageLimit } from '@/lib/usage-utils'
 import { headers } from 'next/headers'
 import { z } from 'zod'
 
@@ -25,6 +26,18 @@ export async function addSiteToProject({ siteUrl }: { siteUrl: string }) {
       return {
         success: false,
         error: 'Vous devez être connecté',
+      }
+    }
+
+    // Vérification de la limite de projets
+    const usageCheck = await checkUsageLimit(session.user.id, 'projects')
+    if (!usageCheck.allowed) {
+      return {
+        success: false,
+        message: usageCheck.message,
+        limitReached: true,
+        currentUsage: usageCheck.currentUsage,
+        limit: usageCheck.limit,
       }
     }
 

@@ -1,5 +1,8 @@
 'use server'
 
+import { auth } from '@/lib/auth'
+import { checkAndIncrementUsage } from '@/lib/usage-utils'
+import { headers } from 'next/headers'
 import { z } from 'zod'
 
 const AIKeywordDataSchema = z.object({
@@ -177,6 +180,27 @@ export async function fetchAIKeywordData(
   console.log("🔍 Début de l'analyse AI Keyword Data...")
 
   try {
+    // Vérifier l'authentification
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    })
+
+    if (!session?.user?.id) {
+      return {
+        success: false,
+        error: 'Vous devez être connecté pour effectuer cette action',
+      }
+    }
+
+    // Vérification des limites d'usage pour la visibilité IA
+    const usageCheck = await checkAndIncrementUsage(session.user.id, 'aiVisibilityRequests')
+    if (!usageCheck.allowed) {
+      return {
+        success: false,
+        error: usageCheck.message || 'Limite de requêtes Visibilité IA atteinte. Cette fonctionnalité n\'est pas disponible avec le forfait gratuit.',
+      }
+    }
+
     // Extraction et validation des données du formulaire
     const rawData = {
       keywords: formData.get('keywords') as string,
@@ -337,6 +361,27 @@ export async function fetchLLMMentions(
   console.log("🔍 Début de l'analyse LLM Mentions...")
 
   try {
+    // Vérifier l'authentification
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    })
+
+    if (!session?.user?.id) {
+      return {
+        success: false,
+        error: 'Vous devez être connecté pour effectuer cette action',
+      }
+    }
+
+    // Vérification des limites d'usage pour la visibilité IA
+    const usageCheck = await checkAndIncrementUsage(session.user.id, 'aiVisibilityRequests')
+    if (!usageCheck.allowed) {
+      return {
+        success: false,
+        error: usageCheck.message || 'Limite de requêtes Visibilité IA atteinte. Cette fonctionnalité n\'est pas disponible avec le forfait gratuit.',
+      }
+    }
+
     // Extraction et validation des données du formulaire
     const rawData = {
       target_type: formData.get('target_type') as string,

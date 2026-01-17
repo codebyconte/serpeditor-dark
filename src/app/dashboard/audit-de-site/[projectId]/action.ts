@@ -2,6 +2,7 @@
 
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { checkAndIncrementUsage } from '@/lib/usage-utils'
 import { addDays } from 'date-fns'
 import { headers } from 'next/headers'
 import { z } from 'zod'
@@ -20,6 +21,7 @@ type OnPageTaskResult =
   | {
       success: false
       error: string
+      limitReached?: boolean
     }
 
 // Schéma de validation
@@ -45,6 +47,17 @@ export const onPageTask = async (url: string): Promise<OnPageTaskResult> => {
       return {
         success: false,
         error: 'Vous devez être connecté pour effectuer cette action',
+      }
+    }
+
+    // Vérification des limites d'usage pour les pages d'audit (10 pages par audit)
+    const maxCrawlPages = 10
+    const usageCheck = await checkAndIncrementUsage(session.user.id, 'auditPages', maxCrawlPages)
+    if (!usageCheck.allowed) {
+      return {
+        success: false,
+        error: usageCheck.message || 'Limite de pages d\'audit atteinte',
+        limitReached: true,
       }
     }
 
@@ -97,31 +110,26 @@ export const onPageTask = async (url: string): Promise<OnPageTaskResult> => {
       }
     }
 
-    // Appel à l'API DataForSEO
-    const response = await fetch(`${process.env.DATAFORSEO_URL}/on_page/task_post`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Basic ${process.env.DATAFORSEO_PASSWORD}`,
-        'Content-Type': 'application/json',
+    // Appel à l'API DataForSEO protégé (l'incrémentation est déjà faite plus haut)
+    // On utilise protectedDataForSEOPost avec increment=0 pour vérifier sans double comptage
+    const { protectedDataForSEOPost } = await import('@/lib/dataforseo-protection')
+    const data = await protectedDataForSEOPost<{
+      status_code: number
+      status_message?: string
+      tasks?: Array<{
+        id: string
+        status_code: number
+        status_message?: string
+      }>
+    }>(
+      session.user.id,
+      '/on_page/task_post',
+      {
+        target: validatedUrl.data,
+        max_crawl_pages: 10,
       },
-      body: JSON.stringify([
-        {
-          target: validatedUrl.data,
-          max_crawl_pages: 10,
-        },
-      ]),
-    })
-
-    if (!response.ok) {
-      const errorText = await response.text()
-      console.error('Erreur HTTP DataForSEO:', response.status, errorText)
-      return {
-        success: false,
-        error: `Erreur lors de la communication avec le service d'analyse (${response.status})`,
-      }
-    }
-
-    const data = await response.json()
+      0, // Ne pas incrémenter car déjà fait plus haut avec checkAndIncrementUsage
+    )
 
     if (data.status_code !== 20000) {
       console.error('Erreur DataForSEO:', data.status_message)
@@ -258,26 +266,27 @@ export async function checkIfTaskReady(taskId: string): Promise<CheckTaskReadyRe
       }
     }
 
-    // Appel à l'API DataForSEO
-    const response = await fetch(`${process.env.DATAFORSEO_URL}/on_page/tasks_ready`, {
-      headers: {
-        Authorization: `Basic ${process.env.DATAFORSEO_PASSWORD}`,
+    // Appel à l'API DataForSEO protégé (GET request pour vérifier le statut, ne compte pas dans les limites)
+    const { protectedDataForSEOFetch } = await import('@/lib/dataforseo-protection')
+    const data = await protectedDataForSEOFetch<{
+      status_code: number
+      status_message?: string
+      tasks?: Array<{
+        status_code: number
+        status_message?: string
+        result?: TaskResult[]
+      }>
+    }>(
+      session.user.id,
+      '/on_page/tasks_ready',
+      {
+        method: 'GET',
       },
-    })
+      0, // Ne pas compter car c'est juste une vérification de statut
+    )
 
-    if (!response.ok) {
-      const errorText = await response.text()
-      console.error('Erreur HTTP DataForSEO:', response.status, errorText)
-      return {
-        success: false,
-        error: `Erreur lors de la vérification du statut (${response.status})`,
-      }
-    }
-
-    const data = await response.json()
-
-    const readyTasks = data.tasks?.[0]?.result || []
-    const myTask = readyTasks.find((task: TaskResult) => task.id === taskId)
+    const readyTasks = (data.tasks?.[0]?.result || []) as TaskResult[]
+    const myTask = readyTasks.find((task) => task.id === taskId)
 
     // Mise à jour du statut dans la base de données
     if (myTask) {
@@ -397,23 +406,24 @@ export const onPageSummary = async (taskId: string): Promise<OnPageSummaryResult
       }
     }
 
-    // Appel à l'API DataForSEO
-    const response = await fetch(`${process.env.DATAFORSEO_URL}/on_page/summary/${taskId}`, {
-      headers: {
-        Authorization: `Basic ${process.env.DATAFORSEO_PASSWORD}`,
+    // Appel à l'API DataForSEO protégé (GET request pour récupérer les résultats, ne compte pas dans les limites)
+    const { protectedDataForSEOFetch } = await import('@/lib/dataforseo-protection')
+    const data = await protectedDataForSEOFetch<{
+      status_code: number
+      status_message?: string
+      tasks?: Array<{
+        status_code: number
+        status_message?: string
+        result?: unknown[]
+      }>
+    }>(
+      session.user.id,
+      `/on_page/summary/${taskId}`,
+      {
+        method: 'GET',
       },
-    })
-
-    if (!response.ok) {
-      const errorText = await response.text()
-      console.error('Erreur HTTP DataForSEO:', response.status, errorText)
-      return {
-        success: false,
-        error: `Erreur lors de la récupération des données (${response.status})`,
-      }
-    }
-
-    const data = await response.json()
+      0, // Ne pas compter car c'est juste une récupération de résultats déjà générés
+    )
 
     // Vérification du code de statut de l'API
     if (data.status_code !== 20000) {

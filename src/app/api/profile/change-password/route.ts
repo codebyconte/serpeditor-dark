@@ -2,12 +2,8 @@ import { NextResponse } from 'next/server'
 import { headers } from 'next/headers'
 import { auth } from '@/lib/auth'
 import { z } from 'zod'
-
-// Note: Pour implémenter le changement de mot de passe direct, installez bcryptjs:
-// npm install bcryptjs @types/bcryptjs
-// Puis décommentez l'import et le code ci-dessous
-// import { prisma } from '@/lib/prisma'
-// import { hash } from 'bcryptjs'
+ import { prisma } from '@/lib/prisma'
+ import { hash } from 'bcryptjs'
 
 const changePasswordSchema = z.object({
   currentPassword: z.string().min(1, 'Le mot de passe actuel est requis'),
@@ -73,7 +69,6 @@ export async function POST(request: Request) {
       { status: 501 }
     )
     
-    /* Code pour changer le mot de passe directement (nécessite bcryptjs):
     try {
       // Trouver le compte email/password de l'utilisateur
       const account = await prisma.account.findFirst({
@@ -107,7 +102,7 @@ export async function POST(request: Request) {
         { status: 500 }
       )
     }
-    */
+  
 
     return NextResponse.json({
       success: true,

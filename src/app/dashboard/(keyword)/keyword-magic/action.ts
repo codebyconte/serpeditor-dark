@@ -2,6 +2,7 @@
 'use server'
 
 import { auth } from '@/lib/auth'
+import { checkAndIncrementUsage } from '@/lib/usage-utils'
 import { headers } from 'next/headers'
 import { API_CONFIG, DEFAULT_PARAMS } from './config'
 import type { APIResponse, KeywordItem, KeywordMagicParams } from './types'
@@ -27,6 +28,17 @@ async function validateSession() {
 }
 
 /**
+ * Vérification des limites d'usage pour les recherches de mots-clés
+ */
+async function checkKeywordSearchLimit(userId: string) {
+  const usageCheck = await checkAndIncrementUsage(userId, 'keywordSearches')
+  if (!usageCheck.allowed) {
+    throw new Error(usageCheck.message || 'Limite de recherches de mots-clés atteinte')
+  }
+  return usageCheck
+}
+
+/**
  * Headers de base pour les requêtes API
  */
 function getApiHeaders() {
@@ -47,7 +59,10 @@ export async function fetchKeywordSuggestions(
 
   try {
     // Validation
-    await validateSession()
+    const session = await validateSession()
+
+    // Vérification des limites d'usage
+    await checkKeywordSearchLimit(session.user.id)
 
     const keywordValidation = validateKeyword(params.keyword)
     if (!keywordValidation.valid) {
@@ -151,7 +166,10 @@ export async function fetchKeywordIdeas(
 
   try {
     // Validation
-    await validateSession()
+    const session = await validateSession()
+
+    // Vérification des limites d'usage
+    await checkKeywordSearchLimit(session.user.id)
 
     if (!params.keywords || params.keywords.length === 0) {
       throw new Error('Au moins un mot-clé est requis')
@@ -258,7 +276,10 @@ export async function fetchRelatedKeywords(
 
   try {
     // Validation
-    await validateSession()
+    const session = await validateSession()
+
+    // Vérification des limites d'usage
+    await checkKeywordSearchLimit(session.user.id)
 
     const keywordValidation = validateKeyword(params.keyword)
     if (!keywordValidation.valid) {

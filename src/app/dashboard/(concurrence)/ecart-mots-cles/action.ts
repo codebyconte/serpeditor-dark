@@ -1,6 +1,7 @@
 'use server'
 
 import { auth } from '@/lib/auth'
+import { checkAndIncrementUsage } from '@/lib/usage-utils'
 import { headers } from 'next/headers'
 
 // Types pour Keyword Gap
@@ -144,15 +145,26 @@ export async function getKeywordGap(options: {
   limit?: number
   offset?: number
   includeSubdomains?: boolean
-}): Promise<{ success: boolean; data?: KeywordGapResponse; error?: string }> {
+}): Promise<{ success: boolean; data?: KeywordGapResponse; error?: string; limitReached?: boolean; upgradeRequired?: boolean }> {
   try {
     // Authentification avec Better Auth
     const session = await auth.api.getSession({
       headers: await headers(),
     })
 
-    if (!session?.user) {
+    if (!session?.user?.id) {
       return { success: false, error: 'Non authentifié' }
+    }
+
+    // Vérification des limites d'usage
+    const usageCheck = await checkAndIncrementUsage(session.user.id, 'keywordSearches')
+    if (!usageCheck.allowed) {
+      return {
+        success: false,
+        error: usageCheck.message,
+        limitReached: true,
+        upgradeRequired: true,
+      }
     }
 
     if (!options.target1 || !options.target2) {

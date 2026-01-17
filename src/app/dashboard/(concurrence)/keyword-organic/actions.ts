@@ -3,6 +3,7 @@
 
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { checkAndIncrementUsage, checkUsageLimit } from '@/lib/usage-utils'
 import { revalidatePath } from 'next/cache'
 import { headers } from 'next/headers'
 import { z } from 'zod'
@@ -18,6 +19,8 @@ export interface RankedKeywordsState {
   error?: string
   result?: RankedKeywordsResult
   cost?: number
+  limitReached?: boolean
+  upgradeRequired?: boolean
 }
 
 export interface RankedKeywordsResult {
@@ -413,6 +416,17 @@ export async function fetchRankedKeywords(
       return { success: false, error: 'Non authentifié' }
     }
 
+    // Vérification des limites d'usage
+    const usageCheck = await checkAndIncrementUsage(session.user.id, 'keywordSearches')
+    if (!usageCheck.allowed) {
+      return {
+        success: false,
+        error: usageCheck.message,
+        limitReached: true,
+        upgradeRequired: true,
+      }
+    }
+
     // Extraction des données
     const rawTarget = formData.get('target')
     const rawLimit = formData.get('limit')
@@ -462,23 +476,23 @@ export async function fetchRankedKeywords(
       },
     ]
 
-    const credentials = process.env.DATAFORSEO_PASSWORD
-
-    // Appel API DataForSEO
-    const response = await fetch(`${process.env.DATAFORSEO_URL}/dataforseo_labs/google/ranked_keywords/live`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Basic ${credentials}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(requestBody),
-    })
-
-    if (!response.ok) {
-      throw new Error(`Erreur API: ${response.status}`)
-    }
-
-    const data = await response.json()
+    // Appel API protégé (la vérification de limite est déjà faite plus haut)
+    const { protectedDataForSEOPost } = await import('@/lib/dataforseo-protection')
+    const data = await protectedDataForSEOPost<{
+      status_code: number
+      status_message?: string
+      cost?: number
+      tasks?: Array<{
+        status_code: number
+        status_message?: string
+        result?: unknown[]
+      }>
+    }>(
+      session.user.id,
+      '/dataforseo_labs/google/ranked_keywords/live',
+      requestBody[0],
+      0, // Ne pas incrémenter car déjà fait plus haut
+    )
 
     if (data.status_code !== 20000) {
       throw new Error(data.status_message || 'Erreur lors de la récupération des données')
@@ -562,7 +576,7 @@ export interface SaveKeywordData {
 export async function saveSelectedKeywords(
   projectId: string,
   keywords: SaveKeywordData[],
-): Promise<{ success: boolean; error?: string; saved?: number; skipped?: number }> {
+): Promise<{ success: boolean; error?: string; saved?: number; skipped?: number; limitReached?: boolean; upgradeRequired?: boolean }> {
   try {
     const session = await auth.api.getSession({
       headers: await headers(),
@@ -572,6 +586,17 @@ export async function saveSelectedKeywords(
       return {
         success: false,
         error: 'Non authentifié',
+      }
+    }
+
+    // Vérification des limites de mots-clés suivis
+    const usageCheck = await checkUsageLimit(session.user.id, 'trackedKeywords', keywords.length)
+    if (!usageCheck.allowed) {
+      return {
+        success: false,
+        error: usageCheck.message,
+        limitReached: true,
+        upgradeRequired: true,
       }
     }
 

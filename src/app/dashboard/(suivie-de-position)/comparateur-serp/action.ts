@@ -1,6 +1,7 @@
 'use server'
 
 import { auth } from '@/lib/auth'
+import { checkAndIncrementUsage } from '@/lib/usage-utils'
 import { headers } from 'next/headers'
 
 // Types pour Historical SERP - Structure améliorée basée sur l'API DataForSEO
@@ -166,6 +167,8 @@ export async function getHistoricalSERP(
   success: boolean
   data?: HistoricalSERPResponse
   error?: string
+  limitReached?: boolean
+  upgradeRequired?: boolean
 }> {
   try {
     // Authentification avec Better Auth
@@ -173,8 +176,19 @@ export async function getHistoricalSERP(
       headers: await headers(),
     })
 
-    if (!session?.user) {
+    if (!session?.user?.id) {
       return { success: false, error: 'Non authentifié' }
+    }
+
+    // Vérification des limites d'usage
+    const usageCheck = await checkAndIncrementUsage(session.user.id, 'serpHistories')
+    if (!usageCheck.allowed) {
+      return {
+        success: false,
+        error: usageCheck.message,
+        limitReached: true,
+        upgradeRequired: true,
+      }
     }
 
     // Validation du keyword
@@ -226,20 +240,22 @@ export async function getHistoricalSERP(
       },
     ]
 
-    const response = await fetch(`${process.env.DATAFORSEO_URL}/dataforseo_labs/google/historical_serps/live`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Basic ${process.env.DATAFORSEO_PASSWORD}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload),
-    })
-
-    if (!response.ok) {
-      throw new Error(`API Error: ${response.status} ${response.statusText}`)
-    }
-
-    const result = await response.json()
+    // Appel API protégé (la vérification de limite est déjà faite plus haut)
+    const { protectedDataForSEOPost } = await import('@/lib/dataforseo-protection')
+    const result = await protectedDataForSEOPost<{
+      status_code: number
+      status_message?: string
+      tasks?: Array<{
+        status_code: number
+        status_message?: string
+        result?: unknown[]
+      }>
+    }>(
+      session.user.id,
+      '/dataforseo_labs/google/historical_serps/live',
+      payload[0],
+      0, // Ne pas incrémenter car déjà fait plus haut
+    )
 
     if (result.status_code !== 20000) {
       return {

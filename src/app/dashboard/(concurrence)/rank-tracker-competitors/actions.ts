@@ -1,6 +1,7 @@
 'use server'
 
 import { auth } from '@/lib/auth'
+import { checkAndIncrementUsage } from '@/lib/usage-utils'
 import { headers } from 'next/headers'
 
 // Types pour l'API SERP Competitors
@@ -60,6 +61,8 @@ export async function getSERPCompetitors(
   success: boolean
   data?: SERPCompetitorsResponse
   error?: string
+  limitReached?: boolean
+  upgradeRequired?: boolean
 }> {
   try {
     const session = await auth.api.getSession({
@@ -67,6 +70,17 @@ export async function getSERPCompetitors(
     })
     if (!session?.user?.id) {
       return { success: false, error: 'Non authentifié' }
+    }
+
+    // Vérification des limites d'usage
+    const usageCheck = await checkAndIncrementUsage(session.user.id, 'keywordSearches')
+    if (!usageCheck.allowed) {
+      return {
+        success: false,
+        error: usageCheck.message,
+        limitReached: true,
+        upgradeRequired: true,
+      }
     }
 
     if (!credentials) {
@@ -146,20 +160,22 @@ export async function getSERPCompetitors(
       },
     ]
 
-    const response = await fetch(`${process.env.DATAFORSEO_URL}/dataforseo_labs/google/serp_competitors/live`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Basic ${credentials}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload),
-    })
-
-    if (!response.ok) {
-      throw new Error(`API Error: ${response.status} ${response.statusText}`)
-    }
-
-    const result = await response.json()
+    // Appel API protégé (la vérification de limite est déjà faite plus haut)
+    const { protectedDataForSEOPost } = await import('@/lib/dataforseo-protection')
+    const result = await protectedDataForSEOPost<{
+      status_code: number
+      status_message?: string
+      tasks?: Array<{
+        status_code: number
+        status_message?: string
+        result?: unknown[]
+      }>
+    }>(
+      session.user.id,
+      '/dataforseo_labs/google/serp_competitors/live',
+      payload[0],
+      0, // Ne pas incrémenter car déjà fait plus haut
+    )
 
     if (result.status_code !== 20000) {
       return {

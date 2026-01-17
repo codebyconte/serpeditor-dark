@@ -1,6 +1,7 @@
 'use server'
 
 import { auth } from '@/lib/auth'
+import { checkAndIncrementUsage } from '@/lib/usage-utils'
 import { headers } from 'next/headers'
 
 // Types pour Competitors
@@ -119,15 +120,26 @@ export async function getCompetitors(
     ignoreSynonyms?: boolean
     tag?: string
   },
-): Promise<{ success: boolean; data?: CompetitorsResponse; error?: string }> {
+): Promise<{ success: boolean; data?: CompetitorsResponse; error?: string; limitReached?: boolean; upgradeRequired?: boolean }> {
   try {
     // Authentification avec Better Auth
     const session = await auth.api.getSession({
       headers: await headers(),
     })
 
-    if (!session?.user) {
+    if (!session?.user?.id) {
       return { success: false, error: 'Non authentifié' }
+    }
+
+    // Vérification des limites d'usage
+    const usageCheck = await checkAndIncrementUsage(session.user.id, 'domainAnalyses')
+    if (!usageCheck.allowed) {
+      return {
+        success: false,
+        error: usageCheck.message,
+        limitReached: true,
+        upgradeRequired: true,
+      }
     }
 
     if (!credentials) {

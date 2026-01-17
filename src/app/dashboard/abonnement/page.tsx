@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge'
 import { SoftButton } from '@/components/elements/button'
 import { CheckCircle2, Crown, Sparkles } from 'lucide-react'
 import { CancelSubscriptionButton } from '@/components/dashboard/cancel-subscription-button'
+import { UsageStats } from '@/components/dashboard/usage-stats'
 
 type PlanType = 'Free' | 'Pro' | 'Agency'
 
@@ -230,6 +231,12 @@ export default async function AbonnementPage() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Usage actuel */}
+      <div className="mb-8">
+        <h2 className="mb-4 text-2xl font-bold tracking-tight">Votre utilisation</h2>
+        <UsageStats />
+      </div>
 
       {/* Plans disponibles */}
       <div className="mb-8">

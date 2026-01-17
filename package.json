@@ -51,6 +51,7 @@
     "@stripe/stripe-js": "^8.6.1",
     "@tabler/icons": "^3.36.1",
     "@tailwindplus/elements": "^1.0.21",
+    "bcryptjs": "^3.0.3",
     "better-auth": "^1.4.10",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

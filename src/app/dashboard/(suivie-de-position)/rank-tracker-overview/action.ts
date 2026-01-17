@@ -1,8 +1,11 @@
 'use server'
 
+import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { fetchKeywordMetrics } from '@/lib/rank-tracking/dataforseo'
+import { checkAndIncrementUsage } from '@/lib/usage-utils'
 import { randomUUID } from 'crypto'
+import { headers } from 'next/headers'
 
 // Types pour les réponses DataForSEO
 interface DataForSEOResponse<T> {
@@ -192,12 +195,32 @@ export async function getHistoricalRankOverview(
   languageCode: string = 'fr',
   dateFrom?: string,
   dateTo?: string,
-) {
+): Promise<{ success: boolean; data?: HistoricalRankOverviewResult; error?: string; limitReached?: boolean; upgradeRequired?: boolean }> {
   try {
+    // Authentification
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    })
+
+    if (!session?.user?.id) {
+      return { success: false, error: 'Non authentifié' }
+    }
+
+    // Vérification des limites d'usage
+    const usageCheck = await checkAndIncrementUsage(session.user.id, 'serpHistories')
+    if (!usageCheck.allowed) {
+      return {
+        success: false,
+        error: usageCheck.message,
+        limitReached: true,
+        upgradeRequired: true,
+      }
+    }
+
     const credentials = process.env.DATAFORSEO_PASSWORD
 
     if (!credentials) {
-      throw new Error('Credentials DataForSEO manquants')
+      return { success: false, error: 'Credentials DataForSEO manquants' }
     }
 
     const requestBody: {
@@ -225,20 +248,14 @@ export async function getHistoricalRankOverview(
       requestBody.date_to = dateTo
     }
 
-    const response = await fetch(`${process.env.DATAFORSEO_URL}/dataforseo_labs/google/historical_rank_overview/live`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Basic ${credentials}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify([requestBody]),
-    })
-
-    if (!response.ok) {
-      throw new Error(`API request failed: ${response.statusText}`)
-    }
-
-    const data: DataForSEOResponse<HistoricalRankOverviewResult> = await response.json()
+    // Appel API protégé (la vérification de limite est déjà faite plus haut)
+    const { protectedDataForSEOPost } = await import('@/lib/dataforseo-protection')
+    const data = await protectedDataForSEOPost<DataForSEOResponse<HistoricalRankOverviewResult>>(
+      session.user.id,
+      '/dataforseo_labs/google/historical_rank_overview/live',
+      requestBody,
+      0, // Ne pas incrémenter car déjà fait plus haut
+    )
 
     if (data.status_code !== 20000) {
       throw new Error(data.status_message)
@@ -328,34 +345,66 @@ export async function getTrackedKeywords(projectId?: string) {
 }
 
 // Récupérer les données détaillées d'un mot-clé
-export async function getKeywordData(keyword: string, locationCode: number = 2250, languageCode: string = 'fr') {
+export async function getKeywordData(keyword: string, locationCode: number = 2250, languageCode: string = 'fr'): Promise<{ success: boolean; data?: unknown; error?: string; limitReached?: boolean; upgradeRequired?: boolean }> {
   try {
-    const credentials = process.env.DATAFORSEO_PASSWORD
-
-    if (!credentials) {
-      throw new Error('Credentials DataForSEO manquants')
-    }
-
-    const response = await fetch(`${process.env.DATAFORSEO_URL}/dataforseo_labs/google/keyword_overview/live`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Basic ${credentials}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify([
-        {
-          keywords: [keyword],
-          location_code: locationCode,
-          language_code: languageCode,
-          include_serp_info: true,
-          include_clickstream_data: false,
-        },
-      ]),
+    // Authentification
+    const session = await auth.api.getSession({
+      headers: await headers(),
     })
 
-    if (!response.ok) {
-      throw new Error(`API request failed: ${response.statusText}`)
+    if (!session?.user?.id) {
+      return { success: false, error: 'Non authentifié' }
     }
+
+    // Vérification des limites d'usage
+    const usageCheck = await checkAndIncrementUsage(session.user.id, 'keywordSearches')
+    if (!usageCheck.allowed) {
+      return {
+        success: false,
+        error: usageCheck.message,
+        limitReached: true,
+        upgradeRequired: true,
+      }
+    }
+
+    // Appel API protégé (la vérification de limite est déjà faite plus haut)
+    const { protectedDataForSEOPost } = await import('@/lib/dataforseo-protection')
+    const data = await protectedDataForSEOPost<{
+      status_code: number
+      status_message?: string
+      tasks?: Array<{
+        status_code: number
+        status_message?: string
+        result?: Array<{
+          items?: Array<{
+            keyword_data?: {
+              keyword: string
+              keyword_info?: {
+                search_volume: number
+                cpc: number | null
+                competition: number | null
+                competition_level: string | null
+              }
+            }
+            serp_info?: Array<{
+              se_results_count: number
+              keyword_difficulty: number
+            }>
+          }>
+        }>
+      }>
+    }>(
+      session.user.id,
+      '/dataforseo_labs/google/keyword_overview/live',
+      {
+        keywords: [keyword],
+        location_code: locationCode,
+        language_code: languageCode,
+        include_serp_info: true,
+        include_clickstream_data: false,
+      },
+      0, // Ne pas incrémenter car déjà fait plus haut
+    )
 
     interface KeywordOverviewItem {
       keyword_data?: {
@@ -377,8 +426,8 @@ export async function getKeywordData(keyword: string, locationCode: number = 225
       items: KeywordOverviewItem[]
     }
 
-    const data: DataForSEOResponse<KeywordOverviewResult> = await response.json()
-
+    // Les données sont déjà récupérées par protectedDataForSEOPost
+    // Vérifier le status_code (déjà fait dans protectedDataForSEOPost mais on vérifie quand même)
     if (data.status_code !== 20000) {
       throw new Error(data.status_message)
     }
@@ -423,8 +472,17 @@ export async function getKeywordData(keyword: string, locationCode: number = 225
 }
 
 // Mettre à jour les métriques d'un mot-clé (Volume, CPC, Competition)
-export async function updateKeywordMetrics(keywordId: string) {
+export async function updateKeywordMetrics(keywordId: string): Promise<{ success: boolean; data?: unknown; error?: string; limitReached?: boolean; upgradeRequired?: boolean }> {
   try {
+    // Authentification
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    })
+
+    if (!session?.user?.id) {
+      return { success: false, error: 'Non authentifié' }
+    }
+
     const keyword = await prisma.keyword.findUnique({
       where: { id: keywordId },
     })
@@ -436,8 +494,13 @@ export async function updateKeywordMetrics(keywordId: string) {
       }
     }
 
-    // Charger les métriques depuis l'API
-    const metricsResult = await fetchKeywordMetrics(keyword.keyword, keyword.locationCode, keyword.languageCode)
+    // Charger les métriques depuis l'API (protégé automatiquement)
+    const metricsResult = await fetchKeywordMetrics(
+      keyword.keyword,
+      keyword.locationCode,
+      keyword.languageCode,
+      session.user.id,
+    )
 
     if (!metricsResult.success || !metricsResult.data) {
       return {
@@ -523,13 +586,13 @@ export async function deleteKeyword(keywordId: string) {
 async function checkKeywordPosition(
   keyword: string,
   domain: string,
+  userId: string,
   locationCode: number = 2250,
   languageCode: string = 'fr',
 ): Promise<{ rankGroup: number | null; rankAbsolute: number | null }> {
   try {
-    const credentials = process.env.DATAFORSEO_PASSWORD
-    if (!credentials) {
-      throw new Error('Credentials DataForSEO manquants')
+    if (!userId) {
+      throw new Error('userId est requis pour protéger l\'appel API')
     }
 
     // Nettoyer le domaine
@@ -538,37 +601,34 @@ async function checkKeywordPosition(
       .replace(/^(https?:\/\/)?(www\.)?/, '')
       .replace(/\/$/, '')
 
-    const response = await fetch(`${process.env.DATAFORSEO_URL}/serp/google/organic/live/advanced`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Basic ${credentials}`,
-        'Content-Type': 'application/json',
+    // Appel API SERP protégé
+    const { protectedDataForSEOPost } = await import('@/lib/dataforseo-protection')
+    const data = await protectedDataForSEOPost<{
+      tasks?: Array<{
+        status_code: number
+        status_message?: string
+        result?: Array<{
+          items?: Array<{
+            type: string
+            domain?: string
+            rank_group?: number
+            rank_absolute?: number
+          }>
+        }>
+      }>
+    }>(
+      userId,
+      '/serp/google/organic/live/advanced',
+      {
+        keyword: keyword.trim(),
+        location_code: locationCode,
+        language_code: languageCode,
+        device: 'desktop',
+        os: 'windows',
+        depth: 100, // Vérifier jusqu'à la position 100
+        calculate_rectangles: false,
       },
-      body: JSON.stringify([
-        {
-          keyword: keyword.trim(),
-          location_code: locationCode,
-          language_code: languageCode,
-          device: 'desktop',
-          os: 'windows',
-          depth: 100, // Vérifier jusqu'à la position 100
-          calculate_rectangles: false,
-        },
-      ]),
-    })
-
-    if (!response.ok) {
-      const errorText = await response.text().catch(() => response.statusText)
-      console.error('DataForSEO API Error:', {
-        status: response.status,
-        statusText: response.statusText,
-        url: `${process.env.DATAFORSEO_URL}/serp/google/organic/live/advanced`,
-        error: errorText,
-      })
-      throw new Error(`API request failed: ${response.status} ${response.statusText}`)
-    }
-
-    const data = await response.json()
+    )
 
     if (data.status_code !== 20000) {
       throw new Error(data.status_message || 'Erreur API')
@@ -616,8 +676,17 @@ async function checkKeywordPosition(
 /**
  * Met à jour la position d'un mot-clé en base de données
  */
-export async function updateKeywordPosition(keywordId: string) {
+export async function updateKeywordPosition(keywordId: string): Promise<{ success: boolean; data?: unknown; error?: string; limitReached?: boolean; upgradeRequired?: boolean }> {
   try {
+    // Authentification
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    })
+
+    if (!session?.user?.id) {
+      return { success: false, error: 'Non authentifié' }
+    }
+
     const keyword = await prisma.keyword.findUnique({
       where: { id: keywordId },
       include: {
@@ -639,16 +708,27 @@ export async function updateKeywordPosition(keywordId: string) {
     // Nettoyer l'URL du projet
     const domain = keyword.project.url.replace(/^(https?:\/\/)?(www\.)?/, '').replace(/\/$/, '')
 
-    // Vérifier la position actuelle
-    const position = await checkKeywordPosition(keyword.keyword, domain, keyword.locationCode, keyword.languageCode)
+    // Vérifier la position actuelle (protégé automatiquement - compte comme serpHistories)
+    const position = await checkKeywordPosition(
+      keyword.keyword,
+      domain,
+      session.user.id,
+      keyword.locationCode,
+      keyword.languageCode,
+    )
 
-    // Charger les métriques si elles ne sont pas déjà présentes
+    // Charger les métriques si elles ne sont pas déjà présentes (protégé automatiquement)
     let searchVolume = keyword.searchVolume
     let cpc = keyword.cpc
     let competition = keyword.competition
     let competitionLevel = keyword.competitionLevel
     if (!searchVolume || !cpc) {
-      const metricsResult = await fetchKeywordMetrics(keyword.keyword, keyword.locationCode, keyword.languageCode)
+      const metricsResult = await fetchKeywordMetrics(
+        keyword.keyword,
+        keyword.locationCode,
+        keyword.languageCode,
+        session.user.id,
+      )
       if (metricsResult.success && metricsResult.data) {
         searchVolume = metricsResult.data.searchVolume || searchVolume || null
         cpc = metricsResult.data.cpc || cpc || null
@@ -712,8 +792,17 @@ export async function updateKeywordPosition(keywordId: string) {
 /**
  * Met à jour les positions de tous les mots-clés d'un projet
  */
-export async function updateAllKeywordPositions(projectId: string) {
+export async function updateAllKeywordPositions(projectId: string): Promise<{ success: boolean; data?: unknown[]; count?: number; error?: string; limitReached?: boolean; upgradeRequired?: boolean }> {
   try {
+    // Authentification
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    })
+
+    if (!session?.user?.id) {
+      return { success: false, error: 'Non authentifié' }
+    }
+
     const keywords = await prisma.keyword.findMany({
       where: { projectId },
       include: {
@@ -729,15 +818,27 @@ export async function updateAllKeywordPositions(projectId: string) {
     for (const keyword of keywords) {
       const domain = keyword.project.url.replace(/^(https?:\/\/)?(www\.)?/, '').replace(/\/$/, '')
 
-      const position = await checkKeywordPosition(keyword.keyword, domain, keyword.locationCode, keyword.languageCode)
+      // Vérifier la position actuelle (protégé automatiquement - compte comme serpHistories)
+      const position = await checkKeywordPosition(
+        keyword.keyword,
+        domain,
+        session.user.id,
+        keyword.locationCode,
+        keyword.languageCode,
+      )
 
-      // Charger les métriques si elles ne sont pas déjà présentes
+      // Charger les métriques si elles ne sont pas déjà présentes (protégé automatiquement)
       let searchVolume = keyword.searchVolume
       let cpc = keyword.cpc
       let competition = keyword.competition
       let competitionLevel = keyword.competitionLevel
       if (!searchVolume || !cpc) {
-        const metricsResult = await fetchKeywordMetrics(keyword.keyword, keyword.locationCode, keyword.languageCode)
+        const metricsResult = await fetchKeywordMetrics(
+          keyword.keyword,
+          keyword.locationCode,
+          keyword.languageCode,
+          session.user.id,
+        )
         if (metricsResult.success && metricsResult.data) {
           searchVolume = metricsResult.data.searchVolume || searchVolume || null
           cpc = metricsResult.data.cpc || cpc || null
@@ -807,8 +908,39 @@ export async function updateAllKeywordPositions(projectId: string) {
 }
 
 // Ajouter un nouveau mot-clé à suivre
-export async function addKeyword(formData: FormData) {
+export async function addKeyword(formData: FormData): Promise<{ success: boolean; data?: unknown; error?: string; limitReached?: boolean; upgradeRequired?: boolean }> {
   try {
+    // Authentification
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    })
+
+    if (!session?.user?.id) {
+      return { success: false, error: 'Non authentifié' }
+    }
+
+    // Vérification des limites pour les mots-clés suivis
+    const trackedKeywordsCheck = await checkAndIncrementUsage(session.user.id, 'trackedKeywords')
+    if (!trackedKeywordsCheck.allowed) {
+      return {
+        success: false,
+        error: trackedKeywordsCheck.message,
+        limitReached: true,
+        upgradeRequired: true,
+      }
+    }
+
+    // Vérification des limites pour les recherches SERP
+    const serpCheck = await checkAndIncrementUsage(session.user.id, 'serpHistories')
+    if (!serpCheck.allowed) {
+      return {
+        success: false,
+        error: serpCheck.message,
+        limitReached: true,
+        upgradeRequired: true,
+      }
+    }
+
     const keyword = formData.get('keyword') as string
     const projectId = formData.get('projectId') as string
     const locationCode = formData.get('locationCode') ? parseInt(formData.get('locationCode') as string, 10) : 2250
@@ -853,12 +985,12 @@ export async function addKeyword(formData: FormData) {
       }
     }
 
-    // Vérifier la position initiale
+    // Vérifier la position initiale (protégé automatiquement)
     const domain = project.url.replace(/^(https?:\/\/)?(www\.)?/, '').replace(/\/$/, '')
-    const position = await checkKeywordPosition(keyword.trim(), domain, locationCode, languageCode)
+    const position = await checkKeywordPosition(keyword.trim(), domain, session.user.id, locationCode, languageCode)
 
-    // Charger les métriques du mot-clé (Volume, CPC, Competition)
-    const metricsResult = await fetchKeywordMetrics(keyword.trim(), locationCode, languageCode)
+    // Charger les métriques du mot-clé (Volume, CPC, Competition) (protégé automatiquement)
+    const metricsResult = await fetchKeywordMetrics(keyword.trim(), locationCode, languageCode, session.user.id)
     const metrics = metricsResult.success ? metricsResult.data : null
 
     // Calculer les métriques dérivées

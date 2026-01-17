@@ -1,6 +1,9 @@
 // 📁 app/dashboard/backlinks/domaines-referents/action.ts
 'use server'
 
+import { auth } from '@/lib/auth'
+import { checkAndIncrementUsage } from '@/lib/usage-utils'
+import { headers } from 'next/headers'
 import { z } from 'zod'
 
 const referringDomainsSchema = z.object({
@@ -18,6 +21,8 @@ export interface ReferringDomainsState {
   error?: string
   result?: ReferringDomainsResult
   cost?: number
+  limitReached?: boolean
+  upgradeRequired?: boolean
 }
 
 export interface ReferringDomainsResult {
@@ -58,6 +63,29 @@ export async function fetchReferringDomains(
   formData: FormData,
 ): Promise<ReferringDomainsState> {
   try {
+    // Vérifier l'authentification
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    })
+
+    if (!session?.user?.id) {
+      return {
+        success: false,
+        error: 'Vous devez être connecté pour effectuer cette action',
+      }
+    }
+
+    // Vérification des limites d'usage
+    const usageCheck = await checkAndIncrementUsage(session.user.id, 'backlinkAnalyses')
+    if (!usageCheck.allowed) {
+      return {
+        success: false,
+        error: usageCheck.message,
+        limitReached: true,
+        upgradeRequired: true,
+      }
+    }
+
     // Extraction des données
     const rawTarget = formData.get('target')
     const rawLimit = formData.get('limit')

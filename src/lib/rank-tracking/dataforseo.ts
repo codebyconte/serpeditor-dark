@@ -52,13 +52,16 @@ interface SERPItem {
  * - Les SERP features présentes (people_also_ask, featured_snippet, etc.)
  *
  * @param request - Paramètres de la requête SERP
+ * @param userId - ID de l'utilisateur (requis pour la protection)
  * @returns Résultat avec position et URL classée
  */
-export async function fetchDataForSEOSERP(request: SERPRequest): Promise<SERPResult> {
+export async function fetchDataForSEOSERP(
+  request: SERPRequest,
+  userId: string,
+): Promise<SERPResult> {
   try {
-    const credentials = process.env.DATAFORSEO_PASSWORD
-    if (!credentials) {
-      throw new Error('Credentials DataForSEO manquants')
+    if (!userId) {
+      throw new Error('userId est requis pour protéger l\'appel API')
     }
 
     // Nettoyer le domaine (enlever protocole, www, slash final)
@@ -67,35 +70,30 @@ export async function fetchDataForSEOSERP(request: SERPRequest): Promise<SERPRes
       .replace(/^(https?:\/\/)?(www\.)?/, '')
       .replace(/\/$/, '')
 
-    // Appel API SERP
-    const response = await fetch(`${process.env.DATAFORSEO_URL}/serp/google/organic/live/advanced`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Basic ${credentials}`,
-        'Content-Type': 'application/json',
+    // Appel API SERP protégé
+    const { protectedDataForSEOPost } = await import('@/lib/dataforseo-protection')
+    const data = await protectedDataForSEOPost<{
+      tasks?: Array<{
+        status_code: number
+        status_message?: string
+        result?: Array<{
+          items?: SERPItem[]
+        }>
+      }>
+      cost?: number
+    }>(
+      userId,
+      '/serp/google/organic/live/advanced',
+      {
+        keyword: request.keyword.trim(),
+        location_code: request.locationCode,
+        language_code: request.languageCode,
+        device: 'desktop',
+        os: 'windows',
+        depth: 100, // Vérifier jusqu'à la position 100
+        calculate_rectangles: false,
       },
-      body: JSON.stringify([
-        {
-          keyword: request.keyword.trim(),
-          location_code: request.locationCode,
-          language_code: request.languageCode,
-          device: 'desktop',
-          os: 'windows',
-          depth: 100, // Vérifier jusqu'à la position 100
-          calculate_rectangles: false,
-        },
-      ]),
-    })
-
-    if (!response.ok) {
-      throw new Error(`API request failed: ${response.statusText}`)
-    }
-
-    const data = await response.json()
-
-    if (data.status_code !== 20000) {
-      throw new Error(data.status_message || 'API Error')
-    }
+    )
 
     const task = data.tasks?.[0]
     if (!task || task.status_code !== 20000) {
@@ -181,45 +179,50 @@ export async function fetchDataForSEOSERP(request: SERPRequest): Promise<SERPRes
  * @param keyword - Mot-clé
  * @param locationCode - Code de localisation (2250 = France)
  * @param languageCode - Code de langue ("fr")
+ * @param userId - ID de l'utilisateur (requis pour la protection)
  * @returns Métriques du keyword
  */
 export async function fetchKeywordMetrics(
   keyword: string,
   locationCode: number,
-  languageCode: string
+  languageCode: string,
+  userId: string,
 ): Promise<KeywordMetricsResult> {
   try {
-    const credentials = process.env.DATAFORSEO_PASSWORD
-    if (!credentials) {
-      throw new Error('Credentials DataForSEO manquants')
+    if (!userId) {
+      throw new Error('userId est requis pour protéger l\'appel API')
     }
 
-    const response = await fetch(`${process.env.DATAFORSEO_URL}/dataforseo_labs/google/keyword_overview/live`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Basic ${credentials}`,
-        'Content-Type': 'application/json',
+    // Appel API Keyword Overview protégé
+    const { protectedDataForSEOPost } = await import('@/lib/dataforseo-protection')
+    const data = await protectedDataForSEOPost<{
+      tasks?: Array<{
+        status_code: number
+        status_message?: string
+        result?: Array<{
+          items?: Array<{
+            keyword_data?: {
+              keyword_info?: {
+                search_volume?: number
+                cpc?: number
+                competition?: number
+                competition_level?: string
+              }
+            }
+          }>
+        }>
+      }>
+    }>(
+      userId,
+      '/dataforseo_labs/google/keyword_overview/live',
+      {
+        keywords: [keyword],
+        location_code: locationCode,
+        language_code: languageCode,
+        include_serp_info: false,
+        include_clickstream_data: false,
       },
-      body: JSON.stringify([
-        {
-          keywords: [keyword],
-          location_code: locationCode,
-          language_code: languageCode,
-          include_serp_info: false,
-          include_clickstream_data: false,
-        },
-      ]),
-    })
-
-    if (!response.ok) {
-      throw new Error(`API request failed: ${response.statusText}`)
-    }
-
-    const data = await response.json()
-
-    if (data.status_code !== 20000) {
-      throw new Error(data.status_message || 'API Error')
-    }
+    )
 
     const task = data.tasks?.[0]
     if (!task || task.status_code !== 20000) {

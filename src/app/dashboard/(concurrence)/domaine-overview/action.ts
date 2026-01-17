@@ -1,6 +1,7 @@
 'use server'
 
 import { auth } from '@/lib/auth'
+import { checkAndIncrementUsage } from '@/lib/usage-utils'
 import { headers } from 'next/headers'
 
 // Types pour Domain Overview
@@ -70,6 +71,8 @@ export interface DomainOverviewResult {
   success: boolean
   data?: DomainOverviewResponse
   error?: string
+  limitReached?: boolean
+  upgradeRequired?: boolean
 }
 
 export interface GetDomainOverviewParams {
@@ -89,10 +92,21 @@ export async function getDomainOverview(params: GetDomainOverviewParams): Promis
       headers: await headers(),
     })
 
-    if (!session?.user) {
+    if (!session?.user?.id) {
       return {
         success: false,
         error: 'Non authentifié',
+      }
+    }
+
+    // Vérification des limites d'usage
+    const usageCheck = await checkAndIncrementUsage(session.user.id, 'domainAnalyses')
+    if (!usageCheck.allowed) {
+      return {
+        success: false,
+        error: usageCheck.message,
+        limitReached: true,
+        upgradeRequired: true,
       }
     }
 
@@ -133,28 +147,22 @@ export async function getDomainOverview(params: GetDomainOverviewParams): Promis
       }
     }
 
-    // Encoder les credentials en base64 pour l'authentification Basic
-    const credentials = process.env.DATAFORSEO_PASSWORD
-
-    const response = await fetch(`${process.env.DATAFORSEO_URL}/dataforseo_labs/google/domain_rank_overview/live`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Basic ${credentials}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(requestBody),
-    })
-
-    if (!response.ok) {
-      const errorText = await response.text()
-      console.error('DataForSEO API Error:', errorText)
-      return {
-        success: false,
-        error: `Erreur API: ${response.status}`,
-      }
-    }
-
-    const data = await response.json()
+    // Appel API protégé (la vérification de limite est déjà faite plus haut)
+    const { protectedDataForSEOPost } = await import('@/lib/dataforseo-protection')
+    const data = await protectedDataForSEOPost<{
+      status_code: number
+      status_message?: string
+      tasks?: Array<{
+        status_code: number
+        status_message?: string
+        result?: unknown[]
+      }>
+    }>(
+      session.user.id,
+      '/dataforseo_labs/google/domain_rank_overview/live',
+      requestBody[0],
+      0, // Ne pas incrémenter car déjà fait plus haut
+    )
 
     // Vérifier le status_code global
     if (data.status_code !== 20000) {

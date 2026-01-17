@@ -2,6 +2,7 @@
 'use server'
 
 import { auth } from '@/lib/auth'
+import { checkAndIncrementUsage } from '@/lib/usage-utils'
 import { headers } from 'next/headers'
 
 export interface KeywordOverviewState {
@@ -9,6 +10,8 @@ export interface KeywordOverviewState {
   error?: string
   results?: KeywordResult[]
   cost?: number
+  limitReached?: boolean
+  upgradeRequired?: boolean
 }
 
 export interface KeywordResult {
@@ -74,6 +77,17 @@ export async function fetchKeywordOverview(
     })
     if (!session?.user?.id) {
       return { success: false, error: 'Non authentifié' }
+    }
+
+    // Vérification des limites d'usage
+    const usageCheck = await checkAndIncrementUsage(session.user.id, 'keywordSearches')
+    if (!usageCheck.allowed) {
+      return {
+        success: false,
+        error: usageCheck.message,
+        limitReached: true,
+        upgradeRequired: true,
+      }
     }
 
     const rawKeywords = formData.get('keywords')

@@ -265,18 +265,19 @@ model session {
 }
 
 model user {
-  id            String        @id
-  name          String
-  email         String        @unique
-  emailVerified Boolean       @default(false)
-  image         String?
-  phone         String?
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @default(now())
-  account       account[]
-  project       project[]
-  session       session[]
-  subscription  subscription?
+  id             String          @id
+  name           String
+  email          String          @unique
+  emailVerified  Boolean         @default(false)
+  image          String?
+  phone          String?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @default(now())
+  account        account[]
+  project        project[]
+  session        session[]
+  subscription   subscription?
+  usage_tracking usage_tracking[]
 }
 
 model subscription {
@@ -296,6 +297,33 @@ model subscription {
 
   @@index([userId])
   @@index([stripeSubscriptionId])
+}
+
+// Tracking de l'usage mensuel par utilisateur
+model usage_tracking {
+  id                    String   @id @default(cuid())
+  userId                String
+
+  // Période de facturation (mois en cours)
+  periodStart           DateTime
+  periodEnd             DateTime
+
+  // Compteurs d'usage
+  keywordSearches       Int      @default(0)  // Recherches mots-clés
+  backlinkAnalyses      Int      @default(0)  // Analyses backlinks
+  auditPages            Int      @default(0)  // Pages auditées
+  serpHistories         Int      @default(0)  // SERP historiques consultés
+  domainAnalyses        Int      @default(0)  // Analyses de domaines
+  exports               Int      @default(0)  // Exports effectués
+  aiVisibilityRequests  Int      @default(0)  // Requêtes visibilité IA
+
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  user                  user     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, periodStart])
+  @@index([userId, periodStart, periodEnd])
 }
 
 model verification {

@@ -1,6 +1,7 @@
 'use server'
 
 import { auth } from '@/lib/auth'
+import { checkAndIncrementUsage } from '@/lib/usage-utils'
 import { headers } from 'next/headers'
 import { z } from 'zod'
 
@@ -142,6 +143,7 @@ export interface BacklinksSummaryState {
   }
   error?: string
   message?: string
+  limitReached?: boolean
 }
 
 /**
@@ -184,6 +186,16 @@ export async function fetchBacklinksSummary(
       return {
         success: false,
         error: 'Vous devez être connecté pour effectuer cette action',
+      }
+    }
+
+    // Vérification des limites d'usage pour les analyses backlinks
+    const usageCheck = await checkAndIncrementUsage(session.user.id, 'backlinkAnalyses')
+    if (!usageCheck.allowed) {
+      return {
+        success: false,
+        error: usageCheck.message || 'Limite d\'analyses backlinks atteinte',
+        limitReached: true,
       }
     }
 

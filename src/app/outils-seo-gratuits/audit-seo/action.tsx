@@ -1,5 +1,9 @@
 'use server'
 
+import { auth } from '@/lib/auth'
+import { checkAndIncrementUsage } from '@/lib/usage-utils'
+import { protectedDataForSEOPost } from '@/lib/dataforseo-protection'
+import { headers } from 'next/headers'
 import { z } from 'zod'
 
 const auditSeoSchema = z.object({
@@ -184,44 +188,87 @@ export async function auditSeoInstant(prevState: AuditSeoState, formData: FormDa
       }
     }
 
-    // Préparer la requête pour l'API DataForSEO
-    const apiUrl = `${process.env.DATAFORSEO_URL}/on_page/instant_pages`
-    const credentials = process.env.DATAFORSEO_PASSWORD
-
-    console.log('🌐 Appel API DataForSEO:', apiUrl)
-
     // Nettoyer l'URL (s'assurer qu'elle est valide)
     let cleanUrl = url.trim()
     if (!cleanUrl.startsWith('http://') && !cleanUrl.startsWith('https://')) {
       cleanUrl = `https://${cleanUrl}`
     }
 
-    // Appel API
-    const response = await fetch(apiUrl, {
-      method: 'POST',
-      headers: {
-        Authorization: `Basic ${credentials}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify([
-        {
-          url: cleanUrl,
-          enable_javascript: false,
-          enable_browser_rendering: false,
-        },
-      ]),
+    // Vérifier si l'utilisateur est connecté (optionnel pour outil gratuit)
+    const session = await auth.api.getSession({
+      headers: await headers(),
     })
 
-    if (!response.ok) {
-      const errorText = await response.text()
-      console.error('❌ Erreur API:', response.status, errorText)
-      return {
-        success: false,
-        error: `Erreur API: ${response.status} ${response.statusText}`,
-      }
-    }
+    let data: DataForSEOResponse
 
-    const data: DataForSEOResponse = await response.json()
+    // Si l'utilisateur est connecté, protéger l'appel avec les limites
+    if (session?.user?.id) {
+      try {
+        // Vérifier les limites d'usage pour les pages d'audit (1 page pour audit instant)
+        const usageCheck = await checkAndIncrementUsage(session.user.id, 'auditPages', 1)
+        if (!usageCheck.allowed) {
+          return {
+            success: false,
+            error: usageCheck.message || 'Limite de pages d\'audit atteinte',
+            limitReached: true,
+          }
+        }
+
+        // Appel API protégé
+        data = await protectedDataForSEOPost<DataForSEOResponse>(
+          session.user.id,
+          '/on_page/instant_pages',
+          {
+            url: cleanUrl,
+            enable_javascript: false,
+            enable_browser_rendering: false,
+          },
+          1, // 1 page audité
+        )
+      } catch (error) {
+        console.error('❌ Erreur lors de l\'appel API protégé:', error)
+        return {
+          success: false,
+          error: error instanceof Error ? error.message : 'Erreur lors de l\'appel API',
+        }
+      }
+    } else {
+      // Pour les utilisateurs non connectés, permettre un audit gratuit mais limiter par IP
+      // Pour l'instant, on permet l'appel mais on pourrait ajouter un rate limiting par IP
+      const credentials = process.env.DATAFORSEO_PASSWORD
+      if (!credentials) {
+        return {
+          success: false,
+          error: 'Configuration API manquante',
+        }
+      }
+
+      const response = await fetch(`${process.env.DATAFORSEO_URL}/on_page/instant_pages`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Basic ${credentials}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify([
+          {
+            url: cleanUrl,
+            enable_javascript: false,
+            enable_browser_rendering: false,
+          },
+        ]),
+      })
+
+      if (!response.ok) {
+        const errorText = await response.text()
+        console.error('❌ Erreur API:', response.status, errorText)
+        return {
+          success: false,
+          error: `Erreur API: ${response.status} ${response.statusText}`,
+        }
+      }
+
+      data = await response.json()
+    }
 
     console.log('📥 Réponse API reçue:', {
       status_code: data.status_code,
