@@ -1,6 +1,15 @@
 // 📁 app/dashboard/keyword-magic/utils.ts
 import { API_CONFIG } from './config'
-import type { FilterExpression } from './types'
+import type { FilterExpression, KeywordItem, KeywordInfo, KeywordData } from './types'
+
+// Types pour le body de requête
+type RequestBodyValue = string | number | boolean | string[] | FilterExpression | undefined
+type RequestBody = Record<string, RequestBodyValue>
+
+// Type pour les items de related_keywords
+interface RelatedKeywordItem extends KeywordItem {
+  keyword_data?: KeywordData
+}
 
 /**
  * Validation du format des filtres DataForSEO
@@ -47,8 +56,8 @@ export function buildRequestBody(params: {
   offset?: number
   offsetToken?: string
   depth?: number
-}): Record<string, any> {
-  const body: Record<string, any> = {}
+}): RequestBody {
+  const body: RequestBody = {}
 
   // Champs obligatoires/optionnels
   if (params.keyword !== undefined) {
@@ -193,7 +202,7 @@ export function validateKeyword(keyword: string): {
 /**
  * Normalise un item de related_keywords pour le convertir en format standard
  */
-function normalizeRelatedKeywordItem(item: any): any {
+function normalizeRelatedKeywordItem(item: RelatedKeywordItem): KeywordItem {
   // Si l'item a keyword_data, on extrait les données de keyword_data
   if (item.keyword_data) {
     const keywordData = item.keyword_data
@@ -224,14 +233,14 @@ function normalizeRelatedKeywordItem(item: any): any {
 /**
  * Extraction sécurisée des données de l'API
  */
-export function extractApiData<T = any>(
-  data: any,
+export function extractApiData<T = KeywordItem>(
+  data: unknown,
   endpoint?: string,
 ): {
   success: boolean
   results: T[]
   totalCount: number
-  seedData?: any
+  seedData?: KeywordInfo | KeywordInfo[]
   seedKeyword?: string
   itemsCount?: number
   offset?: number
@@ -239,26 +248,48 @@ export function extractApiData<T = any>(
   cost: number
   error?: string
 } {
+  // Type assertion pour l'API response
+  interface ApiDataShape {
+    status_code?: number
+    status_message?: string
+    cost?: number
+    tasks?: Array<{
+      status_code?: number
+      status_message?: string
+      result?: Array<{
+        items?: RelatedKeywordItem[]
+        total_count?: number
+        items_count?: number
+        offset?: number
+        offset_token?: string
+        seed_keyword_data?: KeywordInfo | KeywordInfo[]
+        seed_keyword?: string
+      }>
+    }>
+  }
+
+  const apiData = data as ApiDataShape | null
+
   try {
     // Validation du status code principal
-    if (!data || data.status_code !== 20000) {
+    if (!apiData || apiData.status_code !== 20000) {
       return {
         success: false,
         results: [],
         totalCount: 0,
-        cost: data?.cost || 0,
-        error: data?.status_message || 'Erreur API inconnue',
+        cost: apiData?.cost || 0,
+        error: apiData?.status_message || 'Erreur API inconnue',
       }
     }
 
     // Validation du premier task
-    const task = data.tasks?.[0]
+    const task = apiData.tasks?.[0]
     if (!task) {
       return {
         success: false,
         results: [],
         totalCount: 0,
-        cost: data.cost || 0,
+        cost: apiData.cost || 0,
         error: 'Aucune tâche retournée',
       }
     }
@@ -268,7 +299,7 @@ export function extractApiData<T = any>(
         success: false,
         results: [],
         totalCount: 0,
-        cost: data.cost || 0,
+        cost: apiData.cost || 0,
         error: task.status_message || 'Erreur de tâche',
       }
     }
@@ -280,30 +311,31 @@ export function extractApiData<T = any>(
         success: false,
         results: [],
         totalCount: 0,
-        cost: data.cost || 0,
+        cost: apiData.cost || 0,
         error: 'Aucun résultat',
       }
     }
 
     // Normaliser les items pour related_keywords
-    let items = result.items || []
+    let items: KeywordItem[] = result.items || []
     if (endpoint === 'related_keywords' && items.length > 0) {
       // Vérifier si les items ont la structure keyword_data
-      if (items[0]?.keyword_data) {
-        items = items.map(normalizeRelatedKeywordItem)
+      const relatedItems = items as RelatedKeywordItem[]
+      if (relatedItems[0]?.keyword_data) {
+        items = relatedItems.map(normalizeRelatedKeywordItem)
       }
     }
 
     return {
       success: true,
-      results: items,
+      results: items as T[],
       totalCount: result.total_count || 0,
       itemsCount: result.items_count,
       offset: result.offset,
       offsetToken: result.offset_token,
-      seedData: result.seed_keyword_data, // Peut être un objet ou un tableau
+      seedData: result.seed_keyword_data,
       seedKeyword: result.seed_keyword,
-      cost: data.cost || 0,
+      cost: apiData.cost || 0,
     }
   } catch (error) {
     return {

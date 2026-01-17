@@ -10,8 +10,9 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { AlertTriangle, Info, XCircle } from 'lucide-react'
+import type { AuditData } from './types'
 
-export function SEOIssues({ data }: { data: any }) {
+export function SEOIssues({ data }: { data: AuditData | null }) {
   const checks = data?.page_metrics?.checks || {}
 
   const issues = [
@@ -75,7 +76,7 @@ export function SEOIssues({ data }: { data: any }) {
       severity: 'info',
       description: "Pages avec des erreurs d'orthographe",
     },
-  ].filter((issue) => issue.count > 0)
+  ].filter((issue) => (issue.count ?? 0) > 0)
 
   return (
     <Card>

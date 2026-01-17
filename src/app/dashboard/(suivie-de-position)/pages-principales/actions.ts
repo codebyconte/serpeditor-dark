@@ -24,6 +24,15 @@ export interface PageData {
   pageType: 'home' | 'category' | 'product' | 'article' | 'other'
 }
 
+// Type pour les données GSC (Google Search Console)
+interface GSCPageRow {
+  keys: string[]
+  clicks: number
+  impressions: number
+  ctr: number
+  position: number
+}
+
 async function getPagesData(
   projectUrl: string,
   accessToken: string,
@@ -140,10 +149,10 @@ export async function fetchTopPages(projectId: string) {
     }
 
     // Enrichir les données
-    const pages: PageData[] = currentData.rows.map((page: any) => {
+    const pages: PageData[] = currentData.rows.map((page: GSCPageRow) => {
       const url = page.keys[0]
       const path = shortenPath(url)
-      const previousPage = previousData?.rows?.find((p: any) => p.keys[0] === url)
+      const previousPage = previousData?.rows?.find((p: GSCPageRow) => p.keys[0] === url)
 
       let clicksChange = 0
       let positionChange = 0

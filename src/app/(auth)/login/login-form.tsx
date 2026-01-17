@@ -1,6 +1,5 @@
 'use client'
 
-import { GradientBackground } from '@/components/gradient'
 import { Mark } from '@/components/logo'
 import { Button } from '@/components/ui/button'
 import {

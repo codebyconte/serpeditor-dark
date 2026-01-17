@@ -41,7 +41,7 @@ export function AuthorCard({ author }: AuthorCardProps) {
           {/* Author Info */}
           <div className="flex-1 text-center sm:text-left">
             <div className="mb-1 text-xs font-medium uppercase tracking-wider text-primary">
-              À propos de l'auteur
+              À propos de l&apos;auteur
             </div>
 
             {author.slug ? (

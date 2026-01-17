@@ -2,8 +2,9 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { AlertTriangle, CheckCircle2, XCircle } from 'lucide-react'
+import type { AuditData } from './types'
 
-export function SiteHealthScore({ data }: { data: any }) {
+export function SiteHealthScore({ data }: { data: AuditData | null }) {
   const score = data?.page_metrics?.onpage_score ?? 0
 
   const issues = [

@@ -35,9 +35,6 @@ export function KeywordMagicContent() {
     suggestionsData,
     ideasData,
     relatedData,
-    searchSuggestions,
-    searchRelated,
-    searchIdeas,
     searchAll,
   } = useKeywordSearch()
 
@@ -205,7 +202,7 @@ export function KeywordMagicContent() {
         (relatedData?.results?.length || 0) > 0 ||
         (ideasData?.results?.length || 0) > 0 ? (
           <>
-            <Tabs value={activeTab} onValueChange={(v: any) => setActiveTab(v)} className="space-y-6">
+            <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'suggestions' | 'related' | 'ideas' | 'all')} className="space-y-6">
               <div className="flex flex-wrap items-center justify-between gap-4">
                 <TabsList>
                   <TabsTrigger value="suggestions" className={activeTab === 'suggestions' ? 'bg-mist-600' : ''}>

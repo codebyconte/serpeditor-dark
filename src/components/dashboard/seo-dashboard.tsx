@@ -261,7 +261,7 @@ export function SEODashboard({ data }: SEODashboardProps) {
   // Checks principaux
   const topChecks = page_metrics.checks
     ? Object.entries(page_metrics.checks)
-        .filter(([_, value]) => value > 0)
+        .filter(([, value]) => value > 0)
         .sort((a, b) => b[1] - a[1])
         .slice(0, 12)
     : []

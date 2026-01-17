@@ -3,12 +3,6 @@
 
 import { auth } from '@/lib/auth'
 import { headers } from 'next/headers'
-import { z } from 'zod'
-
-const keywordSchema = z.object({
-  keywords: z.string().min(1, 'Au moins un mot-clé est requis'),
-  include_clickstream_data: z.boolean().optional(),
-})
 
 export interface KeywordOverviewState {
   success: boolean

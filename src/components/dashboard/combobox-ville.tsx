@@ -1,18 +1,4 @@
-'use client'
-
-
-import { Button } from '@/components/dashboard/button'
-import {
-  Combobox,
-  ComboboxLabel,
-  ComboboxOption,
-} from '@/components/dashboard/combobox'
-import { Field, Label } from '@/components/dashboard/fieldset'
-import { Input } from '@/components/dashboard/input'
-import { X } from 'lucide-react'
-import { useActionState, useState } from 'react'
-
-interface Location {
+export interface Location {
   code: number
   name: string
   parentCode: number | null
@@ -21,7 +7,7 @@ interface Location {
   displayName: string
 }
 
-const frenchLocations: Location[] = [
+export const frenchLocations: Location[] = [
   // ========== PAYS ==========
   {
     code: 2250,

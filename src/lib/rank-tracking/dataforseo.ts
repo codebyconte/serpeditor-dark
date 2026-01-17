@@ -35,6 +35,14 @@ interface KeywordMetricsResult {
   error?: string
 }
 
+interface SERPItem {
+  type: string
+  domain?: string
+  rank_group?: number
+  rank_absolute?: number
+  url?: string
+}
+
 /**
  * Récupère la position d'un domaine dans les SERP pour un mot-clé
  *
@@ -110,7 +118,7 @@ export async function fetchDataForSEOSERP(request: SERPRequest): Promise<SERPRes
 
     // Extraire les SERP features
     const serpFeatures: string[] = []
-    result.items.forEach((item: any) => {
+    result.items.forEach((item: SERPItem) => {
       if (item.type && item.type !== 'organic') {
         serpFeatures.push(item.type)
       }

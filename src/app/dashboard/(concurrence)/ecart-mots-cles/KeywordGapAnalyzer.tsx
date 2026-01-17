@@ -247,32 +247,6 @@ function MetricCard({
   )
 }
 
-function ViewTab({
-  active,
-  onClick,
-  icon,
-  label,
-}: {
-  active: boolean
-  onClick: () => void
-  icon: React.ReactNode
-  label: string
-}) {
-  return (
-    <button
-      onClick={onClick}
-      className={`flex items-center gap-2 rounded-lg px-4 py-2 font-medium transition-all ${
-        active
-          ? 'bg-primary text-primary-foreground shadow-md'
-          : 'bg-muted text-muted-foreground hover:bg-accent hover:text-accent-foreground'
-      }`}
-    >
-      {icon}
-      {label}
-    </button>
-  )
-}
-
 function OverviewView({
   stats,
   targets,

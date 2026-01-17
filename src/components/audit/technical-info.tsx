@@ -4,8 +4,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { format } from 'date-fns'
 import { fr } from 'date-fns/locale'
 import { CheckCircle2, XCircle } from 'lucide-react'
+import type { AuditData } from './types'
 
-export function TechnicalInfo({ data }: { data: any }) {
+export function TechnicalInfo({ data }: { data: AuditData | null }) {
   const domainInfo = data?.domain_info
 
   return (

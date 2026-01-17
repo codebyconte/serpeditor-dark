@@ -15,8 +15,6 @@ export function CrawlStatusChecker({ taskId }: { taskId: string }) {
 
   useEffect(() => {
     let isMounted = true
-    let interval: NodeJS.Timeout
-    let progressInterval: NodeJS.Timeout
 
     // Animation de progression simulée
     const updateProgress = () => {
@@ -32,7 +30,7 @@ export function CrawlStatusChecker({ taskId }: { taskId: string }) {
     }
 
     // Mettre à jour la progression toutes les 2 secondes
-    progressInterval = setInterval(updateProgress, 2000)
+    const progressInterval = setInterval(updateProgress, 2000)
 
     const checkStatus = async () => {
       try {
@@ -77,7 +75,7 @@ export function CrawlStatusChecker({ taskId }: { taskId: string }) {
     }
 
     // Vérifier toutes les 30 secondes
-    interval = setInterval(checkStatus, 30000)
+    const interval = setInterval(checkStatus, 30000)
     // Premier appel immédiat
     checkStatus()
 

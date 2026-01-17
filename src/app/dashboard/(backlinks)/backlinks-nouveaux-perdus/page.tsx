@@ -17,10 +17,10 @@ export default function NewLostBacklinksPage() {
           <div className="flex items-start gap-4">
             <div className="bg-primary/10 flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl"></div>
             <div className="flex-1">
-              <h1 className="dashboard-heading-1">Suivez l'évolution de vos backlinks dans le temps</h1>
+              <h1 className="dashboard-heading-1">Suivez l&apos;évolution de vos backlinks dans le temps</h1>
               <p className="dashboard-body-lg mt-2">
-                Visualisez l'historique complet de vos backlinks gagnés et perdus, jour par jour, pour mesurer
-                l'efficacité de vos campagnes de netlinking.
+                Visualisez l&apos;historique complet de vos backlinks gagnés et perdus, jour par jour, pour mesurer
+                l&apos;efficacité de vos campagnes de netlinking.
               </p>
             </div>
           </div>
@@ -43,28 +43,28 @@ export default function NewLostBacklinksPage() {
           <Alert className="border-l-primary bg-primary/5 border-l-4">
             <Calendar className="text-primary h-5 w-5" />
             <AlertTitle className="dashboard-heading-4">
-              Visualisez l'historique complet de votre profil de backlinks
+              Visualisez l&apos;historique complet de votre profil de backlinks
             </AlertTitle>
             <AlertDescription>
               <ul className="dashboard-body-sm mt-2 space-y-2">
                 <li className="flex items-start gap-2">
                   <span className="text-primary mt-1">•</span>
                   <span>
-                    Consultez l'évolution jour par jour du nombre total de backlinks et de domaines référents sur les
+                    Consultez l&apos;évolution jour par jour du nombre total de backlinks et de domaines référents sur les
                     12 derniers mois.
                   </span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-primary mt-1">•</span>
                   <span>
-                    Identifiez les périodes de croissance et de déclin pour comprendre l'impact de vos actions SEO
+                    Identifiez les périodes de croissance et de déclin pour comprendre l&apos;impact de vos actions SEO
                     passées.
                   </span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-primary mt-1">•</span>
                   <span>
-                    Comparez l'évolution de votre profil avec celle de vos concurrents pour évaluer votre vitesse de
+                    Comparez l&apos;évolution de votre profil avec celle de vos concurrents pour évaluer votre vitesse de
                     progression.
                   </span>
                 </li>
@@ -88,14 +88,14 @@ export default function NewLostBacklinksPage() {
                 <li className="flex items-start gap-2">
                   <span className="mt-1 text-green-600">•</span>
                   <span>
-                    Identifiez les pics d'acquisition pour comprendre quelles campagnes (guest posting, PR, contenu
+                    Identifiez les pics d&apos;acquisition pour comprendre quelles campagnes (guest posting, PR, contenu
                     viral) ont le mieux fonctionné.
                   </span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="mt-1 text-green-600">•</span>
                   <span>
-                    Suivez votre taux d'acquisition moyen et fixez-vous des objectifs mensuels basés sur vos
+                    Suivez votre taux d&apos;acquisition moyen et fixez-vous des objectifs mensuels basés sur vos
                     performances passées.
                   </span>
                 </li>
@@ -145,14 +145,14 @@ export default function NewLostBacklinksPage() {
                 <li className="flex items-start gap-2">
                   <span className="mt-1 text-purple-600">•</span>
                   <span>
-                    Repérez les tendances saisonnières dans l'acquisition de backlinks (ex: baisse en été, hausse en
-                    fin d'année).
+                    Repérez les tendances saisonnières dans l&apos;acquisition de backlinks (ex: baisse en été, hausse en
+                    fin d&apos;année).
                   </span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="mt-1 text-purple-600">•</span>
                   <span>
-                    Identifiez les périodes de stagnation où vous n'acquérez pas de nouveaux domaines référents et
+                    Identifiez les périodes de stagnation où vous n&apos;acquérez pas de nouveaux domaines référents et
                     ajustez votre stratégie.
                   </span>
                 </li>
@@ -160,7 +160,7 @@ export default function NewLostBacklinksPage() {
                   <span className="mt-1 text-purple-600">•</span>
                   <span>
                     Visualisez la corrélation entre vos actions marketing (lancement produit, campagne PR) et les pics
-                    d'acquisition de backlinks.
+                    d&apos;acquisition de backlinks.
                   </span>
                 </li>
               </ul>
@@ -171,7 +171,7 @@ export default function NewLostBacklinksPage() {
           <Alert>
             <Target className="h-5 w-5 text-orange-600" />
             <AlertTitle className="dashboard-heading-4">
-              Mesurez l'efficacité de vos campagnes de netlinking
+              Mesurez l&apos;efficacité de vos campagnes de netlinking
             </AlertTitle>
             <AlertDescription>
               <ul className="dashboard-body-sm mt-2 space-y-2">
@@ -179,14 +179,14 @@ export default function NewLostBacklinksPage() {
                   <span className="mt-1 text-orange-600">•</span>
                   <span>
                     Calculez votre ROI netlinking en comparant les investissements (guest posts, outreach) avec
-                    l'acquisition réelle de backlinks.
+                    l&apos;acquisition réelle de backlinks.
                   </span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="mt-1 text-orange-600">•</span>
                   <span>
                     Créez des rapports clients visuels montrant la croissance du profil de backlinks mois après mois
-                    avec graphiques d'évolution.
+                    avec graphiques d&apos;évolution.
                   </span>
                 </li>
                 <li className="flex items-start gap-2">
@@ -206,9 +206,9 @@ export default function NewLostBacklinksPage() {
             <AlertTitle className="dashboard-heading-4">Indicateurs clés à surveiller</AlertTitle>
             <AlertDescription className="dashboard-body-sm">
               <p className="mt-2">
-                Un profil sain devrait avoir un ratio nouveaux/perdus d'au moins <strong>2:1</strong> (2 backlinks
-                gagnés pour 1 perdu). Si vous perdez plus que vous n'acquérez pendant 2 mois consécutifs, c'est un
-                signal d'alarme qui nécessite une action immédiate. Objectif :{' '}
+                Un profil sain devrait avoir un ratio nouveaux/perdus d&apos;au moins <strong>2:1</strong> (2 backlinks
+                gagnés pour 1 perdu). Si vous perdez plus que vous n&apos;acquérez pendant 2 mois consécutifs, c&apos;est un
+                signal d&apos;alarme qui nécessite une action immédiate. Objectif :{' '}
                 <strong>+10-20 nouveaux domaines référents/mois</strong> minimum pour une croissance constante.
               </p>
             </AlertDescription>

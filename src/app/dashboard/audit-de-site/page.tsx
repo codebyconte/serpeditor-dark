@@ -1,5 +1,4 @@
 import { Divider } from '@/components/dashboard/divider'
-import { Heading } from '@/components/dashboard/heading'
 import { PageHeader } from '@/components/dashboard/page-header'
 import { OpenModal } from '@/components/open-modale-google'
 import { Badge } from '@/components/ui/badge'
