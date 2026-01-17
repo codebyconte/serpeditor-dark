@@ -32,6 +32,7 @@ export interface AuditSeoState {
   result?: InstantPagesResult
   url?: string
   message?: string
+  limitReached?: boolean
 }
 
 export interface InstantPagesResult {

@@ -240,6 +240,28 @@ export async function getHistoricalSERP(
       },
     ]
 
+    // Interface pour la réponse de l'API DataForSEO Historical SERPs
+    interface HistoricalSERPTaskResult {
+      se_type: string
+      keyword: string
+      location_code: number
+      language_code: string
+      items: Array<{
+        se_type: string
+        keyword: string
+        location_code: number
+        language_code: string
+        datetime: string
+        se_results_count: number
+        items_count: number
+        items: unknown[]
+        check_url?: string
+        spell?: string | null
+        item_types?: string[]
+        total_count?: number
+      }>
+    }
+
     // Appel API protégé (la vérification de limite est déjà faite plus haut)
     const { protectedDataForSEOPost } = await import('@/lib/dataforseo-protection')
     const result = await protectedDataForSEOPost<{
@@ -248,7 +270,7 @@ export async function getHistoricalSERP(
       tasks?: Array<{
         status_code: number
         status_message?: string
-        result?: unknown[]
+        result?: HistoricalSERPTaskResult[]
       }>
     }>(
       session.user.id,
@@ -264,7 +286,7 @@ export async function getHistoricalSERP(
       }
     }
 
-    const taskResult = result.tasks?.[0]?.result?.[0]
+    const taskResult = result.tasks?.[0]?.result?.[0] as HistoricalSERPTaskResult | undefined
     if (!taskResult) {
       return {
         success: false,

@@ -147,6 +147,17 @@ export async function getDomainOverview(params: GetDomainOverviewParams): Promis
       }
     }
 
+    // Interface pour la réponse de l'API DataForSEO Domain Rank Overview
+    interface DomainRankOverviewTaskResult {
+      se_type: string
+      target: string
+      location_code: number
+      language_code: string
+      total_count: number
+      items_count: number
+      items: DomainOverviewItem[]
+    }
+
     // Appel API protégé (la vérification de limite est déjà faite plus haut)
     const { protectedDataForSEOPost } = await import('@/lib/dataforseo-protection')
     const data = await protectedDataForSEOPost<{
@@ -155,7 +166,7 @@ export async function getDomainOverview(params: GetDomainOverviewParams): Promis
       tasks?: Array<{
         status_code: number
         status_message?: string
-        result?: unknown[]
+        result?: DomainRankOverviewTaskResult[]
       }>
     }>(
       session.user.id,
@@ -198,7 +209,7 @@ export async function getDomainOverview(params: GetDomainOverviewParams): Promis
       }
     }
 
-    const taskResult = task.result[0]
+    const taskResult = task.result[0] as DomainRankOverviewTaskResult
 
     // Vérifier que items existe et n'est pas vide
     if (!taskResult.items || taskResult.items.length === 0) {

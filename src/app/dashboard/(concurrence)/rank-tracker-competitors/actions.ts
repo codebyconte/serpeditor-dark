@@ -168,7 +168,7 @@ export async function getSERPCompetitors(
       tasks?: Array<{
         status_code: number
         status_message?: string
-        result?: unknown[]
+        result?: SERPCompetitorsResponse[]
       }>
     }>(
       session.user.id,
@@ -184,7 +184,7 @@ export async function getSERPCompetitors(
       }
     }
 
-    const taskResult = result.tasks?.[0]?.result?.[0]
+    const taskResult = result.tasks?.[0]?.result?.[0] as SERPCompetitorsResponse | undefined
     if (!taskResult) {
       return {
         success: false,

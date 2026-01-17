@@ -2,8 +2,8 @@ import { NextResponse } from 'next/server'
 import { headers } from 'next/headers'
 import { auth } from '@/lib/auth'
 import { z } from 'zod'
- import { prisma } from '@/lib/prisma'
- import { hash } from 'bcryptjs'
+import { prisma } from '@/lib/prisma'
+import { hash } from 'bcryptjs'
 
 const changePasswordSchema = z.object({
   currentPassword: z.string().min(1, 'Le mot de passe actuel est requis'),
@@ -54,21 +54,6 @@ export async function POST(request: Request) {
 
     // Changer le mot de passe en mettant à jour directement dans la base de données
     // Better-auth stocke les mots de passe dans la table account
-    // Note: Cette approche nécessite bcryptjs pour hasher le mot de passe
-    // Installez avec: npm install bcryptjs @types/bcryptjs
-    
-    // Pour l'instant, nous utilisons une approche qui demande à l'utilisateur
-    // d'utiliser le flux "mot de passe oublié" qui est plus sécurisé
-    // et ne nécessite pas de dépendances supplémentaires
-    
-    return NextResponse.json(
-      {
-        error: 'Pour changer votre mot de passe, veuillez utiliser la fonctionnalité "Mot de passe oublié" depuis la page de connexion. Cette méthode est plus sécurisée.',
-        requiresPasswordReset: true,
-      },
-      { status: 501 }
-    )
-    
     try {
       // Trouver le compte email/password de l'utilisateur
       const account = await prisma.account.findFirst({
@@ -94,6 +79,11 @@ export async function POST(request: Request) {
         data: {
           password: hashedPassword,
         },
+      })
+
+      return NextResponse.json({
+        success: true,
+        message: 'Mot de passe modifié avec succès',
       })
     } catch (updateError) {
       console.error('Error updating password:', updateError)

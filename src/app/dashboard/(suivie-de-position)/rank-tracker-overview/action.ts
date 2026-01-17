@@ -422,10 +422,6 @@ export async function getKeywordData(keyword: string, locationCode: number = 225
       }>
     }
 
-    interface KeywordOverviewResult {
-      items: KeywordOverviewItem[]
-    }
-
     // Les données sont déjà récupérées par protectedDataForSEOPost
     // Vérifier le status_code (déjà fait dans protectedDataForSEOPost mais on vérifie quand même)
     if (data.status_code !== 20000) {
@@ -604,6 +600,8 @@ async function checkKeywordPosition(
     // Appel API SERP protégé
     const { protectedDataForSEOPost } = await import('@/lib/dataforseo-protection')
     const data = await protectedDataForSEOPost<{
+      status_code: number
+      status_message?: string
       tasks?: Array<{
         status_code: number
         status_message?: string

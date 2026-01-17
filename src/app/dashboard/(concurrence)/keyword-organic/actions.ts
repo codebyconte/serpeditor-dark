@@ -485,7 +485,7 @@ export async function fetchRankedKeywords(
       tasks?: Array<{
         status_code: number
         status_message?: string
-        result?: unknown[]
+        result?: RankedKeywordsResult[]
       }>
     }>(
       session.user.id,
@@ -508,7 +508,7 @@ export async function fetchRankedKeywords(
 
     return {
       success: true,
-      result: taskResult.result[0],
+      result: taskResult.result[0] as RankedKeywordsResult,
       cost: data.cost,
     }
   } catch (error) {
