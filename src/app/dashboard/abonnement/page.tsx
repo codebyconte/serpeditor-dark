@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge'
 import { SoftButton } from '@/components/elements/button'
 import { CheckCircle2, Crown, Sparkles } from 'lucide-react'
+import { CancelSubscriptionButton } from '@/components/dashboard/cancel-subscription-button'
 
 type PlanType = 'Free' | 'Pro' | 'Agency'
 
@@ -245,6 +246,24 @@ export default async function AbonnementPage() {
           plans={{ Mensuel: plans(currentPlan, session.user.id) }}
         />
       </div>
+
+      {/* Section d'annulation */}
+      <Card className="border-2 border-red-500/20 bg-gradient-to-br from-red-500/10 to-red-500/5">
+        <CardHeader>
+          <CardTitle className="text-xl">Gérer votre abonnement</CardTitle>
+          <CardDescription>
+            Vous pouvez annuler votre abonnement à tout moment. Votre accès restera actif jusqu&apos;à
+            la fin de la période en cours.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <CancelSubscriptionButton
+            currentPlan={currentPlan}
+            cancelAtPeriodEnd={subscription.cancelAtPeriodEnd || false}
+            currentPeriodEnd={subscription.currentPeriodEnd}
+          />
+        </CardContent>
+      </Card>
     </div>
   )
 }
