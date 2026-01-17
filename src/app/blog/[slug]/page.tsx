@@ -590,14 +590,14 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
   const faqStructuredData =
     faqData?.faqs?.questions?.length > 0
       ? {
-          '@context': 'https://schema.org',
-          '@type': 'FAQPage',
+          '@context': 'https://schema.org' as const,
+          '@type': 'FAQPage' as const,
           mainEntity: faqData.faqs.questions.map((item: { question: string; answer: string }) => ({
-            '@type': 'Question',
+            '@type': 'Question' as const,
             name: item.question,
-            acceptedAnswer: { '@type': 'Answer', text: item.answer },
+            acceptedAnswer: { '@type': 'Answer' as const, text: item.answer },
           })),
-        }
+        } as const
       : null
 
   return (

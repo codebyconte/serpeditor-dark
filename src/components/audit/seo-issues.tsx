@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/table'
 import { AlertTriangle, Info, XCircle } from 'lucide-react'
 
-export function SEOIssues({ data }: { any }) {
+export function SEOIssues({ data }: { data: any }) {
   const checks = data?.page_metrics?.checks || {}
 
   const issues = [
@@ -105,17 +105,17 @@ export function SEOIssues({ data }: { any }) {
                   </TableCell>
                   <TableCell className="text-center">
                     {issue.severity === 'critical' ? (
-                      <Badge variant="destructive" className="gap-1">
+                      <Badge color="red" className="gap-1">
                         <XCircle className="h-3 w-3" />
                         Critique
                       </Badge>
                     ) : issue.severity === 'warning' ? (
-                      <Badge variant="secondary" className="gap-1">
+                      <Badge color="orange" className="gap-1">
                         <AlertTriangle className="h-3 w-3" />
                         Avertissement
                       </Badge>
                     ) : (
-                      <Badge variant="outline" className="gap-1">
+                      <Badge color="zinc" className="gap-1">
                         <Info className="h-3 w-3" />
                         Info
                       </Badge>

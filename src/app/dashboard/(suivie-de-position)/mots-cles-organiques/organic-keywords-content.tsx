@@ -25,7 +25,7 @@ import {
   TrendingDown,
   TrendingUp,
 } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { fetchOrganicKeywords, type KeywordData } from './action'
 
 interface Props {
@@ -34,8 +34,8 @@ interface Props {
 
 interface OrganicKeywordsData {
   success: boolean
-  keywords: KeywordData[]
-  stats: {
+  keywords?: KeywordData[]
+  stats?: {
     totalKeywords: number
     totalClicks: number
     totalImpressions: number
@@ -60,7 +60,7 @@ export function OrganicKeywordsContent({ projectId }: Props) {
   const [sortBy, setSortBy] = useState<'clicks' | 'impressions' | 'ctr' | 'position'>('clicks')
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     if (!projectId) {
       setError('Aucun projet sélectionné')
       setIsLoading(false)
@@ -71,10 +71,11 @@ export function OrganicKeywordsContent({ projectId }: Props) {
     setError(null)
     try {
       const result = await fetchOrganicKeywords(projectId)
-      if (result.success) {
-        setData(result)
+      if (result.success && result.keywords && result.stats) {
+        setData(result as OrganicKeywordsData)
       } else {
         setError(result.error || 'Erreur de chargement des données')
+        setData(null)
       }
     } catch (err) {
       console.error('Erreur loadData:', err)
@@ -83,14 +84,15 @@ export function OrganicKeywordsContent({ projectId }: Props) {
           ? err.message
           : 'Erreur lors du chargement des données. Vérifiez que votre site est connecté à Google Search Console.',
       )
+      setData(null)
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [projectId])
 
   useEffect(() => {
     loadData()
-  }, [projectId])
+  }, [loadData])
 
   // Filtrage et tri
   const filteredKeywords =
@@ -208,9 +210,21 @@ export function OrganicKeywordsContent({ projectId }: Props) {
   }
 
   const stats = data.stats
-  const opportunities = data.keywords.filter((k: KeywordData) => k.opportunity === 'high')
-  const improving = data.keywords.filter((k: KeywordData) => k.isImproving)
-  const decreasing = data.keywords.filter((k: KeywordData) => k.isDecreasing)
+  if (!stats) {
+    return (
+      <Card>
+        <CardContent className="py-16 text-center">
+          <AlertTriangle className="text-destructive mx-auto h-12 w-12" />
+          <p className="mt-4 font-medium">Données incomplètes</p>
+          <p className="text-muted-foreground mt-2 text-sm">Les statistiques ne sont pas disponibles</p>
+        </CardContent>
+      </Card>
+    )
+  }
+
+  const opportunities = data.keywords?.filter((k: KeywordData) => k.opportunity === 'high') || []
+  const improving = data.keywords?.filter((k: KeywordData) => k.isImproving) || []
+  const decreasing = data.keywords?.filter((k: KeywordData) => k.isDecreasing) || []
 
   return (
     <TooltipProvider>
@@ -275,7 +289,7 @@ export function OrganicKeywordsContent({ projectId }: Props) {
         <Tabs defaultValue="all" className="space-y-6">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <TabsList>
-              <TabsTrigger value="all">Tous ({data.keywords.length})</TabsTrigger>
+              <TabsTrigger value="all">Tous ({data.keywords?.length || 0})</TabsTrigger>
               <TabsTrigger value="opportunities">Opportunités ({opportunities.length})</TabsTrigger>
               <TabsTrigger value="improving">En progression ({improving.length})</TabsTrigger>
               <TabsTrigger value="decreasing">En baisse ({decreasing.length})</TabsTrigger>

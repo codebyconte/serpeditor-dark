@@ -108,17 +108,28 @@ export function generateArticleStructuredData(
 ): WithContext<BlogPosting | Article> {
   const url = `${baseUrl}/blog/${post.slug}`
   const imageUrl = post.image?.asset.url || `${baseUrl}/default-og.jpg`
+  const articleType = (post.seo?.structuredDataType as 'BlogPosting' | 'Article' | 'NewsArticle' | 'TechArticle') || 'BlogPosting'
 
-  const structuredData: WithContext<BlogPosting> = {
+  // Ajouter les mots-clés
+  const keywords: string[] = []
+  if (post.categories && post.categories.length > 0) {
+    keywords.push(...post.categories.map((cat) => cat.title))
+  }
+  if (post.tags && post.tags.length > 0) {
+    keywords.push(...post.tags)
+  }
+  if (post.keywords && post.keywords.length > 0) {
+    keywords.push(...post.keywords)
+  }
+
+  const structuredData: WithContext<BlogPosting | Article> = {
     '@context': 'https://schema.org',
-    '@type': (post.seo?.structuredDataType as 'BlogPosting' | 'Article' | 'NewsArticle' | 'TechArticle') || 'BlogPosting',
+    '@type': articleType,
     headline: post.title,
     description: post.excerpt || '',
     image: {
       '@type': 'ImageObject',
       url: imageUrl,
-      width: 1200,
-      height: 630,
       ...(post.image?.alt && { caption: post.image.alt }),
     },
     url,
@@ -162,44 +173,30 @@ export function generateArticleStructuredData(
     ...(post.readingTime && {
       timeRequired: `PT${post.readingTime}M`,
     }),
-  }
-
-  // Ajouter le réviseur si présent (E-E-A-T)
-  if (post.reviewer) {
-    structuredData.reviewedBy = {
-      '@type': 'Person',
-      name: post.reviewer.name,
-      url: `${baseUrl}/author/${post.reviewer.slug}`,
-      ...(post.reviewer.role && {
-        jobTitle: post.reviewer.role,
-      }),
-    }
-  }
-
-  // Ajouter les mots-clés
-  const keywords: string[] = []
-  if (post.categories && post.categories.length > 0) {
-    keywords.push(...post.categories.map((cat) => cat.title))
-  }
-  if (post.tags && post.tags.length > 0) {
-    keywords.push(...post.tags)
-  }
-  if (post.keywords && post.keywords.length > 0) {
-    keywords.push(...post.keywords)
-  }
-  if (keywords.length > 0) {
-    structuredData.keywords = keywords.join(', ')
-  }
-
-  // Ajouter la section de l'article
-  if (post.articleSection) {
-    structuredData.articleSection = post.articleSection
-  }
-
-  // Ajouter la date de dernière révision si présente
-  if (post.lastReviewedAt) {
-    structuredData.dateReviewed = post.lastReviewedAt
-  }
+    // Ajouter le réviseur si présent (E-E-A-T) - propriété personnalisée
+    ...(post.reviewer && {
+      reviewedBy: {
+        '@type': 'Person',
+        name: post.reviewer.name,
+        url: `${baseUrl}/author/${post.reviewer.slug}`,
+        ...(post.reviewer.role && {
+          jobTitle: post.reviewer.role,
+        }),
+      },
+    }),
+    // Ajouter les mots-clés
+    ...(keywords.length > 0 && {
+      keywords: keywords.join(', '),
+    }),
+    // Ajouter la section de l'article
+    ...(post.articleSection && {
+      articleSection: post.articleSection,
+    }),
+    // Ajouter la date de dernière révision si présente - propriété personnalisée
+    ...(post.lastReviewedAt && {
+      dateReviewed: post.lastReviewedAt,
+    }),
+  } as WithContext<BlogPosting | Article>
 
   return structuredData
 }
@@ -260,8 +257,7 @@ export function generatePersonStructuredData(
  * Génère les données structurées FAQ à partir d'un bloc FAQ
  */
 export function generateFAQStructuredData(
-  faqBlock: { questions: Array<{ question: string; answerText: string }> },
-  pageUrl: string
+  faqBlock: { questions: Array<{ question: string; answerText: string }> }
 ): WithContext<FAQPage> {
   return {
     '@context': 'https://schema.org',
@@ -299,7 +295,7 @@ export function generateBreadcrumbStructuredData(
 /**
  * Helper pour extraire et générer toutes les FAQs d'un article
  */
-export function extractFAQsFromPost(post: SanityPost, pageUrl: string): WithContext<FAQPage> | null {
+export function extractFAQsFromPost(post: SanityPost): WithContext<FAQPage> | null {
   if (!post.body) return null
 
   const faqBlocks = post.body.filter((block) => block._type === 'faqBlock')
@@ -310,7 +306,7 @@ export function extractFAQsFromPost(post: SanityPost, pageUrl: string): WithCont
 
   if (allQuestions.length === 0) return null
 
-  return generateFAQStructuredData({ questions: allQuestions }, pageUrl)
+  return generateFAQStructuredData({ questions: allQuestions })
 }
 
 /**
@@ -422,7 +418,6 @@ export function generateWebsiteStructuredData(baseUrl: string): WithContext<WebS
         '@type': 'EntryPoint',
         urlTemplate: `${baseUrl}/search?q={search_term_string}`,
       },
-      'query-input': 'required name=search_term_string',
     },
   }
 }
@@ -484,12 +479,12 @@ export function generateArticleListStructuredData(
  * Génère les données structurées pour l'organisation
  */
 export function generateOrganizationStructuredData(
-  customData?: Partial<WithContext<Organization>>
+  customData?: Partial<Omit<WithContext<Organization>, '@context' | '@type'>>
 ): WithContext<Organization> {
-  return {
-    ...DEFAULT_ORGANIZATION,
-    ...customData,
+  if (customData && typeof customData === 'object' && !Array.isArray(customData) && customData !== null) {
+    return Object.assign({}, DEFAULT_ORGANIZATION, customData) as WithContext<Organization>
   }
+  return DEFAULT_ORGANIZATION
 }
 
 /**
@@ -680,6 +675,8 @@ export function generateAuthorPageStructuredData(
  *   dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
  * />
  */
-export function renderStructuredData(data: WithContext<any>): string {
+export function renderStructuredData(
+  data: WithContext<Article | BlogPosting | FAQPage | BreadcrumbList | Organization | WebSite | WebPage | ItemList | CollectionPage | ProfilePage | Person>
+): string {
   return JSON.stringify(data, null, 0) // Pas d'indentation pour réduire la taille
 }

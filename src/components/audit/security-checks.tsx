@@ -11,7 +11,58 @@ import {
   XCircle,
 } from 'lucide-react'
 
-export function SecurityChecks({ data }: { any }) {
+type OnPageSummaryData = {
+  domain_info?: {
+    ssl_info?: {
+      valid_certificate?: boolean
+      certificate_issuer?: string
+      certificate_subject?: string
+      certificate_version?: string
+      certificate_expiration_date?: string
+      certificate_hash?: string
+    }
+    checks?: {
+      ssl?: boolean
+      test_https_redirect?: boolean
+      [key: string]: boolean | undefined
+    }
+  }
+  page_metrics?: {
+    links_external?: number
+    links_internal?: number
+    duplicate_title?: number
+    duplicate_description?: number
+    duplicate_content?: number
+    broken_links?: number
+    broken_resources?: number
+    redirect_loop?: number
+    onpage_score?: number
+    non_indexable?: number
+    checks?: {
+      canonical?: number
+      no_description?: number
+      no_title?: number
+      no_h1_tag?: number
+      title_too_long?: number
+      title_too_short?: number
+      is_broken?: number
+      is_4xx_code?: number
+      is_5xx_code?: number
+      is_redirect?: number
+      no_image_alt?: number
+      low_content_rate?: number
+      high_loading_time?: number
+      has_misspelling?: number
+      irrelevant_title?: number
+      irrelevant_description?: number
+      https_to_http_links?: number
+      [key: string]: number | undefined
+    }
+  }
+  [key: string]: unknown
+}
+
+export function SecurityChecks({ data }: { data: OnPageSummaryData | null | undefined }) {
   const domainInfo = data?.domain_info
   const sslInfo = domainInfo?.ssl_info
   const checks = domainInfo?.checks
@@ -78,12 +129,12 @@ export function SecurityChecks({ data }: { any }) {
           <div className="flex items-center justify-between">
             <CardTitle>Score de sécurité</CardTitle>
             <Badge
-              variant={
+              color={
                 scorePercentage === 100
-                  ? 'default'
+                  ? 'green'
                   : scorePercentage >= 75
-                    ? 'secondary'
-                    : 'destructive'
+                    ? 'orange'
+                    : 'red'
               }
               className="text-base"
             >
@@ -147,7 +198,7 @@ export function SecurityChecks({ data }: { any }) {
                       Valide
                     </Badge>
                   ) : (
-                    <Badge variant="destructive">
+                    <Badge color="red">
                       <XCircle className="mr-1 h-3 w-3" />
                       Invalide
                     </Badge>
@@ -263,7 +314,7 @@ export function SecurityChecks({ data }: { any }) {
                 }`}
               >
                 {/* Icône */}
-                <div className="flex-shrink-0">
+                <div className="shrink-0">
                   {item.status ? (
                     <CheckCircle2 className="h-6 w-6 text-green-600" />
                   ) : item.severity === 'critical' ? (
@@ -288,7 +339,7 @@ export function SecurityChecks({ data }: { any }) {
                       {item.title}
                     </h4>
                     <Badge
-                      variant={item.status ? 'default' : 'outline'}
+                      color={item.status ? 'green' : item.severity === 'critical' ? 'red' : 'orange'}
                       className={
                         item.status
                           ? 'bg-green-600'
@@ -365,7 +416,7 @@ export function SecurityChecks({ data }: { any }) {
                   </span>
                 </li>
               )}
-              {pageChecks?.https_to_http_links > 0 && (
+              {(pageChecks?.https_to_http_links || 0) > 0 && (
                 <li className="flex gap-3">
                   <span className="text-orange-600">•</span>
                   <span className="text-sm">

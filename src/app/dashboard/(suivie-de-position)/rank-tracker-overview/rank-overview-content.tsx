@@ -116,6 +116,14 @@ interface TrackedKeyword {
   rankGroup: number | null
   rankAbsolute: number | null
   previousRank: number | null
+  rankedUrl: string | null
+  searchVolume: number | null
+  cpc: number | null
+  competition: number | null
+  competitionLevel: string | null
+  visibilityScore: number | null
+  estimatedCtr: number | null
+  estimatedTraffic: number | null
   createdAt: Date
   updatedAt: Date
   lastCheckedAt: Date | null
@@ -125,27 +133,10 @@ interface TrackedKeyword {
   }
 }
 
-interface KeywordData {
-  keyword_data?: {
-    keyword: string
-    keyword_info?: {
-      search_volume: number
-      cpc: number | null
-      competition: number | null
-      competition_level: string | null
-    }
-  }
-  serp_info?: Array<{
-    se_results_count: number
-    keyword_difficulty: number
-  }>
-}
-
 export default function RankOverviewContent() {
   const [domains, setDomains] = useState<Domain[]>([])
   const [selectedDomain, setSelectedDomain] = useState<string>('')
   const [selectedProjectId, setSelectedProjectId] = useState<string>('')
-  const [loading, setLoading] = useState(false)
   const [overviewData, setOverviewData] = useState<DomainMetrics | null>(null)
   const [historicalData, setHistoricalData] = useState<HistoricalDataItem[]>([])
   const [trackedKeywords, setTrackedKeywords] = useState<TrackedKeyword[]>([])
@@ -154,7 +145,6 @@ export default function RankOverviewContent() {
   const [newKeyword, setNewKeyword] = useState('')
   const [addingKeyword, setAddingKeyword] = useState(false)
   const [showPaidMetrics, setShowPaidMetrics] = useState(false)
-  const [keywordDataMap, setKeywordDataMap] = useState<Record<string, KeywordData | null>>({})
   const [loadingKeywordData, setLoadingKeywordData] = useState<Record<string, boolean>>({})
   const [deletingKeywords, setDeletingKeywords] = useState<Set<string>>(new Set())
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
@@ -199,8 +189,6 @@ export default function RankOverviewContent() {
       const result = await getTrackedKeywords(selectedProjectId)
       if (result.success && 'data' in result && result.data) {
         setTrackedKeywords(result.data)
-        // Réinitialiser les données des mots-clés
-        setKeywordDataMap({})
       } else if (result.error) {
         toast.error(result.error || 'Erreur lors du chargement des mots-clés')
       }
@@ -360,7 +348,6 @@ export default function RankOverviewContent() {
   const loadData = useCallback(async () => {
     if (!selectedDomain) return
 
-    setLoading(true)
     try {
       // Charger Historical Rank Overview
       const historicalResult = await getHistoricalRankOverview(selectedDomain, 2250, 'fr')
@@ -398,8 +385,6 @@ export default function RankOverviewContent() {
       toast.error('Erreur lors du chargement des données historiques')
       setOverviewData(null)
       setHistoricalData([])
-    } finally {
-      setLoading(false)
     }
   }, [selectedDomain])
 
@@ -767,7 +752,6 @@ export default function RankOverviewContent() {
                 </TableHeader>
                 <TableBody>
                   {trackedKeywords.map((kw) => {
-                    const keywordData = keywordDataMap[kw.id]
                     const isLoading = loadingKeywordData[kw.id]
                     const isDeleting = deletingKeywords.has(kw.id)
 

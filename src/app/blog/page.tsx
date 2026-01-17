@@ -211,17 +211,17 @@ export default async function BlogPage({ searchParams }: PageProps) {
 
   // Breadcrumb structured data
   const breadcrumbStructuredData = {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
+    '@context': 'https://schema.org' as const,
+    '@type': 'BreadcrumbList' as const,
     itemListElement: [
       {
-        '@type': 'ListItem',
+        '@type': 'ListItem' as const,
         position: 1,
         name: 'Accueil',
         item: baseUrl,
       },
       {
-        '@type': 'ListItem',
+        '@type': 'ListItem' as const,
         position: 2,
         name: 'Blog',
         item: `${baseUrl}/blog`,
@@ -229,7 +229,7 @@ export default async function BlogPage({ searchParams }: PageProps) {
       ...(currentCategory
         ? [
             {
-              '@type': 'ListItem',
+              '@type': 'ListItem' as const,
               position: 3,
               name: categories.find((c) => c.slug.current === currentCategory)?.title || currentCategory,
               item: `${baseUrl}/blog?category=${currentCategory}`,
@@ -237,7 +237,7 @@ export default async function BlogPage({ searchParams }: PageProps) {
           ]
         : []),
     ],
-  }
+  } as const
 
   const featuredImageUrl = featuredPost?.image ? urlFor(featuredPost.image) : null
   const featuredAuthorImageUrl = featuredPost?.author?.image ? urlFor(featuredPost.author.image) : null

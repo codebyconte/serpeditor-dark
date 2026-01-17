@@ -52,14 +52,15 @@ export const infoBoxBlock = defineType({
       title: 'title',
       type: 'type',
     },
-    prepare({ title, type }) {
-      const typeLabel = {
+    prepare({ title, type }: { title?: string; type?: string }) {
+      const typeLabels: Record<string, string> = {
         tip: 'Astuce',
         info: 'Information',
         warning: 'Attention',
         danger: 'Danger',
         note: 'Note',
-      }[type] || 'Information'
+      }
+      const typeLabel = (type && typeLabels[type]) || 'Information'
 
       return {
         title: title || `Encadré ${typeLabel}`,

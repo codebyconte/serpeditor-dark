@@ -5,7 +5,7 @@ import { format } from 'date-fns'
 import { fr } from 'date-fns/locale'
 import { CheckCircle2, XCircle } from 'lucide-react'
 
-export function TechnicalInfo({ data }: { any }) {
+export function TechnicalInfo({ data }: { data: any }) {
   const domainInfo = data?.domain_info
 
   return (
@@ -18,11 +18,11 @@ export function TechnicalInfo({ data }: { any }) {
         <CardContent className="space-y-3">
           <div className="flex justify-between">
             <span className="text-sm text-muted-foreground">CMS</span>
-            <Badge variant="outline">{domainInfo?.cms || 'Non détecté'}</Badge>
+            <Badge color="zinc">{domainInfo?.cms || 'Non détecté'}</Badge>
           </div>
           <div className="flex justify-between">
             <span className="text-sm text-muted-foreground">Serveur</span>
-            <Badge variant="outline">
+            <Badge color="zinc">
               {domainInfo?.server || 'Non détecté'}
             </Badge>
           </div>
@@ -52,7 +52,7 @@ export function TechnicalInfo({ data }: { any }) {
             {domainInfo?.ssl_info?.valid_certificate ? (
               <Badge className="bg-green-600">Valide</Badge>
             ) : (
-              <Badge variant="destructive">Invalide</Badge>
+              <Badge color="red">Invalide</Badge>
             )}
           </div>
           <div className="flex justify-between">

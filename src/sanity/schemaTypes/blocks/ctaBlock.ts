@@ -79,13 +79,14 @@ export const ctaBlock = defineType({
       subtitle: 'buttonText',
       style: 'style',
     },
-    prepare({ title, subtitle, style }) {
-      const styleLabel = {
+    prepare({ title, subtitle, style }: { title?: string; subtitle?: string; style?: string }) {
+      const styleLabels: Record<string, string> = {
         primary: 'Principal',
         info: 'Informatif',
         success: 'Succès',
         warning: 'Attention',
-      }[style] || 'Principal'
+      }
+      const styleLabel = (style && styleLabels[style]) || 'Principal'
 
       return {
         title: title || 'Call-to-Action',

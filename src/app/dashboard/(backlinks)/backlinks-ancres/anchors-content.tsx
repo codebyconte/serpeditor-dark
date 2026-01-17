@@ -446,7 +446,6 @@ export function AnchorsContent() {
                 />
                 {searchTerm && (
                   <Button
-                    variant="outline"
                     onClick={() => {
                       setSearchTerm('')
                       setCurrentPage(1)
@@ -537,16 +536,11 @@ export function AnchorsContent() {
                     Page {currentPage} sur {totalPages}
                   </p>
                   <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                      disabled={currentPage === 1}
-                    >
+                    <Button onClick={() => setCurrentPage((p) => Math.max(1, p - 1))} disabled={currentPage === 1}>
                       <ChevronLeft className="h-4 w-4" />
                       Précédent
                     </Button>
                     <Button
-                      variant="outline"
                       onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                       disabled={currentPage === totalPages}
                     >

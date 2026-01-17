@@ -2,12 +2,8 @@
 'use client'
 
 import { useCallback, useState } from 'react'
-import {
-  fetchKeywordIdeas,
-  fetchKeywordSuggestions,
-  fetchRelatedKeywords,
-} from '../action'
-import type { APIResponse, KeywordItem } from '../types'
+import { fetchKeywordIdeas, fetchKeywordSuggestions, fetchRelatedKeywords } from '../action'
+import type { APIResponse, FilterExpression, KeywordItem } from '../types'
 
 interface SearchParams {
   keyword: string
@@ -23,60 +19,38 @@ interface SearchParams {
 export function useKeywordSearch() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [suggestionsData, setSuggestionsData] =
-    useState<APIResponse<KeywordItem> | null>(null)
-  const [ideasData, setIdeasData] = useState<APIResponse<KeywordItem> | null>(
-    null,
-  )
-  const [relatedData, setRelatedData] =
-    useState<APIResponse<KeywordItem> | null>(null)
+  const [suggestionsData, setSuggestionsData] = useState<APIResponse<KeywordItem> | null>(null)
+  const [ideasData, setIdeasData] = useState<APIResponse<KeywordItem> | null>(null)
+  const [relatedData, setRelatedData] = useState<APIResponse<KeywordItem> | null>(null)
 
-  const buildFilters = useCallback((params: SearchParams) => {
-    const filterConditions: any[] = []
+  const buildFilters = useCallback((params: SearchParams): FilterExpression | undefined => {
+    const filterConditions: Array<[string, string, string | number]> = []
 
     if (params.minVolume?.trim()) {
-      filterConditions.push([
-        'keyword_info.search_volume',
-        '>=',
-        parseInt(params.minVolume),
-      ])
+      filterConditions.push(['keyword_info.search_volume', '>=', parseInt(params.minVolume)])
     }
     if (params.maxVolume?.trim()) {
-      filterConditions.push([
-        'keyword_info.search_volume',
-        '<=',
-        parseInt(params.maxVolume),
-      ])
+      filterConditions.push(['keyword_info.search_volume', '<=', parseInt(params.maxVolume)])
     }
     if (params.minCPC?.trim()) {
-      filterConditions.push([
-        'keyword_info.cpc',
-        '>=',
-        parseFloat(params.minCPC),
-      ])
+      filterConditions.push(['keyword_info.cpc', '>=', parseFloat(params.minCPC)])
     }
     if (params.maxCPC?.trim()) {
-      filterConditions.push([
-        'keyword_info.cpc',
-        '<=',
-        parseFloat(params.maxCPC),
-      ])
+      filterConditions.push(['keyword_info.cpc', '<=', parseFloat(params.maxCPC)])
     }
     if (params.competitionLevel && params.competitionLevel !== 'all') {
-      filterConditions.push([
-        'keyword_info.competition_level',
-        '=',
-        params.competitionLevel.toUpperCase(),
-      ])
+      filterConditions.push(['keyword_info.competition_level', '=', params.competitionLevel.toUpperCase()])
     }
 
     if (filterConditions.length === 0) return undefined
     if (filterConditions.length === 1) return filterConditions[0]
 
-    return filterConditions.reduce((acc, condition, index) => {
-      if (index === 0) return condition
-      return [acc, 'and', condition]
-    })
+    // Construire l'expression de filtre combinée
+    let result: FilterExpression = filterConditions[0]
+    for (let i = 1; i < filterConditions.length; i++) {
+      result = [result, 'and', filterConditions[i]] as FilterExpression
+    }
+    return result
   }, [])
 
   const searchSuggestions = useCallback(
@@ -106,7 +80,7 @@ export function useKeywordSearch() {
         } else {
           setError(result.error || 'Erreur lors de la recherche')
         }
-      } catch (err) {
+      } catch {
         setError('Une erreur est survenue')
       } finally {
         setIsLoading(false)
@@ -143,7 +117,7 @@ export function useKeywordSearch() {
         } else {
           setError(result.error || 'Erreur lors de la recherche')
         }
-      } catch (err) {
+      } catch {
         setError('Une erreur est survenue')
       } finally {
         setIsLoading(false)
@@ -164,8 +138,10 @@ export function useKeywordSearch() {
 
       try {
         const filters = buildFilters(params)
+        const trimmedKeyword = params.keyword.trim()
         const result = await fetchKeywordIdeas({
-          keywords: [params.keyword.trim()],
+          keyword: trimmedKeyword,
+          keywords: [trimmedKeyword],
           locationCode: params.locationCode,
           languageCode: params.languageCode,
           filters,
@@ -179,7 +155,7 @@ export function useKeywordSearch() {
         } else {
           setError(result.error || 'Erreur lors de la recherche')
         }
-      } catch (err) {
+      } catch {
         setError('Une erreur est survenue')
       } finally {
         setIsLoading(false)
@@ -211,15 +187,15 @@ export function useKeywordSearch() {
         }
 
         // Lancer tous les appels API en parallèle
-        const [suggestionsResult, relatedResult, ideasResult] =
-          await Promise.allSettled([
-            fetchKeywordSuggestions(baseParams),
-            fetchRelatedKeywords({ ...baseParams, depth: 2 }),
-            fetchKeywordIdeas({
-              ...baseParams,
-              keywords: [params.keyword.trim()],
-            }),
-          ])
+        const [suggestionsResult, relatedResult, ideasResult] = await Promise.allSettled([
+          fetchKeywordSuggestions(baseParams),
+          fetchRelatedKeywords({ ...baseParams, depth: 2 }),
+          fetchKeywordIdeas({
+            ...baseParams,
+            keyword: params.keyword.trim(),
+            keywords: [params.keyword.trim()],
+          }),
+        ])
 
         // Traiter les résultats
         if (suggestionsResult.status === 'fulfilled') {
@@ -242,16 +218,10 @@ export function useKeywordSearch() {
 
         // Vérifier s'il y a des erreurs
         const errors: string[] = []
-        if (
-          suggestionsResult.status === 'fulfilled' &&
-          !suggestionsResult.value.success
-        ) {
+        if (suggestionsResult.status === 'fulfilled' && !suggestionsResult.value.success) {
           errors.push(suggestionsResult.value.error || 'Erreur suggestions')
         }
-        if (
-          relatedResult.status === 'fulfilled' &&
-          !relatedResult.value.success
-        ) {
+        if (relatedResult.status === 'fulfilled' && !relatedResult.value.success) {
           errors.push(relatedResult.value.error || 'Erreur related')
         }
         if (ideasResult.status === 'fulfilled' && !ideasResult.value.success) {
@@ -265,7 +235,7 @@ export function useKeywordSearch() {
           // Certaines ont échoué mais pas toutes
           console.warn('Certaines requêtes ont échoué:', errors)
         }
-      } catch (err) {
+      } catch {
         setError('Une erreur est survenue')
       } finally {
         setIsLoading(false)

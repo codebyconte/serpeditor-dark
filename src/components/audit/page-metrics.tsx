@@ -13,7 +13,27 @@ import {
   Link as LinkIcon,
 } from 'lucide-react'
 
-export function PageMetrics({ data }: { any }) {
+type OnPageSummaryData = {
+  page_metrics?: {
+    links_external?: number
+    links_internal?: number
+    duplicate_title?: number
+    duplicate_description?: number
+    duplicate_content?: number
+    broken_links?: number
+    broken_resources?: number
+    redirect_loop?: number
+    onpage_score?: number
+    non_indexable?: number
+    links_relation_conflict?: number
+  }
+  crawl_status?: {
+    pages_crawled?: number
+  }
+  [key: string]: unknown
+}
+
+export function PageMetrics({ data }: { data: OnPageSummaryData | null | undefined }) {
   const pageMetrics = data?.page_metrics
   const crawlStatus = data?.crawl_status
   const totalPages = crawlStatus?.pages_crawled || 0
@@ -71,7 +91,7 @@ export function PageMetrics({ data }: { any }) {
       color: 'text-orange-600',
       bgColor: 'bg-orange-100 dark:bg-orange-900/20',
       description: 'Pages bloquées par robots.txt ou meta tags',
-      warning: pageMetrics.non_indexable > 0,
+      warning: (pageMetrics.non_indexable || 0) > 0,
     },
     {
       title: 'Boucles de redirection',
@@ -80,7 +100,7 @@ export function PageMetrics({ data }: { any }) {
       color: 'text-red-600',
       bgColor: 'bg-red-100 dark:bg-red-900/20',
       description: 'Redirections circulaires détectées',
-      critical: pageMetrics.redirect_loop > 0,
+      critical: (pageMetrics.redirect_loop || 0) > 0,
     },
   ]
 
@@ -196,7 +216,7 @@ export function PageMetrics({ data }: { any }) {
                   </div>
                   {(metric.critical || metric.warning) && (
                     <Badge
-                      variant={metric.critical ? 'destructive' : 'secondary'}
+                      color={metric.critical ? 'red' : 'orange'}
                       className="text-xs"
                     >
                       {metric.critical ? 'Critique' : 'Attention'}
@@ -222,7 +242,7 @@ export function PageMetrics({ data }: { any }) {
           <div className="flex items-center justify-between">
             <CardTitle>Contenu dupliqué</CardTitle>
             <Badge
-              variant={duplicatePages > 0 ? 'secondary' : 'default'}
+              color={duplicatePages > 0 ? 'orange' : 'green'}
               className={duplicatePages > 0 ? '' : 'bg-green-600'}
             >
               {duplicatePages > 0
@@ -255,7 +275,7 @@ export function PageMetrics({ data }: { any }) {
                     {metric.value}
                   </span>
                   {metric.value > 0 && (
-                    <Badge variant="outline" className="text-xs">
+                    <Badge color="zinc" className="text-xs">
                       {((metric.value / totalPages) * 100).toFixed(1)}%
                     </Badge>
                   )}
@@ -285,7 +305,7 @@ export function PageMetrics({ data }: { any }) {
           <div className="flex items-center justify-between">
             <CardTitle>Problèmes de liens</CardTitle>
             <Badge
-              variant={brokenPages > 0 ? 'destructive' : 'default'}
+              color={brokenPages > 0 ? 'red' : 'green'}
               className={brokenPages > 0 ? '' : 'bg-green-600'}
             >
               {brokenPages > 0 ? `${brokenPages} problèmes` : 'Aucun problème'}
@@ -328,7 +348,7 @@ export function PageMetrics({ data }: { any }) {
                     {metric.value}
                   </span>
                   {metric.value > 0 && metric.severity === 'critical' && (
-                    <Badge variant="destructive" className="text-xs">
+                    <Badge color="red" className="text-xs">
                       Critique
                     </Badge>
                   )}

@@ -611,7 +611,6 @@ export function ReferringDomainsContent() {
                       {filteredAndSortedItems.length} / {state.result?.items.length || 0} domaines
                     </Badge>
                     <Button
-                      variant="outline"
                       onClick={() => {
                         setSearchDomain('')
                         setFilterSpamScore('all')
@@ -705,16 +704,11 @@ export function ReferringDomainsContent() {
                       Page {currentPage} sur {totalPages}
                     </p>
                     <div className="flex gap-2">
-                      <Button
-                        variant="outline"
-                        onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                        disabled={currentPage === 1}
-                      >
+                      <Button onClick={() => setCurrentPage((p) => Math.max(1, p - 1))} disabled={currentPage === 1}>
                         <ChevronLeft className="h-4 w-4" />
                         Précédent
                       </Button>
                       <Button
-                        variant="outline"
                         onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                         disabled={currentPage === totalPages}
                       >

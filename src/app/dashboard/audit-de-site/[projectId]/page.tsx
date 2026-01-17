@@ -145,7 +145,7 @@ export default async function AuditDeSitePage({ params }: { params: { projectId:
                 <Heading className="text-3xl font-bold">Audit de site</Heading>
                 {summaryData && (
                   <Badge
-                    variant={onPageScore >= 80 ? 'default' : onPageScore >= 60 ? 'secondary' : 'destructive'}
+                    color={onPageScore >= 80 ? 'green' : onPageScore >= 60 ? 'orange' : 'red'}
                     className="text-base"
                   >
                     Score: {onPageScore.toFixed(0)}/100

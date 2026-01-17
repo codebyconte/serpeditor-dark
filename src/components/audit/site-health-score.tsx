@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { AlertTriangle, CheckCircle2, XCircle } from 'lucide-react'
 
-export function SiteHealthScore({ data }: { any }) {
+export function SiteHealthScore({ data }: { data: any }) {
   const score = data?.page_metrics?.onpage_score ?? 0
 
   const issues = [

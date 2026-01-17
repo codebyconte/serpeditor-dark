@@ -148,6 +148,7 @@ export const onPageTask = async (url: string): Promise<OnPageTaskResult> => {
         url: validatedUrl.data,
       },
       create: {
+        id: crypto.randomUUID(),
         url: validatedUrl.data,
         userId: session.user.id,
         task_id: taskId,

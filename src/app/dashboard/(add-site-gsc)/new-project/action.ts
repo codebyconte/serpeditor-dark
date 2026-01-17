@@ -45,6 +45,7 @@ export async function addSiteToProject({ siteUrl }: { siteUrl: string }) {
 
     await prisma.project.create({
       data: {
+        id: crypto.randomUUID(),
         url: validatedUrl,
         userId: session?.user?.id,
       },

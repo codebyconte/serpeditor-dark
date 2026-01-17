@@ -96,9 +96,7 @@ export interface AvgBacklinksInfo {
 export interface SearchIntentInfo {
   se_type?: string
   main_intent?: 'informational' | 'navigational' | 'commercial' | 'transactional'
-  foreign_intent?: Array<
-    'informational' | 'navigational' | 'commercial' | 'transactional'
-  >
+  foreign_intent?: Array<'informational' | 'navigational' | 'commercial' | 'transactional'>
   last_updated_time?: string
 }
 
@@ -147,7 +145,7 @@ export interface DataForSEOFilter {
   value: string | number
 }
 
-export type FilterExpression = 
+export type FilterExpression =
   | [string, string, string | number]
   | [[string, string, string | number], 'and' | 'or', [string, string, string | number]]
   | Array<[string, string, string | number] | 'and' | 'or'>
@@ -197,7 +195,7 @@ export interface DataForSEOResponse {
     cost: number
     result_count: number
     path: string[]
-     {
+    task: {
       api: string
       function: string
       se_type: string

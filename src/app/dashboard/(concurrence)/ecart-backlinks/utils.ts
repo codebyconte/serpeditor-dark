@@ -1,14 +1,9 @@
-import type {
-  DomainIntersectionResponse,
-  DomainIntersectionStats,
-} from './action'
+import type { DomainIntersectionResponse, DomainIntersectionStats } from './action'
 
 /**
  * Statistiques sur l'intersection
  */
-export function calculateIntersectionStats(
-  data: DomainIntersectionResponse,
-): DomainIntersectionStats {
+export function calculateIntersectionStats(data: DomainIntersectionResponse): DomainIntersectionStats {
   const stats: DomainIntersectionStats = {
     totalReferringDomains: data.items.length,
     targetCount: Object.keys(data.targets).length,
@@ -38,6 +33,10 @@ export function calculateIntersectionStats(
   }> = []
 
   data.items.forEach((item) => {
+    // Ignorer les items sans referring_domain
+    if (!item.referring_domain) return
+
+    const referringDomain = item.referring_domain
     let domainTotalBacklinks = 0
     let domainTargetsCount = 0
 
@@ -49,19 +48,19 @@ export function calculateIntersectionStats(
 
       // Ajouter ce domaine au set du target
       if (referringDomainsPerTarget.has(targetId)) {
-        referringDomainsPerTarget.get(targetId)!.add(item.referring_domain)
+        referringDomainsPerTarget.get(targetId)!.add(referringDomain)
       }
     })
 
     totalBacklinks += domainTotalBacklinks
     domainsData.push({
-      domain: item.referring_domain,
+      domain: referringDomain,
       totalBacklinks: domainTotalBacklinks,
       targetsCount: domainTargetsCount,
     })
 
     // Compter les TLDs
-    const tld = item.referring_domain.split('.').pop() || 'unknown'
+    const tld = referringDomain.split('.').pop() || 'unknown'
     tldCount.set(tld, (tldCount.get(tld) || 0) + 1)
 
     // Matrice d'intersection (combien pointent vers X targets)
@@ -72,18 +71,11 @@ export function calculateIntersectionStats(
   // Moyennes
   stats.avgBacklinksPerDomain = Math.round(totalBacklinks / data.items.length)
 
-  const totalReferringDomains = Array.from(referringDomainsPerTarget.values()).reduce(
-    (sum, set) => sum + set.size,
-    0,
-  )
-  stats.avgReferringDomainsPerTarget = Math.round(
-    totalReferringDomains / stats.targetCount,
-  )
+  const totalReferringDomains = Array.from(referringDomainsPerTarget.values()).reduce((sum, set) => sum + set.size, 0)
+  stats.avgReferringDomainsPerTarget = Math.round(totalReferringDomains / stats.targetCount)
 
   // Top domaines référents
-  stats.topReferringDomains = domainsData
-    .sort((a, b) => b.totalBacklinks - a.totalBacklinks)
-    .slice(0, 10)
+  stats.topReferringDomains = domainsData.sort((a, b) => b.totalBacklinks - a.totalBacklinks).slice(0, 10)
 
   // Top TLDs
   stats.topTLDs = Array.from(tldCount.entries())
@@ -93,4 +85,3 @@ export function calculateIntersectionStats(
 
   return stats
 }
-

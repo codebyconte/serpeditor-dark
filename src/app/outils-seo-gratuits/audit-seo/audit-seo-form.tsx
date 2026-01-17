@@ -706,7 +706,7 @@ function AuditResults({ result, url }: { result: InstantPagesResult; url: string
         description: `Vérification: ${key.replace(/_/g, ' ')}`,
       }
       if (!acc[info.category]) acc[info.category] = []
-      acc[info.category].push({ key, passed, ...info })
+      acc[info.category].push({ key, passed: passed as boolean, ...info })
       return acc
     },
     {} as Record<string, Array<{ key: string; passed: boolean; label: string; category: string; description: string }>>,
