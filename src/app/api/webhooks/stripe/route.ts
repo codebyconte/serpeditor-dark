@@ -13,16 +13,12 @@ const PRICE_TO_PLAN: Record<string, string> = {
   price_1SqYjOIY7EONGwxeSIg8SPzO: 'Agency',
 }
 
-// Type pour les propriétés supplémentaires de Stripe Subscription
-interface StripeSubscriptionWithPeriods extends Omit<Stripe.Subscription, 'current_period_start' | 'current_period_end'> {
-  current_period_start: number
-  current_period_end: number
-}
-
 // Helper type pour accéder aux propriétés qui peuvent ne pas être dans le type TypeScript
+// Stripe peut retourner ces propriétés dans l'objet brut même si elles ne sont pas dans le type TypeScript
 type SubscriptionWithRawData = Stripe.Subscription & {
   current_period_start?: number
   current_period_end?: number
+  billing_cycle_anchor?: number
 }
 
 export async function POST(request: Request) {
@@ -73,7 +69,10 @@ export async function POST(request: Request) {
 
         if (session.mode === 'subscription' && session.subscription) {
           const subscriptionId = session.subscription as string
-          const subscription = await stripe.subscriptions.retrieve(subscriptionId)
+          // Récupérer la subscription avec expansion pour avoir toutes les données
+          const subscription = await stripe.subscriptions.retrieve(subscriptionId, {
+            expand: ['items.data.price.product'],
+          })
           const userId = session.metadata?.userId
 
           if (!userId) {
@@ -88,41 +87,36 @@ export async function POST(request: Request) {
 
           // Créer ou mettre à jour l'abonnement
           // Les timestamps Stripe sont en secondes, on les convertit en millisecondes pour Date
-          // Accéder directement aux propriétés de l'objet subscription
-          const subWithRaw = subscription as unknown as SubscriptionWithRawData
-          const currentPeriodStartRaw = subWithRaw.current_period_start
-          const currentPeriodEndRaw = subWithRaw.current_period_end
+          // Accéder aux propriétés de l'objet subscription via le type étendu
+          const subscriptionWithRaw = subscription as SubscriptionWithRawData
+          const currentPeriodStartRaw = subscriptionWithRaw.current_period_start
+          const currentPeriodEndRaw = subscriptionWithRaw.current_period_end
           const cancelAtPeriodEnd = subscription.cancel_at_period_end || false
 
-          // Log complet pour debug
-          console.log('Full subscription object keys:', Object.keys(subscription))
-          const subscriptionJson = JSON.stringify(subscription, null, 2)
-          console.log('Subscription object (first 1000 chars):', subscriptionJson.substring(0, 1000))
-          
-          console.log('Raw subscription data:', {
-            currentPeriodStartRaw,
-            currentPeriodEndRaw,
-            cancelAtPeriodEnd,
-            status: subscription.status,
-            subscriptionKeys: Object.keys(subscription).filter(k => k.includes('period') || k.includes('cancel')),
-            // Essayer d'accéder directement
-            directAccess: {
-              current_period_start: subWithRaw.current_period_start,
-              current_period_end: subWithRaw.current_period_end,
-            },
-          })
+          // Si les périodes ne sont pas disponibles, utiliser billing_cycle_anchor comme fallback
+          // et calculer la période (généralement 1 mois = 30 jours)
+          let currentPeriodStart: Date | undefined
+          let currentPeriodEnd: Date | undefined
 
-          // Convertir les timestamps en Date (Stripe utilise des timestamps Unix en secondes)
-          const currentPeriodStart =
-            typeof currentPeriodStartRaw === 'number' ? new Date(currentPeriodStartRaw * 1000) : undefined
-          const currentPeriodEnd =
-            typeof currentPeriodEndRaw === 'number' ? new Date(currentPeriodEndRaw * 1000) : undefined
+          if (typeof currentPeriodStartRaw === 'number' && typeof currentPeriodEndRaw === 'number') {
+            currentPeriodStart = new Date(currentPeriodStartRaw * 1000)
+            currentPeriodEnd = new Date(currentPeriodEndRaw * 1000)
+          } else {
+            // Utiliser billing_cycle_anchor comme point de départ
+            const anchor = subscriptionWithRaw.billing_cycle_anchor ?? subscription.billing_cycle_anchor
+            if (anchor && typeof anchor === 'number') {
+              currentPeriodStart = new Date(anchor * 1000)
+              // Ajouter 1 mois (environ 30 jours) pour la fin de période
+              currentPeriodEnd = new Date((anchor + 30 * 24 * 60 * 60) * 1000)
+            }
+          }
 
           console.log('Processed subscription data:', {
-            currentPeriodStart,
-            currentPeriodEnd,
+            currentPeriodStart: currentPeriodStart?.toISOString(),
+            currentPeriodEnd: currentPeriodEnd?.toISOString(),
             cancelAtPeriodEnd,
             status: subscription.status,
+            usedFallback: !currentPeriodStartRaw || !currentPeriodEndRaw,
           })
 
           await updateSubscriptionFromStripe(userId, {
@@ -144,17 +138,23 @@ export async function POST(request: Request) {
 
       case 'customer.subscription.updated': {
         console.log('📝 Processing customer.subscription.updated')
-        const subscription = event.data.object as unknown as StripeSubscriptionWithPeriods
+        const subscription = event.data.object as SubscriptionWithRawData
         const userId = subscription.metadata?.userId
 
         const priceId = subscription.items.data[0]?.price.id
         const plan = priceId ? PRICE_TO_PLAN[priceId] || 'Free' : 'Free'
         const customerId = typeof subscription.customer === 'string' ? subscription.customer : subscription.customer.id
 
-        // Extraire les timestamps correctement
-        const currentPeriodStart = subscription.current_period_start
-        const currentPeriodEnd = subscription.current_period_end
+        // Extraire les timestamps correctement (peuvent être dans l'objet brut)
+        const currentPeriodStartRaw = subscription.current_period_start
+        const currentPeriodEndRaw = subscription.current_period_end
         const cancelAtPeriodEnd = subscription.cancel_at_period_end || false
+
+        // Convertir en Date
+        const currentPeriodStart =
+          typeof currentPeriodStartRaw === 'number' ? new Date(currentPeriodStartRaw * 1000) : undefined
+        const currentPeriodEnd =
+          typeof currentPeriodEndRaw === 'number' ? new Date(currentPeriodEndRaw * 1000) : undefined
 
         if (!userId) {
           // Essayer de trouver l'utilisateur via le customer ID
@@ -174,9 +174,8 @@ export async function POST(request: Request) {
             priceId: priceId || undefined,
             plan,
             status: subscription.status,
-            currentPeriodStart:
-              typeof currentPeriodStart === 'number' ? new Date(currentPeriodStart * 1000) : undefined,
-            currentPeriodEnd: typeof currentPeriodEnd === 'number' ? new Date(currentPeriodEnd * 1000) : undefined,
+            currentPeriodStart,
+            currentPeriodEnd,
             cancelAtPeriodEnd,
           })
         } else {
@@ -187,9 +186,8 @@ export async function POST(request: Request) {
             priceId: priceId || undefined,
             plan,
             status: subscription.status,
-            currentPeriodStart:
-              typeof currentPeriodStart === 'number' ? new Date(currentPeriodStart * 1000) : undefined,
-            currentPeriodEnd: typeof currentPeriodEnd === 'number' ? new Date(currentPeriodEnd * 1000) : undefined,
+            currentPeriodStart,
+            currentPeriodEnd,
             cancelAtPeriodEnd,
           })
         }
