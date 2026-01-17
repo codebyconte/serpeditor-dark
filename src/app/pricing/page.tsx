@@ -1,5 +1,5 @@
+
 import { ButtonLink, PlainButtonLink, SoftButtonLink } from '@/components/elements/button'
-import { Logo, LogoGrid } from '@/components/elements/logo-grid'
 import { Main } from '@/components/elements/main'
 import { ChevronIcon } from '@/components/icons/chevron-icon'
 import { XIcon } from '@/components/icons/social/x-icon'
@@ -22,68 +22,66 @@ import {
 } from '@/components/sections/navbar-with-links-actions-and-centered-logo'
 import { PlanComparisonTable } from '@/components/sections/plan-comparison-table'
 import { Plan, PricingHeroMultiTier } from '@/components/sections/pricing-hero-multi-tier'
-import { TestimonialTwoColumnWithLargePhoto } from '@/components/sections/testimonial-two-column-with-large-photo'
 import Image from 'next/image'
 
 function plans(option: string) {
   return (
     <>
       <Plan
-        name="Starter"
-        price={option === 'Monthly' ? '$12' : '$120'}
-        period={option === 'Monthly' ? '/month' : '/year'}
-        subheadline={<p>Small teams getting started with shared inboxes</p>}
+        name="Free"
+        price={option === 'Mensuel' ? '0€' : '0€'}
+        period={option === 'Mensuel' ? '/mois' : '/année'}
+        subheadline={<p>Pour découvrir l&apos;outil et tester les bases</p>}
         features={[
-          'Shared inbox for up to 2 mailboxes',
-          'Tagging & assignment',
-          'Private notes',
-          'Automatic replies',
-          'Email support',
+          '1 projet',
+          '10 mots-clés suivis',
+          '100 recherches mots-clés/mois',
+          '10 analyses backlinks',
+          '1 audit (100 pages)',
+          'Exports limités',
         ]}
         cta={
-          <SoftButtonLink href="#" size="lg">
-            Start free trial
+          <SoftButtonLink href="/register" size="lg">
+            Commencer gratuitement
           </SoftButtonLink>
         }
       />
       <Plan
-        name="Growth"
-        price={option === 'Monthly' ? '$49' : '$490'}
-        period={option === 'Monthly' ? '/month' : '/year'}
-        subheadline={<p>Growing teams needing collaboration and insights</p>}
-        badge="Most popular"
+        name="Pro"
+        price={option === 'Mensuel' ? '39€' : '390€'}
+        period={option === 'Mensuel' ? '/mois' : '/année'}
+        subheadline={<p>Pour freelances et consultants SEO</p>}
+        badge="Populaire"
         features={[
-          'Everything in Starter',
-          'Inbox Agent',
-          'Unlimited mailboxes',
-          'Collision detection',
-          'Snippets and templates',
-          'Reporting dashboard',
-          'Slack integration',
+          '5 projets',
+          '1 000 mots-clés suivis',
+          '10k recherches mots-clés/mois',
+          '5k analyses backlinks',
+          '10k pages audits/mois',
+          'Support prioritaire',
         ]}
         cta={
-          <ButtonLink href="#" size="lg">
-            Start free trial
+          <ButtonLink href="/register" size="lg">
+          Commencer le plan Pro →
           </ButtonLink>
         }
       />
       <Plan
-        name="Pro"
-        price={option === 'Monthly' ? '$299' : '$2990'}
-        period={option === 'Monthly' ? '/month' : '/year'}
-        subheadline={<p>Support-focused organizations and larger teams</p>}
+        name="Agency"
+        price={option === 'Mensuel' ? '99€' : '990€'}
+        period={option === 'Mensuel' ? '/mois' : '/année'}
+        subheadline={<p>Pour agences et équipes SEO avancées</p>}
         features={[
-          'Everything in Growth',
-          'Custom roles & permissions',
-          'Automation engine',
-          'API access',
-          'SLA tracking',
-          'SSO support',
-          'SOC 2 compliance',
+          '50 projets maximum',
+          '10k mots-clés suivis',
+          '100k recherches mots-clés/mois',
+          '40k analyses backlinks',
+          '100k pages audits/mois',
+          'Support prioritaire',
         ]}
         cta={
-          <SoftButtonLink href="#" size="lg">
-            Start free trial
+          <SoftButtonLink href="/register" size="lg">
+            Commencer le plan Agency →
           </SoftButtonLink>
         }
       />
@@ -132,270 +130,128 @@ export default function Page() {
         {/* Hero */}
         <PricingHeroMultiTier
           id="pricing"
-          headline="Pricing"
+          headline="Tarifs"
           subheadline={
             <p>
-              Simplify your shared inbox, collaborate effortlessly, and give every customer a reply that feels personal,
-              even if it was written by a bot.
+              Choisissez le plan adapté à vos besoins SEO : audits, mots-clés, backlinks et suivi de positions pour dominer Google.
             </p>
           }
-          options={['Monthly', 'Yearly']}
-          plans={{ Monthly: plans('Monthly'), Yearly: plans('Yearly') }}
-          footer={
-            <LogoGrid>
-              <Logo>
-                <Image
-                  src="https://assets.tailwindplus.com/logos/9.svg?color=black&height=32"
-                  className="dark:hidden"
-                  alt=""
-                  width={51}
-                  height={32}
-                />
-                <Image
-                  src="https://assets.tailwindplus.com/logos/9.svg?color=white&height=32"
-                  className="not-dark:hidden"
-                  alt=""
-                  width={51}
-                  height={32}
-                />
-              </Logo>
-              <Logo>
-                <Image
-                  src="https://assets.tailwindplus.com/logos/10.svg?color=black&height=32"
-                  className="dark:hidden"
-                  alt=""
-                  width={70}
-                  height={32}
-                />
-                <Image
-                  src="https://assets.tailwindplus.com/logos/10.svg?color=white&height=32"
-                  className="not-dark:hidden"
-                  alt=""
-                  width={70}
-                  height={32}
-                />
-              </Logo>
-              <Logo>
-                <Image
-                  src="https://assets.tailwindplus.com/logos/11.svg?color=black&height=32"
-                  className="dark:hidden"
-                  alt=""
-                  width={100}
-                  height={32}
-                />
-                <Image
-                  src="https://assets.tailwindplus.com/logos/11.svg?color=white&height=32"
-                  className="not-dark:hidden"
-                  alt=""
-                  width={100}
-                  height={32}
-                />
-              </Logo>
-              <Logo>
-                <Image
-                  src="https://assets.tailwindplus.com/logos/12.svg?color=black&height=32"
-                  className="dark:hidden"
-                  alt=""
-                  width={85}
-                  height={32}
-                />
-                <Image
-                  src="https://assets.tailwindplus.com/logos/12.svg?color=white&height=32"
-                  className="not-dark:hidden"
-                  alt=""
-                  width={85}
-                  height={32}
-                />
-              </Logo>
-              <Logo>
-                <Image
-                  src="https://assets.tailwindplus.com/logos/13.svg?color=black&height=32"
-                  className="dark:hidden"
-                  alt=""
-                  width={75}
-                  height={32}
-                />
-                <Image
-                  src="https://assets.tailwindplus.com/logos/13.svg?color=white&height=32"
-                  className="not-dark:hidden"
-                  alt=""
-                  width={75}
-                  height={32}
-                />
-              </Logo>
-              <Logo>
-                <Image
-                  src="https://assets.tailwindplus.com/logos/8.svg?color=black&height=32"
-                  className="dark:hidden"
-                  alt=""
-                  width={85}
-                  height={32}
-                />
-                <Image
-                  src="https://assets.tailwindplus.com/logos/8.svg?color=white&height=32"
-                  className="not-dark:hidden"
-                  alt=""
-                  width={85}
-                  height={32}
-                />
-              </Logo>
-            </LogoGrid>
-          }
+          options={['Mensuel']}
+          plans={{ Mensuel: plans('Mensuel') }}
+         
         />
 
         {/* Plan Comparison Table */}
         <PlanComparisonTable
           id="pricing"
-          plans={['Starter', 'Growth', 'Pro']}
+          plans={['Free', 'Pro', 'Agency']}
           features={[
             {
-              title: 'Collaboration',
+              title: 'Projets ',
               features: [
                 {
-                  name: 'Shared inboxes',
-                  value: { Starter: '2', Growth: 'Unlimited', Pro: 'Unlimited' },
-                },
-                { name: 'Private notes', value: true },
-                { name: 'Tagging & assignment', value: true },
-                {
-                  name: 'Collision detection',
-                  value: { Starter: false, Growth: true, Pro: true },
-                },
-                {
-                  name: 'Real-time activity indicators',
-                  value: { Starter: false, Growth: true, Pro: true },
-                },
-                {
-                  name: 'Internal chat',
-                  value: { Starter: false, Growth: true, Pro: true },
+                  name: 'Projets',
+                  value: { Free: '1', Pro: '5', Agency: '50' },
                 },
               ],
             },
             {
-              title: 'Automation',
+              title: 'Suivi & Recherche',
               features: [
-                { name: 'Automatic replies', value: true },
                 {
-                  name: 'Inbox Agent',
-                  value: { Starter: false, Growth: true, Pro: true },
+                  name: 'Mots-clés suivis (Synthèse des positions, Pages positionnées)',
+                  value: { Free: '10 (refresh limité 1/jour)', Pro: '1 000 (refresh quotidien)', Agency: '10 000 (refresh multiple/jour)' },
                 },
                 {
-                  name: 'Automation engine',
-                  value: { Starter: false, Growth: true, Pro: true },
+                  name: 'Recherches mots-clés/mois (Recherche de mots-clés, Vue d’ensemble mots clés, Mot clés organiques)',
+                  value: { Free: '100', Pro: '10 000', Agency: '100 000' },
                 },
                 {
-                  name: 'Snippets and templates',
-                  value: { Starter: false, Growth: true, Pro: true },
-                },
-                {
-                  name: 'SLA tracking',
-                  value: { Starter: false, Growth: false, Pro: true },
+                  name: 'SERP historiques/mois (Comparateur de SERP)',
+                  value: { Free: '10', Pro: '1 000', Agency: '10 000' },
                 },
               ],
             },
             {
-              title: 'Team Management',
+              title: 'Analyses Avancées',
               features: [
                 {
-                  name: 'Unlimited users',
-                  value: { Starter: 'Up to 5', Growth: true, Pro: true },
+                  name: 'Analyses backlinks/mois (Tous les backlinks, Domaines référents, Ancres, Nouveaux / Perdus, Possibilités de backlinks)',
+                  value: { Free: '10 (top 10 liens)', Pro: '5 000', Agency: '40 000' },
                 },
                 {
-                  name: 'Reporting dashboard',
-                  value: { Starter: false, Growth: true, Pro: true },
+                  name: 'Pages audits/mois (Audit technique)',
+                  value: { Free: '10 (1 audit)', Pro: '10 000 (10 audits)', Agency: '100 000 (illimité avec queue)' },
                 },
                 {
-                  name: 'Slack integration',
-                  value: { Starter: false, Growth: true, Pro: true },
+                  name: 'Visibilité AI/mois (Visibilité IA)',
+                  value: { Free: false, Pro: '100 req', Agency: '1 000 req' },
                 },
                 {
-                  name: 'Roles & permissions',
-                  value: { Starter: false, Growth: false, Pro: true },
-                },
-                {
-                  name: 'SSO support',
-                  value: { Starter: false, Growth: false, Pro: true },
+                  name: 'Analyses domaines/mois (Opportunités de domaines, Vue d’ensemble, Recherche organiques, Possibilités de mots clés, Identifiez vos concurrents)',
+                  value: { Free: '10 (basique)', Pro: '100', Agency: '1 000' },
                 },
               ],
             },
             {
-              title: 'Support',
+              title: 'Support & Extras',
               features: [
-                { name: 'Email support', value: true },
+                { name: 'Exports/mois', value: { Free: '5', Pro: '1 000', Agency: 'Illimité' } },
                 {
-                  name: 'Priority response',
-                  value: { Starter: false, Growth: true, Pro: true },
+                  name: 'Support',
+                  value: { Free: 'Docs + forum', Pro: 'Chat <24h', Agency: 'Support prioritaire' },
                 },
                 {
-                  name: 'Dedicated manager',
-                  value: { Starter: false, Growth: false, Pro: true },
+                  name: 'White-label',
+                  value: { Free: false, Pro: false, Agency: true },
                 },
               ],
             },
           ]}
         />
 
-        {/* Testimonial */}
-        <TestimonialTwoColumnWithLargePhoto
-          id="testimonial"
-          quote={
-            <p>
-              Ever since we started using Oatmeal, our customer satisfaction scores have skyrocketed. The personal touch
-              that their human-AI hybrid support provides is unparalleled.
-            </p>
-          }
-          img={
-            <Image
-              src="https://assets.tailwindplus.com/avatars/16.webp?w=1400&h=1000"
-              alt=""
-              className="not-dark:bg-white/75 dark:bg-black/75"
-              width={1400}
-              height={1000}
-            />
-          }
-          name="Lynn Marshall"
-          byline="Founder at Pine Labs"
-        />
+   
 
         {/* FAQs */}
         <FAQsAccordion id="faqs" headline="Questions & Answers">
-          <Faq
-            id="faq-1"
-            question="Do I need a credit card to start the free trial?"
-            answer="Yes, but don't worry, you won't be charged until the trial period is over. We won't send you an email reminding you when this happens because we are really hoping you'll forget and we can keep charging you until your cards expires"
-          />
+     <Faq
+  id="faq-1"
+  question="Puis-je tester l'outil gratuitement sans carte bancaire ?"
+  answer="Oui ! Créez simplement un compte avec votre email et accédez immédiatement à toutes les fonctionnalités de notre forfait Free, limité en volumes mais totalement gratuit, sans carte bancaire."
+/>
+
           <Faq
             id="faq-2"
-            question="Can my whole team use the same inbox?"
-            answer="Yes, the more the merrier! Oatmeal works best when your entire company has access. We will charge you per additional seat, but we won't tell you about this until you get your invoice."
+            question="Puis-je utiliser l'outil pour plusieurs clients ?"
+            answer="Oui, avec plusieurs projets ! Le plan Pro permet jusqu'à 5 projets, et Agency jusqu'à 50."
           />
           <Faq
             id="faq-3"
-            question="Is the AI agent actually a bunch of people in India?"
-            answer="Not just India! We have people in lots of countries around the world pretending to be an AI, including some that are currently under sanctions, so we can't legally mention them here."
+            question="Les données sont-elles précises pour le marché français ?"
+            answer="Absolument. SerpEditor s'appuie sur une technologie de scan propriétaire qui agrège des milliards de points de données issus directement des résultats de recherche Google France. Notre base de données de 213M+ de mots-clés est mise à jour quotidiennement pour garantir une précision maximale."
           />
           <Faq
             id="faq-4"
-            question="Does Oatmeal replace my email client?"
-            answer="Absolutely. The idea is that we transition you away from email entirely, so you become completely dependent on our service. Like a parasite living off a host."
+            question="SerpEditor remplace-t-il d'autres outils SEO ?"
+            answer="Oui, c'est un tout-en-un : audits, mots-clés, backlinks et suivi, pour simplifier votre workflow SEO."
           />
         </FAQsAccordion>
 
         {/* Call To Action */}
         <CallToActionSimpleCentered
           id="call-to-action"
-          headline="Have anymore questions?"
+          headline="Encore des questions ?"
           subheadline={
-            <p>Chat to someone on our sales team, who will make promises about our roadmap that we won&apos;t keep.</p>
+            <p>Contactez notre équipe pour des réponses personnalisées sur nos tarifs et fonctionnalités SEO.</p>
           }
           cta={
             <div className="flex items-center gap-4">
               <ButtonLink href="#" size="lg">
-                Chat with us
+                Chat avec nous
               </ButtonLink>
 
               <PlainButtonLink href="#" size="lg">
-                Book a demo <ChevronIcon />
+                Réserver une démo <ChevronIcon />
               </PlainButtonLink>
             </div>
           }
