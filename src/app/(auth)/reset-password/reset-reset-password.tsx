@@ -64,16 +64,16 @@ export function ResetPasswordForm() {
 
   if (!token || error === 'Invalid token') {
     return (
-      <main className="overflow-hidden bg-gray-50">
+      <main className="overflow-hidden bg-gray-50 dark:bg-gray-950">
         <GradientBackground />
         <div className="isolate flex min-h-dvh items-center justify-center p-6 lg:p-8">
-          <div className="w-full max-w-md space-y-4 rounded-xl bg-white p-7 shadow-md ring-1 ring-black/5">
-            <h1 className="text-base/6 font-medium">
+          <div className="w-full max-w-md space-y-4 rounded-xl bg-white p-7 shadow-md ring-1 ring-black/5 dark:bg-gray-900 dark:ring-white/10">
+            <h1 className="text-base/6 font-medium text-gray-900 dark:text-white">
               Le lien de réinitialisation du mot de passe est invalide ou expiré
             </h1>
-            <p className="text-sm/5 text-gray-600">
-              Ce lien n’est plus valide. Il se peut qu’il ait déjà été utilisé
-              ou qu’il ait expiré pour des raisons de sécurité. Veuillez
+            <p className="text-sm/5 text-gray-600 dark:text-gray-400">
+              Ce lien n&apos;est plus valide. Il se peut qu&apos;il ait déjà été utilisé
+              ou qu&apos;il ait expiré pour des raisons de sécurité. Veuillez
               demander un nouveau lien afin de réinitialiser votre mot de passe
               et accéder à votre compte.
             </p>
@@ -87,21 +87,21 @@ export function ResetPasswordForm() {
   }
 
   return (
-    <main className="overflow-hidden bg-gray-50">
+    <main className="overflow-hidden bg-gray-50 dark:bg-gray-950">
       <GradientBackground />
       <div className="isolate flex min-h-dvh items-center justify-center p-6 lg:p-8">
-        <div className="w-full max-w-md rounded-xl bg-white shadow-md ring-1 ring-black/5">
+        <div className="w-full max-w-md rounded-xl bg-white shadow-md ring-1 ring-black/5 dark:bg-gray-900 dark:ring-white/10">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="p-7">
               <div className="flex items-start">
                 <Link href="/" title="Home">
-                  <Mark className="h-9 fill-black" />
+                  <Mark className="h-9 fill-black dark:fill-white" />
                 </Link>
               </div>
-              <h1 className="mt-8 text-base/6 font-medium">
+              <h1 className="mt-8 text-base/6 font-medium text-gray-900 dark:text-white">
                 Réinitialiser votre mot de passe
               </h1>
-              <p className="mt-1 text-sm/5 text-gray-600">
+              <p className="mt-1 text-sm/5 text-gray-600 dark:text-gray-400">
                 Créez un nouveau mot de passe pour sécuriser votre compte.
                 Entrez un mot de passe fort et unique, puis confirmez-le.
               </p>
@@ -111,7 +111,7 @@ export function ResetPasswordForm() {
                 name="password"
                 render={({ field }) => (
                   <FormItem className="mt-8">
-                    <FormLabel>Mot de passe</FormLabel>
+                    <FormLabel className="text-gray-900 dark:text-white">Mot de passe</FormLabel>
                     <FormControl>
                       <Input
                         {...field}
@@ -120,9 +120,10 @@ export function ResetPasswordForm() {
                         name="password"
                         placeholder="Saisissez un mot de passe sécurisé"
                         className={clsx(
-                          'block w-full rounded-lg border border-transparent shadow-sm ring-1 ring-black/10',
+                          'block w-full rounded-lg border border-transparent shadow-sm ring-1 ring-black/10 dark:ring-white/10',
+                          'bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500',
                           'px-[calc(--spacing(2)-1px)] py-[calc(--spacing(1.5)-1px)] text-base/6 sm:text-sm/6',
-                          'data-focus:outline-2 data-focus:-outline-offset-1 data-focus:outline-black',
+                          'data-focus:outline-2 data-focus:-outline-offset-1 data-focus:outline-black dark:data-focus:outline-white',
                         )}
                       />
                     </FormControl>
@@ -136,7 +137,7 @@ export function ResetPasswordForm() {
                 name="confirmPassword"
                 render={({ field }) => (
                   <FormItem className="mt-8">
-                    <FormLabel>Confirmer le mot de passe</FormLabel>
+                    <FormLabel className="text-gray-900 dark:text-white">Confirmer le mot de passe</FormLabel>
                     <FormControl>
                       <Input
                         {...field}
@@ -145,9 +146,10 @@ export function ResetPasswordForm() {
                         name="confirmPassword"
                         placeholder="Retapez le même mot de passe"
                         className={clsx(
-                          'block w-full rounded-lg border border-transparent shadow-sm ring-1 ring-black/10',
+                          'block w-full rounded-lg border border-transparent shadow-sm ring-1 ring-black/10 dark:ring-white/10',
+                          'bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500',
                           'px-[calc(--spacing(2)-1px)] py-[calc(--spacing(1.5)-1px)] text-base/6 sm:text-sm/6',
-                          'data-focus:outline-2 data-focus:-outline-offset-1 data-focus:outline-black',
+                          'data-focus:outline-2 data-focus:-outline-offset-1 data-focus:outline-black dark:data-focus:outline-white',
                         )}
                       />
                     </FormControl>
