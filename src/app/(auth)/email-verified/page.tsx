@@ -26,7 +26,7 @@ export default async function EmailVerifiedPage() {
             Votre compte est maintenant activé. Vous pouvez dès à présent vous
             connecter et commencer à utiliser nos services.
           </p>
-          <Button asChild>
+          <Button asChild className="bg-white dark:bg-gray-800 hover:cursor-pointer">
             <Link href="/dashboard">Accéder à votre espace</Link>
           </Button>
         </div>

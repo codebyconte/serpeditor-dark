@@ -73,7 +73,7 @@ export function ForgotForm() {
                 Réinitialiser votre mot de passe
               </h1>
               <p className="mt-1 text-sm/5 text-gray-600 dark:text-gray-400">
-                Saisissez l'adresse e-mail associée à votre compte. Nous vous
+                Saisissez l&apos;adresse e-mail associée à votre compte. Nous vous
                 enverrons un lien pour créer un nouveau mot de passe.
               </p>
 
@@ -103,7 +103,7 @@ export function ForgotForm() {
               />
 
               <div className="mt-8">
-                <Button type="submit" className="w-full" disabled={isPending}>
+                <Button type="submit" className="w-full bg-white dark:bg-gray-800 hover:cursor-pointer" disabled={isPending}>
                   {isPending ? 'Envoi en cours…' : 'Envoyer le lien'}
                 </Button>
               </div>

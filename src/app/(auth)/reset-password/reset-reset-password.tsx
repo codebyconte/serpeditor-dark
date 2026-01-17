@@ -159,7 +159,7 @@ export function ResetPasswordForm() {
               />
 
               <div className="mt-8">
-                <Button type="submit" className="w-full" disabled={isPending}>
+                <Button type="submit" className="w-full bg-white dark:bg-gray-800 hover:cursor-pointer" disabled={isPending}>
                   {isPending
                     ? 'Enregistrement en cours…'
                     : 'Enregistrer le nouveau mot de passe'}

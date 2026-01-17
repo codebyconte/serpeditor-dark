@@ -113,7 +113,7 @@ export function FormRegister() {
                 Inscrivez-vous sur Serpeditor{' '}
               </h1>
               <p className="mt-1 text-sm/5 text-gray-600 dark:text-gray-400">
-                Boostez votre référencement dès aujourd'hui.
+                Boostez votre référencement dès aujourd&apos;hui.
               </p>
 
               <FormField
@@ -223,7 +223,7 @@ export function FormRegister() {
               />
 
               <div className="mt-8">
-                <Button type="submit" className="w-full" disabled={isPending}>
+                <Button type="submit" className="w-full bg-white dark:bg-gray-800 hover:cursor-pointer" disabled={isPending}>
                   {isPending ? 'En cours...' : "S'inscrire"}
                 </Button>
               </div>
@@ -238,7 +238,7 @@ export function FormRegister() {
             </div>
             <Button
               onClick={loginwithGoogle}
-              className="flex w-full items-center gap-2"
+              className="flex w-full items-center gap-2 bg-white dark:bg-gray-800 hover:cursor-pointer"
             >
               <FcGoogle />
               S&apos;inscrire avec Google
