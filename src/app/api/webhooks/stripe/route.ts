@@ -19,6 +19,12 @@ interface StripeSubscriptionWithPeriods extends Omit<Stripe.Subscription, 'curre
   current_period_end: number
 }
 
+// Helper type pour accéder aux propriétés qui peuvent ne pas être dans le type TypeScript
+type SubscriptionWithRawData = Stripe.Subscription & {
+  current_period_start?: number
+  current_period_end?: number
+}
+
 export async function POST(request: Request) {
   const body = await request.text()
   const headersList = await headers()
@@ -82,12 +88,37 @@ export async function POST(request: Request) {
 
           // Créer ou mettre à jour l'abonnement
           // Les timestamps Stripe sont en secondes, on les convertit en millisecondes pour Date
-          const subData = subscription as unknown as StripeSubscriptionWithPeriods
-          const currentPeriodStart = subData.current_period_start
-          const currentPeriodEnd = subData.current_period_end
-          const cancelAtPeriodEnd = subData.cancel_at_period_end || false
+          // Accéder directement aux propriétés de l'objet subscription
+          const subWithRaw = subscription as unknown as SubscriptionWithRawData
+          const currentPeriodStartRaw = subWithRaw.current_period_start
+          const currentPeriodEndRaw = subWithRaw.current_period_end
+          const cancelAtPeriodEnd = subscription.cancel_at_period_end || false
 
-          console.log('Subscription data:', {
+          // Log complet pour debug
+          console.log('Full subscription object keys:', Object.keys(subscription))
+          const subscriptionJson = JSON.stringify(subscription, null, 2)
+          console.log('Subscription object (first 1000 chars):', subscriptionJson.substring(0, 1000))
+          
+          console.log('Raw subscription data:', {
+            currentPeriodStartRaw,
+            currentPeriodEndRaw,
+            cancelAtPeriodEnd,
+            status: subscription.status,
+            subscriptionKeys: Object.keys(subscription).filter(k => k.includes('period') || k.includes('cancel')),
+            // Essayer d'accéder directement
+            directAccess: {
+              current_period_start: subWithRaw.current_period_start,
+              current_period_end: subWithRaw.current_period_end,
+            },
+          })
+
+          // Convertir les timestamps en Date (Stripe utilise des timestamps Unix en secondes)
+          const currentPeriodStart =
+            typeof currentPeriodStartRaw === 'number' ? new Date(currentPeriodStartRaw * 1000) : undefined
+          const currentPeriodEnd =
+            typeof currentPeriodEndRaw === 'number' ? new Date(currentPeriodEndRaw * 1000) : undefined
+
+          console.log('Processed subscription data:', {
             currentPeriodStart,
             currentPeriodEnd,
             cancelAtPeriodEnd,
@@ -100,8 +131,8 @@ export async function POST(request: Request) {
             priceId: priceId || undefined,
             plan,
             status: subscription.status,
-            currentPeriodStart: currentPeriodStart ? new Date(currentPeriodStart * 1000) : undefined,
-            currentPeriodEnd: currentPeriodEnd ? new Date(currentPeriodEnd * 1000) : undefined,
+            currentPeriodStart,
+            currentPeriodEnd,
             cancelAtPeriodEnd,
           })
           console.log(`✅ Subscription updated successfully for user ${userId}`)
@@ -143,8 +174,9 @@ export async function POST(request: Request) {
             priceId: priceId || undefined,
             plan,
             status: subscription.status,
-            currentPeriodStart: currentPeriodStart ? new Date(currentPeriodStart * 1000) : undefined,
-            currentPeriodEnd: currentPeriodEnd ? new Date(currentPeriodEnd * 1000) : undefined,
+            currentPeriodStart:
+              typeof currentPeriodStart === 'number' ? new Date(currentPeriodStart * 1000) : undefined,
+            currentPeriodEnd: typeof currentPeriodEnd === 'number' ? new Date(currentPeriodEnd * 1000) : undefined,
             cancelAtPeriodEnd,
           })
         } else {
@@ -155,8 +187,9 @@ export async function POST(request: Request) {
             priceId: priceId || undefined,
             plan,
             status: subscription.status,
-            currentPeriodStart: currentPeriodStart ? new Date(currentPeriodStart * 1000) : undefined,
-            currentPeriodEnd: currentPeriodEnd ? new Date(currentPeriodEnd * 1000) : undefined,
+            currentPeriodStart:
+              typeof currentPeriodStart === 'number' ? new Date(currentPeriodStart * 1000) : undefined,
+            currentPeriodEnd: typeof currentPeriodEnd === 'number' ? new Date(currentPeriodEnd * 1000) : undefined,
             cancelAtPeriodEnd,
           })
         }
@@ -180,6 +213,76 @@ export async function POST(request: Request) {
               status: 'canceled',
               cancelAtPeriodEnd: false,
             },
+          })
+        }
+        break
+      }
+
+      case 'customer.subscription.created': {
+        console.log('📝 Processing customer.subscription.created')
+        const subscription = event.data.object as Stripe.Subscription
+        const userId = subscription.metadata?.userId
+
+        // Accéder aux périodes depuis l'événement (plus fiable que retrieve)
+        const subWithRaw = subscription as unknown as SubscriptionWithRawData
+        const currentPeriodStartRaw = subWithRaw.current_period_start
+        const currentPeriodEndRaw = subWithRaw.current_period_end
+        
+        console.log('Subscription created event data:', {
+          subscriptionId: subscription.id,
+          currentPeriodStartRaw,
+          currentPeriodEndRaw,
+          status: subscription.status,
+          allKeys: Object.keys(subscription).filter(k => k.includes('period') || k.includes('cancel')),
+        })
+
+        if (!userId) {
+          // Essayer de trouver l'utilisateur via le customer ID
+          const existingSub = await prisma.subscription.findFirst({
+            where: { stripeSubscriptionId: subscription.id },
+          })
+
+          if (!existingSub) {
+            console.log('ℹ️ Subscription created but no userId found, will be handled by checkout.session.completed')
+            break
+          }
+
+          const priceId = subscription.items.data[0]?.price.id
+          const plan = priceId ? PRICE_TO_PLAN[priceId] || 'Free' : 'Free'
+          const customerId = typeof subscription.customer === 'string' ? subscription.customer : subscription.customer.id
+
+          console.log(`✅ Updating subscription for user ${existingSub.userId} to plan ${plan}`)
+
+          await updateSubscriptionFromStripe(existingSub.userId, {
+            customerId,
+            subscriptionId: subscription.id,
+            priceId: priceId || undefined,
+            plan,
+            status: subscription.status,
+            currentPeriodStart:
+              typeof currentPeriodStartRaw === 'number' ? new Date(currentPeriodStartRaw * 1000) : undefined,
+            currentPeriodEnd:
+              typeof currentPeriodEndRaw === 'number' ? new Date(currentPeriodEndRaw * 1000) : undefined,
+            cancelAtPeriodEnd: subscription.cancel_at_period_end || false,
+          })
+        } else {
+          const priceId = subscription.items.data[0]?.price.id
+          const plan = priceId ? PRICE_TO_PLAN[priceId] || 'Free' : 'Free'
+          const customerId = typeof subscription.customer === 'string' ? subscription.customer : subscription.customer.id
+
+          console.log(`✅ Updating subscription for user ${userId} to plan ${plan}`)
+
+          await updateSubscriptionFromStripe(userId, {
+            customerId,
+            subscriptionId: subscription.id,
+            priceId: priceId || undefined,
+            plan,
+            status: subscription.status,
+            currentPeriodStart:
+              typeof currentPeriodStartRaw === 'number' ? new Date(currentPeriodStartRaw * 1000) : undefined,
+            currentPeriodEnd:
+              typeof currentPeriodEndRaw === 'number' ? new Date(currentPeriodEndRaw * 1000) : undefined,
+            cancelAtPeriodEnd: subscription.cancel_at_period_end || false,
           })
         }
         break
