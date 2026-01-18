@@ -390,10 +390,10 @@ export default function RankOverviewContent() {
 
   // Charger les données automatiquement quand le domaine change ou la page change
   useEffect(() => {
-    if (selectedDomain) {
+    if (selectedDomain && domains.length > 0) {
       loadData()
     }
-  }, [selectedDomain, loadData])
+  }, [selectedDomain, loadData, domains.length])
 
   const formatNumber = (num: number | null | undefined) => {
     if (num === null || num === undefined) return '-'

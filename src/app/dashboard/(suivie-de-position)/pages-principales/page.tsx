@@ -1,11 +1,13 @@
 // 📁 app/dashboard/pages-principales/page.tsx
 import { PageHeader } from '@/components/dashboard/page-header'
 import { ProjectSelector } from '@/components/dashboard/project-selector'
+import { OpenModal } from '@/components/open-modale-google'
+import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty'
 import { Skeleton } from '@/components/ui/skeleton'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
-import type { Metadata } from 'next'
 import { FileText } from 'lucide-react'
+import type { Metadata } from 'next'
 import { headers } from 'next/headers'
 import { Suspense } from 'react'
 import { TopPagesContent } from './top-pages-content'
@@ -49,17 +51,41 @@ export default async function PagesPrincipalesPage({ searchParams }: { searchPar
           iconClassName="border-green-500/20 bg-gradient-to-br from-green-500/10 to-emerald-500/10 text-green-500"
         />
 
-        {/* Project Selector */}
-        {projects.length > 1 && (
-          <div className="mb-6">
-            <ProjectSelector projects={projects} currentProjectId={selectedProject?.id} />
-          </div>
-        )}
+        {projects.length === 0 ? (
+          <section className="py-12">
+            <Empty>
+              <EmptyHeader>
+                <EmptyMedia variant="icon">
+                  <div className="bg-primary/10 flex h-16 w-16 items-center justify-center rounded-full">
+                    <FileText className="text-primary h-8 w-8" />
+                  </div>
+                </EmptyMedia>
+                <EmptyTitle className="text-xl">Aucun projet</EmptyTitle>
+                <EmptyDescription className="max-w-md">
+                  Commencez par ajouter votre premier site web pour analyser les performances de vos pages dans Google
+                  Search Console.
+                </EmptyDescription>
+              </EmptyHeader>
+              <EmptyContent>
+                <OpenModal />
+              </EmptyContent>
+            </Empty>
+          </section>
+        ) : (
+          <>
+            {/* Project Selector */}
+            {projects.length > 1 && (
+              <div className="mb-6">
+                <ProjectSelector projects={projects} currentProjectId={selectedProject?.id} />
+              </div>
+            )}
 
-        {/* Content */}
-        <Suspense fallback={<PagesSkeleton />}>
-          {selectedProject && <TopPagesContent projectId={selectedProject.id} />}
-        </Suspense>
+            {/* Content */}
+            <Suspense fallback={<PagesSkeleton />}>
+              {selectedProject && <TopPagesContent projectId={selectedProject.id} />}
+            </Suspense>
+          </>
+        )}
       </div>
     </main>
   )
