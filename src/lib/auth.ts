@@ -15,8 +15,9 @@ export const auth = betterAuth({
     requireEmailVerification: true,
     sendResetPassword: async ({ user, url }) => {
       await resend.emails.send({
-        from: 'Serpeditor <onboarding@resend.dev>',
+        from: 'Serpeditor <onboarding@notifications.serpeditor.fr>',
         to: user.email,
+        replyTo: 'contact@serpeditor.fr',
         subject: 'Réinitialisation de votre mot de passe',
         html: `<body style="margin: 0; padding: 0; background-color: #f9fafb; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
   <table role="presentation" style="width: 100%; border-collapse: collapse;">
@@ -117,8 +118,9 @@ export const auth = betterAuth({
     autoSignInAfterVerification: true,
     sendVerificationEmail: async ({ user, url }: { user: { email: string }; url: string }) => {
       await resend.emails.send({
-        from: 'Serpeditor <onboarding@resend.dev>',
+        from: 'Serpeditor <onboarding@notifications.serpeditor.fr>',
         to: user.email,
+        replyTo: 'contact@serpeditor.fr',
         subject: 'Activez votre compte SerpEditor',
         html: `
          <body style="margin: 0; padding: 0; background-color: #f9fafb; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
