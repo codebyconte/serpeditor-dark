@@ -1,0 +1,9 @@
+User-Agent: *
+Allow: /
+Disallow: /dashboard/
+Disallow: /api/
+Disallow: /studio/
+Disallow: /success/
+Disallow: /generated/
+
+Sitemap: https://www.serpeditor.fr/sitemap.xml
