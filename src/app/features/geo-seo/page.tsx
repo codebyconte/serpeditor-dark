@@ -164,7 +164,7 @@ const jsonLd = {
           "name": "Pourquoi investir dans le GEO en 2026 ?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "En 2026, plus de 60% des recherches ne génèrent plus de clic car l'IA fournit la réponse directement. Si vous n'êtes pas cité par les LLM, vous perdez une part massive de visibilité. Le GEO vous permet d'anticiper ce changement de paradigme."
+            "text": "En 2026, plus de 60% des recherches ne génèrent plus de clic car l'IA fournit la réponse directement. Si vous n'êtes pas cité par les LLM, vous perdez une part massive de visibilité. Le GEO vous permet d'anticiper ce changement de paradigme. Disponible à partir du plan Pro."
           }
         },
         {
@@ -250,7 +250,7 @@ export default function GeoSeoPage() {
           cta={
             <div className="flex flex-wrap items-center gap-4">
               <ButtonLink href="/register" size="lg">
-                Démarrer mon essai gratuit de 7 jours (sans CB)
+                Commencer gratuitement (sans CB)
               </ButtonLink>
               <PlainButtonLink href="/features" size="lg">
                 Découvrir les fonctionnalités <ArrowNarrowRightIcon />
@@ -543,7 +543,7 @@ export default function GeoSeoPage() {
           cta={
             <div className="flex flex-wrap items-center gap-4">
               <ButtonLink href="/register" size="lg">
-                Démarrer mon essai gratuit de 7 jours (sans CB) →
+                Commencer gratuitement (sans CB) →
               </ButtonLink>
               <PlainButtonLink href="/pricing" size="lg">
                 Voir les tarifs

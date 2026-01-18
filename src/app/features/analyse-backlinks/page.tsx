@@ -171,7 +171,7 @@ const jsonLd = {
           "name": "Puis-je utiliser le backlink checker gratuitement ?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Nous proposons un essai gratuit de 7 jours sans carte bancaire. Cela vous permet d'accéder à l'intégralité de notre base de données (2,8 trillions de liens) pour effectuer une analyse de backlinks complète de votre site et de vos concurrents."
+            "text": "Oui, notre plan gratuit vous permet d'analyser les backlinks avec des quotas limités (10 analyses/mois, top 10 liens). Aucune carte bancaire n'est requise. Pour un accès complet à notre base de 2,8 trillions de liens, passez au plan Pro."
           }
         },
         {
@@ -275,7 +275,7 @@ export default function AnalyseBacklinksPage() {
           cta={
             <div className="flex flex-wrap items-center gap-4">
               <ButtonLink href="/register" size="lg">
-                Essayer gratuitement pendant 7 jours
+                Commencer gratuitement (sans CB)
               </ButtonLink>
               <PlainButtonLink href="/features" size="lg">
                 Découvrir les fonctionnalités <ArrowNarrowRightIcon />
@@ -314,7 +314,7 @@ export default function AnalyseBacklinksPage() {
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="h-4 w-4 text-green-600" />
-                <span>Essai gratuit 7 jours (Sans CB)</span>
+                <span>Plan gratuit (Sans CB)</span>
               </div>
             </div>
           }
@@ -724,9 +724,8 @@ export default function AnalyseBacklinksPage() {
             answer={
               <>
                 <p>
-                  Nous proposons un <strong>essai gratuit de 7 jours sans carte bancaire</strong>. Cela vous permet
-                  d&apos;accéder à l&apos;intégralité de notre base de données (2,8 trillions de liens) pour effectuer
-                  une <strong>analyse de backlinks</strong> complète de votre site et de vos concurrents.
+                  Oui, notre <strong>plan gratuit</strong> vous permet d&apos;analyser les backlinks avec des quotas limités (10 analyses/mois, top 10 liens). 
+                  Aucune carte bancaire n&apos;est requise. Pour un accès complet à notre base de 2,8 trillions de liens, passez au plan Pro.
                 </p>
               </>
             }
@@ -796,7 +795,7 @@ export default function AnalyseBacklinksPage() {
             <div className="flex flex-col items-center gap-4">
               <div className="flex flex-wrap items-center gap-4">
                 <ButtonLink href="/register" size="lg">
-                  Démarrer l&apos;essai gratuit de 7 jours (Sans CB)
+                  Commencer gratuitement (Sans CB)
                 </ButtonLink>
                 <PlainButtonLink href="/pricing" size="lg">
                   Voir les tarifs

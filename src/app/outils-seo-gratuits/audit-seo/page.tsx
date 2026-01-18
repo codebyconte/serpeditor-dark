@@ -697,7 +697,7 @@ export default function AuditSeoPage() {
           </div>
           <div className="mt-8 flex justify-center">
             <ButtonLink href="/register" size="lg">
-              Essayer SerpEditor 7 jours gratuitement
+              Essayer SerpEditor gratuitement (sans CB)
             </ButtonLink>
           </div>
         </Section>

@@ -167,7 +167,7 @@ const jsonLd = {
           "name": "Quelle est la fréquence de mise à jour des positions ?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Les positions sont mises à jour quotidiennement pour tous les mots-clés suivis. Le plan Free permet 1 refresh par jour, le plan Pro un refresh quotidien, et le plan Agency permet plusieurs refreshs par jour pour un suivi en temps quasi-réel."
+            "text": "Les positions sont mises à jour quotidiennement pour tous les mots-clés suivis. Le plan gratuit permet de suivre 10 mots-clés avec 1 refresh par jour, le plan Pro permet 1 000 mots-clés avec refresh quotidien, et le plan Agency permet 10 000 mots-clés avec plusieurs refreshs par jour."
           }
         },
         {
@@ -183,7 +183,7 @@ const jsonLd = {
           "name": "Combien de mots-clés puis-je suivre ?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Le plan Free permet de suivre 10 mots-clés, le plan Pro jusqu'à 1 000 mots-clés, et le plan Agency jusqu'à 10 000 mots-clés. Tous les plans incluent l'historique complet des positions."
+            "text": "Le plan gratuit permet de suivre 10 mots-clés, le plan Pro jusqu'à 1 000 mots-clés, et le plan Agency jusqu'à 10 000 mots-clés. Tous les plans incluent l'historique complet des positions. Aucune carte bancaire requise pour le plan gratuit."
           }
         }
       ]
@@ -630,7 +630,7 @@ export default function SuiviPositionSEOPage() {
             <div className="flex flex-col items-center gap-4">
               <div className="flex flex-wrap items-center gap-4">
                 <ButtonLink href="/register" size="lg">
-                  Démarrer l&apos;essai gratuit (Sans CB)
+                  Commencer gratuitement (Sans CB)
                 </ButtonLink>
                 <PlainButtonLink href="/pricing" size="lg">
                   Voir les tarifs

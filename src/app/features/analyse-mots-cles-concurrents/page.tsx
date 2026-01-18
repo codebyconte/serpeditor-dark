@@ -184,7 +184,7 @@ const jsonLd = {
           "name": "Combien de concurrents puis-je analyser ?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Le plan Free permet d'analyser 10 domaines par mois de manière basique. Le plan Pro permet 100 analyses complètes, et le plan Agency jusqu'à 1 000 analyses mensuelles avec des données détaillées."
+            "text": "Le plan gratuit permet d'analyser 10 domaines par mois de manière basique (sans carte bancaire). Le plan Pro permet 100 analyses complètes, et le plan Agency jusqu'à 1 000 analyses mensuelles avec des données détaillées."
           }
         }
       ]
@@ -659,7 +659,7 @@ export default function AnalyseMotsClesConcurrentsPage() {
           cta={
             <div className="flex flex-col items-center gap-4">
               <ButtonLink href="/register" size="lg">
-                Démarrer mon essai gratuit (Sans CB)
+                Commencer gratuitement (Sans CB)
               </ButtonLink>
               <Text className="text-sm text-mist-600 dark:text-mist-500">
                 Accès complet pendant 7 jours : Keyword Gap, Backlink Gap et Analyse Organique.

@@ -180,7 +180,7 @@ const jsonLd = {
           "name": "Puis-je tester l'outil gratuitement ?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Oui, nous offrons un essai gratuit de 7 jours sans obligation de carte bancaire. Vous pouvez lancer votre premier audit et vos premières recherches de mots-clés immédiatement."
+            "text": "Oui, nous offrons un plan gratuit sans limitation de temps et sans carte bancaire. Vous pouvez lancer vos premières analyses avec des quotas limités pour tester l'outil."
           }
         }
       ]
@@ -261,7 +261,7 @@ export default function Page() {
           cta={
             <div className="flex flex-wrap items-center gap-4">
               <ButtonLink href="/register" size="lg">
-                Démarrer mon essai gratuit de 7 jours
+                Commencer gratuitement (sans CB)
               </ButtonLink>
               <PlainButtonLink href="/features" size="lg">
                 Découvrir les fonctionnalités <ArrowNarrowRightIcon />
@@ -706,7 +706,7 @@ export default function Page() {
           <Faq
             id="faq-5"
             question="Puis-je tester l'outil gratuitement ?"
-            answer="Oui, nous offrons un essai gratuit de 7 jours sans obligation de carte bancaire. Vous pouvez lancer votre premier audit et vos premières recherches de mots-clés immédiatement pour voir la puissance de l'outil."
+            answer="Oui, nous offrons un plan gratuit sans limitation de temps et sans carte bancaire. Vous pouvez lancer vos premières analyses avec des quotas limités (1 projet, 10 mots-clés suivis, 100 recherches/mois) pour tester l'outil."
           />
         </FAQsTwoColumnAccordion>
 
@@ -716,7 +716,7 @@ export default function Page() {
           subheadline="Rejoignez les experts SEO qui ont choisi la performance au juste prix."
           cta={
             <ButtonLink href="/register" size="lg">
-              Commencer mon essai gratuit de 7 jours (Sans CB)
+              Commencer gratuitement (Sans CB)
             </ButtonLink>
           }
         />

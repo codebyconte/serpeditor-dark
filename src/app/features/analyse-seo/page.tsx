@@ -170,7 +170,7 @@ const jsonLd = {
           "name": "À quelle fréquence dois-je faire un audit SEO ?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Il est recommandé de faire une analyse SEO complète au minimum une fois par mois pour détecter les nouvelles erreurs et suivre l'évolution de votre score de santé. Si vous publiez beaucoup de contenu, un audit hebdomadaire est idéal."
+            "text": "Il est recommandé de faire une analyse SEO complète au minimum une fois par mois pour détecter les nouvelles erreurs et suivre l'évolution de votre score de santé. Si vous publiez beaucoup de contenu, un audit hebdomadaire est idéal. Notre plan gratuit permet 1 audit de 100 pages."
           }
         }
       ]
@@ -243,7 +243,7 @@ export default function AnalyseSeoPage() {
           cta={
             <div className="flex flex-wrap items-center gap-4">
               <ButtonLink href="/register" size="lg">
-                Démarrer mon essai gratuit de 7 jours (sans CB){' '}
+                Commencer gratuitement (sans CB)
               </ButtonLink>
               <PlainButtonLink href="#features" size="lg">
                 Découvrir les fonctionnalités <ArrowNarrowRightIcon />
@@ -555,7 +555,7 @@ export default function AnalyseSeoPage() {
           cta={
             <div className="flex flex-wrap items-center justify-center gap-4">
               <ButtonLink href="/register" size="lg">
-                Démarrer l&apos;essai gratuit de 7 jours (sans CB)
+                Commencer gratuitement (sans CB)
               </ButtonLink>
               <PlainButtonLink href="/pricing" size="lg">
                 Voir les tarifs

@@ -201,7 +201,7 @@ const jsonLd = {
           "name": "Puis-je utiliser le générateur de mots-clés gratuitement ?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Pour garantir la fraîcheur de nos données et la puissance de nos serveurs, l'accès complet nécessite un compte. Vous pouvez toutefois bénéficier de 7 jours d'essai gratuit pour tester toutes les fonctionnalités (recherche, audit, backlinks) sans sortir votre carte bancaire."
+            "text": "Oui, notre plan gratuit vous permet d'utiliser le générateur de mots-clés avec des quotas limités (100 recherches/mois). Aucune carte bancaire n'est requise, juste une inscription. Pour des quotas plus élevés, vous pouvez passer au plan Pro."
           }
         },
         {
@@ -289,7 +289,7 @@ export default function RechercheMotsClesPage() {
           cta={
             <div className="flex flex-wrap items-center gap-4">
               <ButtonLink href="/register" size="lg">
-                Démarrer mon essai gratuit de 7 jours (sans CB)
+                Commencer gratuitement (sans CB)
               </ButtonLink>
               <PlainButtonLink href="/features" size="lg">
                 Découvrir les fonctionnalités <ArrowNarrowRightIcon />
@@ -320,11 +320,11 @@ export default function RechercheMotsClesPage() {
             <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-mist-700 dark:text-mist-400">
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="h-4 w-4 text-green-600" />
-                <span>Accès illimité à la base 213M+</span>
+                <span>Plan gratuit disponible</span>
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="h-4 w-4 text-green-600" />
-                <span>Sans engagement</span>
+                <span>Sans carte bancaire</span>
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="h-4 w-4 text-green-600" />
@@ -342,16 +342,16 @@ export default function RechercheMotsClesPage() {
               Accédez à l&apos;intégralité de nos outils de recherche et d&apos;analyse.
             </Text>
             <ButtonLink href="/register" size="lg">
-              Démarrer mon essai gratuit de 7 jours (sans CB)
+              Commencer gratuitement (sans CB)
             </ButtonLink>
             <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-mist-600 dark:text-mist-500">
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="h-4 w-4 text-green-600" />
-                <span>Accès illimité à la base 213M+</span>
+                <span>Plan gratuit disponible</span>
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="h-4 w-4 text-green-600" />
-                <span>Sans engagement</span>
+                <span>Sans carte bancaire</span>
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="h-4 w-4 text-green-600" />
@@ -659,9 +659,8 @@ export default function RechercheMotsClesPage() {
             answer={
               <>
                 <p>
-                  Pour garantir la fraîcheur de nos données et la puissance de nos serveurs, l&apos;accès complet
-                  nécessite un compte. Vous pouvez toutefois bénéficier de <strong>7 jours d&apos;essai gratuit</strong>{' '}
-                  pour tester toutes les fonctionnalités (recherche, audit, backlinks) sans sortir votre carte bancaire.
+                  Oui, notre <strong>plan gratuit</strong> vous permet d&apos;utiliser le générateur de mots-clés avec des quotas limités (100 recherches/mois). 
+                  Aucune carte bancaire n&apos;est requise, juste une inscription. Pour des quotas plus élevés, vous pouvez passer au plan Pro.
                 </p>
               </>
             }
@@ -707,15 +706,14 @@ export default function RechercheMotsClesPage() {
             <div className="flex flex-col items-center gap-4">
               <div className="flex flex-wrap items-center gap-4">
                 <ButtonLink href="/register" size="lg">
-                  Démarrer mon essai gratuit (Sans CB)
+                  Commencer gratuitement (Sans CB)
                 </ButtonLink>
                 <PlainButtonLink href="/pricing" size="lg">
                   Voir les tarifs
                 </PlainButtonLink>
               </div>
               <Text className="text-sm text-mist-600 dark:text-mist-500">
-                Accès complet à la base de 213M+ mots-clés - Recherche de concurrents - Audit technique - Suivi de
-                positions
+                Plan gratuit disponible - 213M+ mots-clés - Recherche de concurrents - Audit technique - Suivi de positions
               </Text>
             </div>
           }

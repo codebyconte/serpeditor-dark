@@ -3,9 +3,10 @@ import { ButtonLink, PlainButtonLink } from '@/components/elements/button'
 import { Link } from '@/components/elements/link'
 import { Main } from '@/components/elements/main'
 import { Screenshot } from '@/components/elements/screenshot'
+import { FacebookIcon } from '@/components/icons/social/facebook-icon'
+import { TiktokIcon } from '@/components/icons/social/tiktok-icon'
 import { XIcon } from '@/components/icons/social/x-icon'
 import { YouTubeIcon } from '@/components/icons/social/youtube-icon'
-import { FacebookIcon } from '@/components/icons/social/facebook-icon'
 import { Faq, FAQsTwoColumnAccordion } from '@/components/sections/faqs-two-column-accordion'
 import {
   Feature,
@@ -27,7 +28,6 @@ import {
 import { Check } from 'lucide-react'
 import type { Metadata } from 'next'
 import Image from 'next/image'
-import { TiktokIcon } from '@/components/icons/social/tiktok-icon'
 
 // SEO OPTIMISÉ POUR "LOGICIEL SEO" & "SOLUTION SEO"
 const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.serpeditor.fr'
@@ -230,7 +230,7 @@ const jsonLd = {
           "name": "Puis-je essayer le logiciel avant de m'abonner ?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Oui, nous offrons un essai gratuit qui vous permet de tester toutes les fonctionnalités du logiciel sans engagement. Vous pouvez explorer nos modules de recherche de mots-clés, d'analyse de backlinks, d'audit SEO et bien plus encore."
+            "text": "Oui, nous offrons un plan gratuit sans limitation de temps qui vous permet de tester les fonctionnalités du logiciel avec des quotas limités. Aucune carte bancaire n'est requise. Vous pouvez explorer nos modules de recherche de mots-clés, d'analyse de backlinks, d'audit SEO et bien plus encore."
           }
         }
       ]
@@ -559,8 +559,8 @@ export default function FeaturesPage() {
             answer={
               <>
                 <p>
-                  Oui, nous offrons un essai gratuit qui vous permet de tester toutes les fonctionnalités du logiciel
-                  sans engagement. Vous pouvez explorer nos modules de recherche de mots-clés, d&apos;analyse de
+                  Oui, nous offrons un <strong>plan gratuit</strong> sans limitation de temps qui vous permet de tester les fonctionnalités du logiciel
+                  avec des quotas limités. Aucune carte bancaire n&apos;est requise. Vous pouvez explorer nos modules de recherche de mots-clés, d&apos;analyse de
                   backlinks, d&apos;audit SEO et bien plus encore.
                 </p>
               </>
