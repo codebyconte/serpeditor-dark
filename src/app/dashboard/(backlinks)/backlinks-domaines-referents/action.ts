@@ -153,6 +153,8 @@ export async function fetchReferringDomains(
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(requestBody),
+        // Cache la réponse pendant 24 heures (86400 secondes)
+        next: { revalidate: 86400 },
       },
     )
 

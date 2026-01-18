@@ -257,6 +257,8 @@ export async function auditSeoInstant(prevState: AuditSeoState, formData: FormDa
             enable_browser_rendering: false,
           },
         ]),
+        // Cache la réponse pendant 24 heures (86400 secondes)
+        next: { revalidate: 86400 },
       })
 
       if (!response.ok) {

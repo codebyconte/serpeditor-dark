@@ -124,6 +124,8 @@ export async function protectedDataForSEOFetch<T>(
       Authorization: `Basic ${credentials}`,
       'Content-Type': 'application/json',
     },
+    // Cache toutes les réponses DataForSEO pendant 24 heures (86400 secondes)
+    next: { revalidate: 86400 },
   })
 
   if (!response.ok) {

@@ -230,6 +230,8 @@ export async function getKeywordGap(options: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(payload),
+        // Cache la réponse pendant 24 heures (86400 secondes)
+        next: { revalidate: 86400 },
       },
     )
 
