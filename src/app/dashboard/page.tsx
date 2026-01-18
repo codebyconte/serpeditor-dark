@@ -10,7 +10,6 @@ import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTi
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { getSession } from '@/lib/server-utils'
-import type { Metadata } from 'next'
 import { format, subDays } from 'date-fns'
 import {
   Activity,
@@ -27,6 +26,7 @@ import {
   TrendingUp,
   Zap,
 } from 'lucide-react'
+import type { Metadata } from 'next'
 import { headers } from 'next/headers'
 import Link from 'next/link'
 
@@ -177,28 +177,31 @@ export default async function DashboardPage() {
   const session = await getSession()
   const userId = session?.user?.id
 
-  // Start parallel requests early - don't await until needed
-  // This eliminates waterfalls between independent operations
-  const [accessTokenResult, projectsResult] = await Promise.all([
-    auth.api.getAccessToken({
+  // Récupérer les projets
+  const projects = await prisma.project.findMany({
+    where: {
+      userId,
+    },
+    orderBy: {
+      createdAt: 'desc',
+    },
+  })
+
+  // Essayer de récupérer l'access token Google (peut échouer si Google n'est pas connecté)
+  let accessToken = null
+  try {
+    accessToken = await auth.api.getAccessToken({
       body: {
         providerId: 'google',
         userId,
       },
       headers: await headers(),
-    }),
-    prisma.project.findMany({
-      where: {
-        userId,
-      },
-      orderBy: {
-        createdAt: 'desc',
-      },
-    }),
-  ])
-
-  const accessToken = accessTokenResult
-  const projects = projectsResult
+    })
+  } catch {
+    // Si l'utilisateur n'a pas encore connecté Google, on continue sans access token
+    // Les données GSC ne seront simplement pas disponibles
+    console.log('Google account not connected, continuing without GSC data')
+  }
 
   // ✅ Récupérer les données GSC pour tous les projets
   const projectsData = new Map()
