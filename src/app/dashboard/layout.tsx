@@ -1,16 +1,19 @@
 import { AppSidebar } from '@/components/app-sidebar'
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
-import { auth } from '@/lib/auth'
-import { headers } from 'next/headers'
+import { getSession } from '@/lib/server-utils'
 import { redirect } from 'next/navigation'
 
+/**
+ * Dashboard layout with auth protection
+ * Uses React.cache() for per-request session deduplication
+ */
 export default async function Layout({ children }: { children: React.ReactNode }) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  })
+  // Uses cached session - if child components also need session,
+  // they can call getSession() without hitting auth again
+  const session = await getSession()
 
   if (!session) {
-    return redirect('/login')
+    redirect('/login')
   }
 
   return (

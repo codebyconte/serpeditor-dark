@@ -48,3 +48,12 @@ src/app/generated
 
 
 /generated/prisma
+
+
+.cursor
+.claude
+.agent
+.codex
+.gemini
+.opencode
+.windsurf

@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server'
-import { headers } from 'next/headers'
-import { auth } from '@/lib/auth'
+import { getCurrentUserId, getUserSubscription } from '@/lib/server-utils'
 import { prisma } from '@/lib/prisma'
 import Stripe from 'stripe'
 
@@ -10,18 +9,15 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 
 export async function POST() {
   try {
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    })
+    // Early return pattern with cached auth
+    const userId = await getCurrentUserId()
 
-    if (!session?.user?.id) {
+    if (!userId) {
       return NextResponse.json({ error: 'Non authentifié' }, { status: 401 })
     }
 
-    // Récupérer l'abonnement de l'utilisateur
-    const subscription = await prisma.subscription.findUnique({
-      where: { userId: session.user.id },
-    })
+    // Use cached subscription lookup
+    const subscription = await getUserSubscription(userId)
 
     if (!subscription) {
       return NextResponse.json({ error: 'Abonnement non trouvé' }, { status: 404 })
@@ -30,7 +26,7 @@ export async function POST() {
     // Si c'est un plan Free, on peut simplement le marquer comme annulé
     if (subscription.plan === 'Free') {
       await prisma.subscription.update({
-        where: { userId: session.user.id },
+        where: { userId: userId },
         data: {
           status: 'canceled',
           plan: 'Free',
@@ -53,7 +49,7 @@ export async function POST() {
 
         // Mettre à jour dans la base de données
         await prisma.subscription.update({
-          where: { userId: session.user.id },
+          where: { userId: userId },
           data: {
             cancelAtPeriodEnd: true,
           },
@@ -70,7 +66,7 @@ export async function POST() {
         // Si l'abonnement Stripe n'existe plus, mettre à jour localement
         if (stripeError.code === 'resource_missing') {
           await prisma.subscription.update({
-            where: { userId: session.user.id },
+            where: { userId: userId },
             data: {
               status: 'canceled',
               cancelAtPeriodEnd: false,
@@ -92,7 +88,7 @@ export async function POST() {
 
     // Si pas d'ID Stripe mais plan payant, mettre à jour localement
     await prisma.subscription.update({
-      where: { userId: session.user.id },
+      where: { userId: userId },
       data: {
         status: 'canceled',
         cancelAtPeriodEnd: false,

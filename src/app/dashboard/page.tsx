@@ -9,6 +9,7 @@ import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle }
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { getSession } from '@/lib/server-utils'
 import { format, subDays } from 'date-fns'
 import {
   Activity,
@@ -159,26 +160,32 @@ function getProjectAlerts(
 }
 
 export default async function DashboardPage() {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  })
+  // Use cached session for per-request deduplication
+  const session = await getSession()
+  const userId = session?.user?.id
 
-  const accessToken = await auth.api.getAccessToken({
-    body: {
-      providerId: 'google',
-      userId: session?.user?.id,
-    },
-    headers: await headers(),
-  })
+  // Start parallel requests early - don't await until needed
+  // This eliminates waterfalls between independent operations
+  const [accessTokenResult, projectsResult] = await Promise.all([
+    auth.api.getAccessToken({
+      body: {
+        providerId: 'google',
+        userId,
+      },
+      headers: await headers(),
+    }),
+    prisma.project.findMany({
+      where: {
+        userId,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    }),
+  ])
 
-  const projects = await prisma.project.findMany({
-    where: {
-      userId: session?.user?.id,
-    },
-    orderBy: {
-      createdAt: 'desc',
-    },
-  })
+  const accessToken = accessTokenResult
+  const projects = projectsResult
 
   // ✅ Récupérer les données GSC pour tous les projets
   const projectsData = new Map()

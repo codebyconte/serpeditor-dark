@@ -1,30 +1,20 @@
 import { NextResponse } from 'next/server'
-import { headers } from 'next/headers'
-import { auth } from '@/lib/auth'
-import { prisma } from '@/lib/prisma'
+import { getCurrentUser, getCurrentUserId } from '@/lib/server-utils'
 
+/**
+ * GET /api/profile
+ * Uses React.cache() for per-request deduplication
+ */
 export async function GET() {
   try {
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    })
-
-    if (!session?.user?.id) {
+    // Early return if not authenticated (avoids unnecessary DB query)
+    const userId = await getCurrentUserId()
+    if (!userId) {
       return NextResponse.json({ error: 'Non authentifié' }, { status: 401 })
     }
 
-    // Récupérer les données complètes de l'utilisateur
-    const user = await prisma.user.findUnique({
-      where: { id: session.user.id },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        phone: true,
-        image: true,
-        emailVerified: true,
-      },
-    })
+    // Uses cached function - multiple calls in same request won't hit DB again
+    const user = await getCurrentUser()
 
     if (!user) {
       return NextResponse.json({ error: 'Utilisateur non trouvé' }, { status: 404 })

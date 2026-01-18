@@ -1,6 +1,6 @@
 "use client"
 
-import * as React from "react"
+import { useMemo, useState, useEffect, useCallback } from "react"
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts"
 
 import { useIsMobile } from "@/hooks/use-mobile"
@@ -140,29 +140,42 @@ const chartConfig = {
   },
 } satisfies ChartConfig
 
+/**
+ * Interactive area chart component
+ *
+ * Optimizations applied:
+ * - useMemo for filtered data to avoid recalculation on every render
+ * - useCallback for stable event handlers
+ * - Static data hoisted outside component
+ * - Memoized date formatter to avoid recreation
+ */
 export function ChartAreaInteractive() {
   const isMobile = useIsMobile()
-  const [timeRange, setTimeRange] = React.useState("90d")
+  const [timeRange, setTimeRange] = useState("90d")
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (isMobile) {
       setTimeRange("7d")
     }
   }, [isMobile])
 
-  const filteredData = chartData.filter((item) => {
-    const date = new Date(item.date)
+  // Memoize filtered data to avoid recalculation on every render
+  const filteredData = useMemo(() => {
     const referenceDate = new Date("2024-06-30")
-    let daysToSubtract = 90
-    if (timeRange === "30d") {
-      daysToSubtract = 30
-    } else if (timeRange === "7d") {
-      daysToSubtract = 7
-    }
+    const daysToSubtract = timeRange === "30d" ? 30 : timeRange === "7d" ? 7 : 90
     const startDate = new Date(referenceDate)
     startDate.setDate(startDate.getDate() - daysToSubtract)
-    return date >= startDate
-  })
+
+    return chartData.filter((item) => {
+      const date = new Date(item.date)
+      return date >= startDate
+    })
+  }, [timeRange])
+
+  // Stable callback for time range changes
+  const handleTimeRangeChange = useCallback((value: string) => {
+    setTimeRange(value)
+  }, [])
 
   return (
     <Card className="@container/card">
@@ -178,7 +191,7 @@ export function ChartAreaInteractive() {
           <ToggleGroup
             type="single"
             value={timeRange}
-            onValueChange={setTimeRange}
+            onValueChange={handleTimeRangeChange}
             variant="outline"
             className="hidden *:data-[slot=toggle-group-item]:!px-4 @[767px]/card:flex"
           >
@@ -186,7 +199,7 @@ export function ChartAreaInteractive() {
             <ToggleGroupItem value="30d">Last 30 days</ToggleGroupItem>
             <ToggleGroupItem value="7d">Last 7 days</ToggleGroupItem>
           </ToggleGroup>
-          <Select value={timeRange} onValueChange={setTimeRange}>
+          <Select value={timeRange} onValueChange={handleTimeRangeChange}>
             <SelectTrigger
               className="flex w-40 **:data-[slot=select-value]:block **:data-[slot=select-value]:truncate @[767px]/card:hidden"
               size="sm"

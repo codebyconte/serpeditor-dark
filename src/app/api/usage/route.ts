@@ -1,28 +1,24 @@
-'use server'
-
-import { auth } from '@/lib/auth'
 import { getUserUsageStats } from '@/lib/usage-utils'
-import { headers } from 'next/headers'
+import { getCurrentUserId } from '@/lib/server-utils'
 import { NextResponse } from 'next/server'
 
 /**
  * GET /api/usage
- * Retourne les statistiques d'usage de l'utilisateur connecté
+ * Returns user usage statistics using cached auth
  */
 export async function GET() {
   try {
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    })
+    // Early return pattern - check auth before any other operations
+    const userId = await getCurrentUserId()
 
-    if (!session?.user?.id) {
+    if (!userId) {
       return NextResponse.json(
         { error: 'Non authentifié' },
         { status: 401 }
       )
     }
 
-    const usageStats = await getUserUsageStats(session.user.id)
+    const usageStats = await getUserUsageStats(userId)
 
     return NextResponse.json({
       success: true,

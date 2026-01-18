@@ -1,8 +1,25 @@
 import { Main } from '@/components/elements/main'
-import { Toaster } from '@/components/ui/sonner'
+import { ClientToaster } from '@/components/client-toaster'
 import 'easymde/dist/easymde.min.css'
 import type { Metadata } from 'next'
+import { Instrument_Serif, Inter } from 'next/font/google'
 import './globals.css'
+
+// Optimized font loading with next/font (automatic font optimization)
+// Benefits: Self-hosted, no layout shift, automatic subsetting
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-inter',
+})
+
+const instrumentSerif = Instrument_Serif({
+  weight: '400',
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-instrument-serif',
+  style: ['normal', 'italic'],
+})
 
 export const metadata: Metadata = {
   title: 'SerpEditor',
@@ -14,21 +31,11 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="fr">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-        <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
-          rel="stylesheet"
-        />
-      </head>
-      <body>
-        <>
-          <Main>{children}</Main>
-        </>
-        <Toaster position="bottom-right" richColors closeButton />
+    <html lang="fr" className={`${inter.variable} ${instrumentSerif.variable}`}>
+      <body className={inter.className}>
+        <Main>{children}</Main>
+        {/* Client-side Toaster with dynamic import for better TTI */}
+        <ClientToaster />
       </body>
     </html>
   )
