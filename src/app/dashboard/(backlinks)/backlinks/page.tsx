@@ -1,7 +1,16 @@
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import type { Metadata } from 'next'
 import { Eye, Filter, Target, TrendingUp } from 'lucide-react'
 import FormBacklinksAnalyzer from './FormBacklinksAnalyzer'
+
+export const metadata: Metadata = {
+  title: 'Liste Détaillée des Backlinks',
+  robots: {
+    index: false,
+    follow: false,
+  },
+}
 
 export default function Page() {
   return (

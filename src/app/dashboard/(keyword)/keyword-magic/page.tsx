@@ -15,7 +15,21 @@ import {
   XCircle,
   Zap,
 } from 'lucide-react'
+import type { Metadata } from 'next'
 import { KeywordMagicContent } from './components/keyword-magic-content'
+
+/**
+ * Métadonnées pour la page Recherche de Mots-Clés
+ * Note: robots: noindex car c'est une page privée/authentifiée
+ * Le title sera combiné avec le template du layout: "Recherche de Mots-Clés | Dashboard SerpEditor"
+ */
+export const metadata: Metadata = {
+  title: 'Recherche de Mots-Clés',
+  robots: {
+    index: false,
+    follow: false,
+  },
+}
 
 export default function Page() {
   return (

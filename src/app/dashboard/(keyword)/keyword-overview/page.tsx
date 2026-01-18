@@ -1,6 +1,7 @@
 // 📁 app/dashboard/keywords/page.tsx
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import type { Metadata } from 'next'
 import {
   AlertCircle,
   Award,
@@ -22,6 +23,14 @@ import {
   Zap,
 } from 'lucide-react'
 import { KeywordOverviewContent } from './keyword-overview-content'
+
+export const metadata: Metadata = {
+  title: 'Vue d\'ensemble des Mots-Clés',
+  robots: {
+    index: false,
+    follow: false,
+  },
+}
 
 export default function Page() {
   return (

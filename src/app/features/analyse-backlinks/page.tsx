@@ -6,10 +6,10 @@ import { Section } from '@/components/elements/section'
 import { Subheading } from '@/components/elements/subheading'
 import { Text } from '@/components/elements/text'
 import { ArrowNarrowRightIcon } from '@/components/icons/arrow-narrow-right-icon'
-import { XIcon } from '@/components/icons/social/x-icon'
-import { YouTubeIcon } from '@/components/icons/social/youtube-icon'
 import { FacebookIcon } from '@/components/icons/social/facebook-icon'
 import { TiktokIcon } from '@/components/icons/social/tiktok-icon'
+import { XIcon } from '@/components/icons/social/x-icon'
+import { YouTubeIcon } from '@/components/icons/social/youtube-icon'
 import { CallToActionSimpleCentered } from '@/components/sections/call-to-action-simple-centered'
 import { FAQsAccordion, Faq } from '@/components/sections/faqs-accordion'
 import { Feature, FeaturesThreeColumn } from '@/components/sections/features-three-column'
@@ -48,7 +48,7 @@ import Image from 'next/image'
 const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.serpeditor.fr'
 
 export const metadata: Metadata = {
-  title: "Analyse de Backlinks Gratuit — Vérifiez le Netlinking de n'importe quel site",
+  title: "Analyse de Backlinks — Vérifiez le Netlinking de n'importe quel site",
   description:
     "Outil complet d'analyse de backlinks : domaines référents, ancres, liens nouveaux et perdus. Surveillez votre netlinking et celui de vos concurrents avec SerpEditor.",
   keywords: [
@@ -102,7 +102,7 @@ const jsonLd = {
       "@type": "WebPage",
       "@id": `${baseUrl}/features/analyse-backlinks#webpage`,
       "url": `${baseUrl}/features/analyse-backlinks`,
-      "name": "Analyse de Backlinks Gratuit — Vérifiez le Netlinking de n'importe quel site",
+      "name": "Analyse de Backlinks — Vérifiez le Netlinking de n'importe quel site",
       "isPartOf": {
         "@id": `${baseUrl}/#website`
       },

@@ -1,5 +1,6 @@
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import type { Metadata } from 'next'
 import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { Plan, PricingHeroMultiTier } from '@/components/sections/pricing-hero-multi-tier'
@@ -9,6 +10,14 @@ import { SoftButton } from '@/components/elements/button'
 import { CheckCircle2, Crown, Sparkles } from 'lucide-react'
 import { CancelSubscriptionButton } from '@/components/dashboard/cancel-subscription-button'
 import { UsageStats } from '@/components/dashboard/usage-stats'
+
+export const metadata: Metadata = {
+  title: 'Abonnement & Facturation',
+  robots: {
+    index: false,
+    follow: false,
+  },
+}
 
 type PlanType = 'Free' | 'Pro' | 'Agency'
 

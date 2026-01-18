@@ -6,10 +6,19 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import type { Metadata } from 'next'
 import { format } from 'date-fns'
 import { ArrowRight, FileSearch, Search, Sparkles } from 'lucide-react'
 import { headers } from 'next/headers'
 import Link from 'next/link'
+
+export const metadata: Metadata = {
+  title: 'Audit de Site SEO',
+  robots: {
+    index: false,
+    follow: false,
+  },
+}
 
 export default async function Page() {
  const session = await auth.api.getSession({

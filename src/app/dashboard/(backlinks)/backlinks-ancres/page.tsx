@@ -1,12 +1,16 @@
 // 📁 app/dashboard/backlinks/ancres/page.tsx
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import type { Metadata } from 'next'
 import { AlertTriangle, Anchor, Eye, Shield, Target, TrendingUp } from 'lucide-react'
 import { AnchorsContent } from './anchors-content'
 
-export const metadata = {
-  title: 'Analyse des Ancres | Dashboard SEO',
-  description: "Analysez les textes d'ancre utilisés dans vos backlinks pour optimiser votre profil de liens",
+export const metadata: Metadata = {
+  title: 'Analyse des Ancres de Backlinks',
+  robots: {
+    index: false,
+    follow: false,
+  },
 }
 
 export default function AnchorsPage() {

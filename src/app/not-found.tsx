@@ -21,42 +21,19 @@ import {
 import type { Metadata } from 'next'
 import Image from 'next/image'
 
-const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.serpeditor.fr'
-
 export const metadata: Metadata = {
   title: 'Page Non Trouvée (404) | SerpEditor',
   description: 'La page que vous recherchez n\'existe pas ou a été déplacée. Retournez à l\'accueil pour découvrir nos outils SEO.',
   robots: {
-    index: false, // On ne veut pas indexer la page 404
+    index: false,
     follow: true,
   },
 }
 
-/**
- * JSON-LD pour la page 404
- */
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@type": "WebPage",
-  "@id": `${baseUrl}/404#webpage`,
-  "url": `${baseUrl}/404`,
-  "name": "Page Non Trouvée",
-  "description": "Erreur 404 - La page demandée n'existe pas",
-  "inLanguage": "fr-FR",
-  "isPartOf": {
-    "@id": `${baseUrl}/#website`
-  }
-}
 
-export default function Page() {
+export default function NotFound() {
   return (
     <>
-      {/* JSON-LD pour le SEO structuré */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
-
       <NavbarWithLinksActionsAndCenteredLogo
         id="navbar"
         links={
@@ -96,15 +73,15 @@ export default function Page() {
           headline="Page non trouvée"
           subheadline={
             <p>
-              Désolé, la page que vous recherchez n'existe pas ou a été déplacée.
+              Désolé, la page que vous recherchez n&apos;existe pas ou a été déplacée.
               <br />
-              Retournez à l'accueil pour découvrir nos outils SEO professionnels.
+              Retournez à l&apos;accueil pour découvrir nos outils SEO professionnels.
             </p>
           }
           cta={
             <div className="flex flex-wrap items-center gap-4">
               <ButtonLink href="/" size="lg">
-                Retour à l'accueil
+                Retour à l&apos;accueil
               </ButtonLink>
               <PlainButtonLink href="/features" size="lg">
                 Voir les fonctionnalités <ArrowNarrowRightIcon />

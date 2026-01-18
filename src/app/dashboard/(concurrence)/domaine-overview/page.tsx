@@ -5,13 +5,10 @@ import type { Metadata } from 'next'
 import { DomainOverviewContent } from './domain-overview-content'
 
 export const metadata: Metadata = {
-  title: "Vue d'Ensemble du Domaine | Dashboard SEO",
-  description:
-    "Analysez la performance SEO globale de n'importe quel domaine : mots-clés positionnés, distribution des positions, valeur du trafic organique, tendances et stratégie SEO vs SEA.",
-  openGraph: {
-    title: "Vue d'Ensemble du Domaine",
-    description:
-      'Découvrez instantanément le nombre de mots-clés positionnés, la distribution des positions (Top 3, Top 10, etc.), la valeur du trafic organique et les tendances SEO.',
+  title: 'Vue d\'ensemble du Domaine',
+  robots: {
+    index: false,
+    follow: false,
   },
 }
 

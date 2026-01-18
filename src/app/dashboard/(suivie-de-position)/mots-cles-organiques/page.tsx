@@ -3,14 +3,18 @@ import { ProjectSelector } from '@/components/dashboard/project-selector'
 import { Skeleton } from '@/components/ui/skeleton'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import type { Metadata } from 'next'
 import { Search } from 'lucide-react'
 import { headers } from 'next/headers'
 import { Suspense } from 'react'
 import { OrganicKeywordsContent } from './organic-keywords-content'
 
-export const metadata = {
-  title: 'Mots-Clés Organiques | Dashboard SEO',
-  description: 'Analyse complète des performances de vos mots-clés organiques',
+export const metadata: Metadata = {
+  title: 'Mots-Clés Organiques',
+  robots: {
+    index: false,
+    follow: false,
+  },
 }
 
 export default async function MotsClesOrganiquesPage({

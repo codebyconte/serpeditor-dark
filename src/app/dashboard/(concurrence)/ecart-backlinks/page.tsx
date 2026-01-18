@@ -1,7 +1,16 @@
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import type { Metadata } from 'next'
 import { Award, BarChart3, CheckCircle2, Globe, Lightbulb, Link2, Search, Target, Trophy, Zap } from 'lucide-react'
 import DomainIntersectionAnalyzerPage from './DomainIntersectionAnalyzerPage'
+
+export const metadata: Metadata = {
+  title: 'Possibilités de Backlinks',
+  robots: {
+    index: false,
+    follow: false,
+  },
+}
 
 export default function Page() {
   return (

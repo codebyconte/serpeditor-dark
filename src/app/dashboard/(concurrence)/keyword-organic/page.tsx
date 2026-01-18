@@ -1,10 +1,14 @@
 // 📁 app/dashboard/mots-cles-organiques/page.tsx
+import type { Metadata } from 'next'
 import { Activity, TrendingUp, Users } from 'lucide-react'
 import { OrganicKeywordsContent } from './organic-keywords-content'
 
-export const metadata = {
-  title: 'Mots-Clés Organiques | Dashboard SEO',
-  description: 'Analysez tous les mots-clés sur lesquels votre domaine se positionne dans Google',
+export const metadata: Metadata = {
+  title: 'Mots-Clés Organiques Concurrents',
+  robots: {
+    index: false,
+    follow: false,
+  },
 }
 
 export default function OrganicKeywordsPage() {

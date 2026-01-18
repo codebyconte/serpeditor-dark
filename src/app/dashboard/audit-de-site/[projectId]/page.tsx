@@ -14,8 +14,17 @@ import { prisma } from '@/lib/prisma'
 import { format } from 'date-fns'
 import { fr } from 'date-fns/locale'
 import { AlertTriangle, CheckCircle2, Clock, Globe, XCircle } from 'lucide-react'
+import type { Metadata } from 'next'
 import { headers } from 'next/headers'
 import { onPageSummary, onPageTask } from './action'
+
+export const metadata: Metadata = {
+  title: 'Audit de Site',
+  robots: {
+    index: false,
+    follow: false,
+  },
+}
 
 type OnPageSummaryData = {
   crawl_progress?: string

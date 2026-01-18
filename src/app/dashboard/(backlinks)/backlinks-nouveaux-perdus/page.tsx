@@ -1,12 +1,16 @@
 // 📁 app/dashboard/backlinks/nouveaux-perdus/page.tsx
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import type { Metadata } from 'next'
 import { AlertCircle, BarChart3, Calendar, Target, TrendingUp, Zap } from 'lucide-react'
 import { NewLostBacklinksContent } from './new-lost-backlinks-content'
 
-export const metadata = {
-  title: 'Backlinks Nouveaux & Perdus | Dashboard SEO',
-  description: "Suivez l'évolution temporelle de vos backlinks : nouveaux liens acquis et liens perdus",
+export const metadata: Metadata = {
+  title: 'Backlinks Nouveaux & Perdus',
+  robots: {
+    index: false,
+    follow: false,
+  },
 }
 
 export default function NewLostBacklinksPage() {

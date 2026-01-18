@@ -1,7 +1,16 @@
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import type { Metadata } from 'next'
 import { AlertTriangle, Globe, Link2, Shield, Target, TrendingUp } from 'lucide-react'
 import { BacklinksContent } from './backlinks-content'
+
+export const metadata: Metadata = {
+  title: 'Profil de Backlinks - Vue d\'ensemble',
+  robots: {
+    index: false,
+    follow: false,
+  },
+}
 
 export default async function BacklinksPage() {
   return (

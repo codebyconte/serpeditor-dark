@@ -4,14 +4,18 @@ import { ProjectSelector } from '@/components/dashboard/project-selector'
 import { Skeleton } from '@/components/ui/skeleton'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import type { Metadata } from 'next'
 import { FileText } from 'lucide-react'
 import { headers } from 'next/headers'
 import { Suspense } from 'react'
 import { TopPagesContent } from './top-pages-content'
 
-export const metadata = {
-  title: 'Pages Principales | Dashboard SEO',
-  description: 'Analyse des performances de vos pages principales',
+export const metadata: Metadata = {
+  title: 'Pages Principales Positionnées',
+  robots: {
+    index: false,
+    follow: false,
+  },
 }
 
 export default async function PagesPrincipalesPage({ searchParams }: { searchParams: { project?: string } }) {

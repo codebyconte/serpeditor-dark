@@ -1,5 +1,6 @@
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import type { Metadata } from 'next'
 import {
   AlertCircle,
   BarChart3,
@@ -14,6 +15,14 @@ import {
   Zap,
 } from 'lucide-react'
 import KeywordGapAnalyzerPage from './KeywordGapAnalyzerPage'
+
+export const metadata: Metadata = {
+  title: 'Écart de Mots-Clés (Keyword Gap)',
+  robots: {
+    index: false,
+    follow: false,
+  },
+}
 
 export default function Page() {
   return (

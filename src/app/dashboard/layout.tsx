@@ -1,7 +1,34 @@
 import { AppSidebar } from '@/components/app-sidebar'
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
 import { getSession } from '@/lib/server-utils'
+import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
+
+/**
+ * Métadonnées par défaut pour toutes les pages du dashboard
+ * Empêche l'indexation car ce sont des pages privées/authentifiées
+ */
+export const metadata: Metadata = {
+  title: {
+    default: 'Dashboard | SerpEditor',
+    template: '%s | Dashboard SerpEditor',
+  },
+  description: 'Tableau de bord SerpEditor - Outils SEO professionnels',
+  robots: {
+    index: false, // Empêche l'indexation de toutes les pages du dashboard
+    follow: false, // Empêche aussi le suivi des liens
+    googleBot: {
+      index: false,
+      follow: false,
+      'noimageindex': true,
+      'max-video-preview': -1,
+      'max-image-preview': 'none',
+      'max-snippet': -1,
+    },
+  },
+  // Pas de Open Graph ni Twitter car c'est privé
+  // Les métadonnées robots au niveau racine suffisent
+}
 
 /**
  * Dashboard layout with auth protection

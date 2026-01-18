@@ -1,8 +1,12 @@
+import type { Metadata } from 'next'
 import RankOverviewContent from './rank-overview-content'
 
-export const metadata = {
-  title: "Vue d'ensemble des positions | Rank Tracker",
-  description: 'Suivez vos positions sur Google et analysez vos performances SEO',
+export const metadata: Metadata = {
+  title: 'Vue d\'ensemble des Positions SEO',
+  robots: {
+    index: false,
+    follow: false,
+  },
 }
 
 export default function RankOverviewPage() {

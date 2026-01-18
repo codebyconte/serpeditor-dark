@@ -1,12 +1,16 @@
 // 📁 app/dashboard/backlinks/domaines-referents/page.tsx
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import type { Metadata } from 'next'
 import { Award, Globe, Target, TrendingUp } from 'lucide-react'
 import { ReferringDomainsContent } from './referring-domains-content'
 
-export const metadata = {
-  title: 'Domaines Référents | Dashboard SEO',
-  description: 'Analysez tous les domaines qui pointent des backlinks vers votre site',
+export const metadata: Metadata = {
+  title: 'Domaines Référents',
+  robots: {
+    index: false,
+    follow: false,
+  },
 }
 
 export default function ReferringDomainsPage() {

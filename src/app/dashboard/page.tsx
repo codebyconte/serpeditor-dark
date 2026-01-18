@@ -10,6 +10,7 @@ import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTi
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { getSession } from '@/lib/server-utils'
+import type { Metadata } from 'next'
 import { format, subDays } from 'date-fns'
 import {
   Activity,
@@ -28,6 +29,18 @@ import {
 } from 'lucide-react'
 import { headers } from 'next/headers'
 import Link from 'next/link'
+
+/**
+ * Métadonnées pour la page principale du dashboard
+ * Note: robots: noindex car c'est une page privée/authentifiée
+ */
+export const metadata: Metadata = {
+  title: 'Tableau de Bord',
+  robots: {
+    index: false,
+    follow: false,
+  },
+}
 
 // Types pour les données GSC
 interface GSCRow {
