@@ -71,9 +71,7 @@ const AUTHOR_FULL_FRAGMENT = `{
   role,
   bio,
   bioLong,
-  yearsOfExperience,
   expertise,
-  certifications,
   image ${IMAGE_FRAGMENT},
   social,
   website,
@@ -93,24 +91,12 @@ const AUTHOR_CARD_FRAGMENT = `{
   }
 }`
 
-// Fragment Catégorie avec Parent
+// Fragment Catégorie (simplifié)
 const CATEGORY_FRAGMENT = `{
   _id,
   title,
   "slug": slug.current,
-  excerpt,
-  color,
-  icon,
-  parent->{
-    _id,
-    title,
-    "slug": slug.current,
-    parent->{
-      _id,
-      title,
-      "slug": slug.current
-    }
-  }
+  excerpt
 }`
 
 // =========================
@@ -292,8 +278,7 @@ export const POSTS_LIST_QUERY = defineQuery(`
 
     categories[]->{
       title,
-      "slug": slug.current,
-      color
+      "slug": slug.current
     },
 
     tags
@@ -320,7 +305,7 @@ export const FEATURED_POSTS_QUERY = defineQuery(`
     readingTime,
     image { asset->{ url }, alt },
     author->{ name, "slug": slug.current },
-    categories[0]->{ title, "slug": slug.current, color }
+    categories[0]->{ title, "slug": slug.current }
   }
 `)
 
@@ -356,29 +341,7 @@ export const CATEGORY_QUERY = defineQuery(`
     _id,
     title,
     "slug": slug.current,
-    description,
     excerpt,
-
-    image ${IMAGE_FRAGMENT},
-
-    color,
-    icon,
-    order,
-
-    // SEO
-    ${SEO_FRAGMENT},
-
-    // Hiérarchie (Breadcrumbs)
-    parent->{
-      _id,
-      title,
-      "slug": slug.current,
-      parent->{
-        _id,
-        title,
-        "slug": slug.current
-      }
-    },
 
     // Articles de cette catégorie
     "posts": *[_type == "post" && references(^._id) && status == "published"] | order(publishedAt desc) {
@@ -392,15 +355,8 @@ export const CATEGORY_QUERY = defineQuery(`
       author->{ name, "slug": slug.current }
     },
 
-    // Sous-catégories
-    "subcategories": *[_type == "category" && parent._ref == ^._id && isActive == true] {
-      _id,
-      title,
-      "slug": slug.current,
-      excerpt,
-      color,
-      "postCount": count(*[_type == "post" && references(^._id) && status == "published"])
-    }
+    // Nombre d'articles
+    "postCount": count(*[_type == "post" && references(^._id) && status == "published"])
   }
 `)
 
@@ -408,23 +364,11 @@ export const CATEGORY_QUERY = defineQuery(`
  * Query pour toutes les catégories (menu navigation)
  */
 export const CATEGORIES_QUERY = defineQuery(`
-  *[_type == "category" && isActive == true && !defined(parent)] | order(order asc) {
+  *[_type == "category" && isActive == true] | order(title asc) {
     _id,
     title,
     "slug": slug.current,
     excerpt,
-    color,
-    icon,
-    order,
-    featured,
-
-    // Sous-catégories
-    "subcategories": *[_type == "category" && parent._ref == ^._id && isActive == true] | order(order asc) {
-      _id,
-      title,
-      "slug": slug.current,
-      color
-    },
 
     // Nombre d'articles
     "postCount": count(*[_type == "post" && references(^._id) && status == "published"])
@@ -453,18 +397,11 @@ export const AUTHOR_QUERY = defineQuery(`
     role,
     bio,
     bioLong,
-
     image ${IMAGE_FRAGMENT},
-
     expertise,
-    yearsOfExperience,
-    certifications,
     social,
     website,
     email,
-
-    // SEO
-    ${SEO_FRAGMENT},
 
     // Articles de cet auteur
     "posts": *[_type == "post" && author._ref == ^._id && status == "published"] | order(publishedAt desc) {
@@ -475,13 +412,12 @@ export const AUTHOR_QUERY = defineQuery(`
       publishedAt,
       readingTime,
       image { asset->{ url }, alt },
-      categories[0]->{ title, "slug": slug.current, color }
+      categories[0]->{ title, "slug": slug.current }
     },
 
     // Statistiques
     "stats": {
       "totalPosts": count(*[_type == "post" && author._ref == ^._id && status == "published"]),
-      "totalViews": 0,
       "avgReadingTime": math::avg(*[_type == "post" && author._ref == ^._id && status == "published"].readingTime)
     }
   }
@@ -562,7 +498,7 @@ export const SEARCH_QUERY = defineQuery(`
     publishedAt,
     image { asset->{ url }, alt },
     author->{ name },
-    categories[]->{ title, color }
+    categories[]->{ title, "slug": slug.current }
   }
 `)
 
@@ -590,6 +526,6 @@ export const POSTS_BY_TAG_QUERY = defineQuery(`
     readingTime,
     image { asset->{ url }, alt },
     author->{ name, "slug": slug.current },
-    categories[0]->{ title, "slug": slug.current, color }
+    categories[0]->{ title, "slug": slug.current }
   }
 `)

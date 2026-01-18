@@ -45,28 +45,8 @@ export const seoType = defineType({
           .warning('Idéalement 140-160 caractères pour éviter la troncature'),
     }),
 
-    // =========================
-    // OPEN GRAPH & SOCIAL (Facebook, LinkedIn, Twitter)
-    // =========================
-    // Note: Utilisez coalesce() dans GROQ pour les fallbacks
-    // Exemple: coalesce(seo.image, image)
-    defineField({
-      name: 'image',
-      title: 'Image Social (Open Graph & Twitter)',
-      type: 'image',
-      description: 'Image pour partage social (Open Graph, Twitter Cards). Format recommandé: 1200x630px. Si vide, utilise l\'image principale. Utilisez coalesce() dans GROQ.',
-      options: {
-        hotspot: true,
-      },
-      fields: [
-        defineField({
-          name: 'alt',
-          title: 'Alt text',
-          type: 'string',
-          description: 'Description de l\'image pour accessibilité',
-        }),
-      ],
-    }),
+    // Note: L'image principale de l'article est utilisée automatiquement pour Open Graph
+    // Pas besoin de champ image séparé ici
 
     // =========================
     // PARAMÈTRES AVANCÉS

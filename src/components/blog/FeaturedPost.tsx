@@ -14,7 +14,6 @@ interface Author {
 interface Category {
   title: string
   slug: { current: string }
-  color?: string
 }
 
 interface FeaturedPostProps {

@@ -1,37 +1,40 @@
 import type { StructureResolver } from 'sanity/structure'
 
-// https://www.sanity.io/docs/structure-builder-cheat-sheet
-export const structure: StructureResolver = (S) => {
-  const defaultItems = S.documentTypeListItems()
-
-  // Structure optimisée pour les performances
-  // Utilise defaultOrdering pour éviter de charger tous les documents à la fois
-  const itemsWithCustomStructure = defaultItems
-    .map((item) => {
-      const documentType = item.getId()
-      if (!documentType) return null
-
-      return S.listItem()
-        .title(item.getTitle() || documentType)
-        .id(documentType)
+// Structure simplifiée : une seule page, pas d'onglets
+export const structure: StructureResolver = (S) =>
+  S.list()
+    .title('Contenu')
+    .items([
+      // Articles de blog
+      S.listItem()
+        .title('Articles de Blog')
+        .schemaType('post')
         .child(
-          S.documentTypeList(documentType)
-            .title(`Tous les ${item.getTitle() || documentType}s`)
-            // Tri par défaut pour améliorer les performances de chargement
-            .defaultOrdering([
-              documentType === 'post'
-                ? { field: 'publishedAt', direction: 'desc' }
-                : { field: '_updatedAt', direction: 'desc' },
-            ])
-            .child((documentId) =>
-              S.document()
-                .documentId(documentId)
-                .schemaType(documentType)
-                .views([S.view.form()]),
-            ),
-        )
-    })
-    .filter((item): item is NonNullable<typeof item> => item !== null)
+          S.documentTypeList('post')
+            .title('Articles')
+            .filter('_type == "post"')
+            .defaultOrdering([{ field: 'publishedAt', direction: 'desc' }])
+        ),
 
-  return S.list().title('Content').items(itemsWithCustomStructure)
-}
+      // Catégories
+      S.listItem()
+        .title('Catégories')
+        .schemaType('category')
+        .child(
+          S.documentTypeList('category')
+            .title('Catégories')
+            .filter('_type == "category"')
+            .defaultOrdering([{ field: 'title', direction: 'asc' }])
+        ),
+
+      // Auteurs
+      S.listItem()
+        .title('Auteurs')
+        .schemaType('author')
+        .child(
+          S.documentTypeList('author')
+            .title('Auteurs')
+            .filter('_type == "author"')
+            .defaultOrdering([{ field: 'name', direction: 'asc' }])
+        ),
+    ])

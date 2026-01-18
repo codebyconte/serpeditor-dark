@@ -10,10 +10,10 @@ import {
 } from '@/components/blog'
 import { ButtonLink, PlainButtonLink } from '@/components/elements/button'
 import { Main } from '@/components/elements/main'
-import { XIcon } from '@/components/icons/social/x-icon'
-import { YouTubeIcon } from '@/components/icons/social/youtube-icon'
 import { FacebookIcon } from '@/components/icons/social/facebook-icon'
 import { TiktokIcon } from '@/components/icons/social/tiktok-icon'
+import { XIcon } from '@/components/icons/social/x-icon'
+import { YouTubeIcon } from '@/components/icons/social/youtube-icon'
 import {
   FooterCategory,
   FooterLink,
@@ -28,6 +28,7 @@ import {
 } from '@/components/sections/navbar-with-links-actions-and-centered-logo'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import { Card, CardContent } from '@/components/ui/card'
+import { Divider } from '@/components/ui/divider'
 import type { Heading } from '@/hooks'
 import { generateArticleStructuredData, generatePostBreadcrumb, renderStructuredData } from '@/lib/structuredData'
 import { client } from '@/sanity/lib/client'
@@ -298,7 +299,7 @@ const createPortableTextComponents = (): Partial<PortableTextReactComponents> =>
       return (
         <div className="relative my-10">
           <CopyCodeButton code={value.code} />
-          <pre className="border-border overflow-x-auto rounded-xl border bg-[oklch(18%_0.01_107)] p-5 text-sm leading-relaxed text-[oklch(90%_0.01_107)]">
+          <pre className="border-border overflow-x-auto rounded-xl border bg-mist-950 p-5 text-sm leading-relaxed text-mist-100">
             <code>{value.code}</code>
           </pre>
         </div>
@@ -309,7 +310,7 @@ const createPortableTextComponents = (): Partial<PortableTextReactComponents> =>
         primary: 'bg-primary text-primary-foreground border-primary',
         info: 'bg-blue-500 text-white border-blue-500',
         success: 'bg-green-500 text-white border-green-500',
-        warning: 'bg-orange-500 text-white border-orange-500',
+        warning: 'bg-mist-500 text-white border-mist-500',
       }
 
       return (
@@ -337,7 +338,7 @@ const createPortableTextComponents = (): Partial<PortableTextReactComponents> =>
       const typeStyles = {
         tip: 'border-blue-300 bg-blue-50 dark:border-blue-700 dark:bg-blue-950/40',
         info: 'border-gray-300 bg-gray-50 dark:border-gray-700 dark:bg-gray-900/50',
-        warning: 'border-orange-300 bg-orange-50 dark:border-orange-700 dark:bg-orange-950/40',
+        warning: 'border-mist-300 bg-mist-50 dark:border-mist-700 dark:bg-mist-950/40',
         danger: 'border-red-300 bg-red-50 dark:border-red-700 dark:bg-red-950/40',
         note: 'border-green-300 bg-green-50 dark:border-green-700 dark:bg-green-950/40',
       }
@@ -456,12 +457,12 @@ const createPortableTextComponents = (): Partial<PortableTextReactComponents> =>
   },
   list: {
     bullet: ({ children }) => (
-      <ul className="text-muted-foreground marker:text-primary my-6 ml-6 list-outside list-disc space-y-3">
+      <ul className="text-muted-foreground marker:text-mist-600 dark:marker:text-mist-400 my-6 ml-6 list-outside list-disc space-y-3">
         {children}
       </ul>
     ),
     number: ({ children }) => (
-      <ol className="text-muted-foreground marker:text-primary my-6 ml-6 list-outside list-decimal space-y-3 marker:font-semibold">
+      <ol className="text-muted-foreground marker:text-mist-600 dark:marker:text-mist-400 my-6 ml-6 list-outside list-decimal space-y-3 marker:font-semibold">
         {children}
       </ol>
     ),
@@ -670,89 +671,98 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
           itemScope
           itemType="https://schema.org/BlogPosting"
         >
-          {/* Breadcrumb */}
-          <nav aria-label="Breadcrumb" className="mb-10 max-w-4xl">
-            <ol className="flex flex-wrap items-center gap-2 text-sm">
+          {/* Breadcrumb - Design amélioré */}
+          <nav aria-label="Breadcrumb" className="mb-12 max-w-4xl">
+            <ol className="flex flex-wrap items-center gap-2 rounded-full bg-muted/50 px-4 py-2.5 text-sm backdrop-blur-sm">
               <li>
-                <Link href="/" className="hover:text-primary text-muted-foreground transition-colors">
+                <Link 
+                  href="/" 
+                  className="flex items-center gap-1.5 text-muted-foreground transition-colors hover:text-primary"
+                >
+                  <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                  </svg>
                   Accueil
                 </Link>
               </li>
-              <li className="text-muted-foreground/50">/</li>
               <li>
-                <Link href="/blog" className="hover:text-primary text-muted-foreground transition-colors">
+                <svg className="h-4 w-4 text-muted-foreground/40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </li>
+              <li>
+                <Link href="/blog" className="text-muted-foreground transition-colors hover:text-primary">
                   Blog
                 </Link>
               </li>
               {post.categories && post.categories.length > 0 && (
                 <>
-                  <li className="text-muted-foreground/50">/</li>
+                  <li>
+                    <svg className="h-4 w-4 text-muted-foreground/40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </li>
                   <li>
                     <Link
-                      href={`/category/${post.categories[0].slug.current}`}
-                      className="hover:text-primary text-muted-foreground transition-colors"
+                      href={`/blog?category=${post.categories[0].slug.current}`}
+                      className="text-muted-foreground transition-colors hover:text-primary"
                     >
                       {post.categories[0].title}
                     </Link>
                   </li>
                 </>
               )}
-              <li className="text-muted-foreground/50">/</li>
-              <li className="text-foreground font-medium" aria-current="page">
+              <li>
+                <svg className="h-4 w-4 text-muted-foreground/40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </li>
+              <li className="max-w-[200px] truncate font-medium text-foreground" aria-current="page">
                 {post.title}
               </li>
             </ol>
           </nav>
 
           {/* Article Header */}
-          <header className="mb-12 max-w-4xl">
+          <header className="mb-16 max-w-4xl">
             {/* Categories */}
-            {post.categories && post.categories.length > 0 && (
-              <div className="mb-6 flex flex-wrap gap-2">
-                {post.categories.map((category, idx) => (
-                  <Link
-                    key={idx}
-                    href={`/category/${category.slug.current}`}
-                    className="bg-primary/10 text-primary hover:bg-primary/20 rounded-full px-4 py-1.5 text-sm font-medium transition-colors"
-                  >
-                    {category.title}
-                  </Link>
-                ))}
-              </div>
-            )}
-
-            {/* Title */}
+            
+           
+            {/* Title avec animation */}
             <h1
-              className="text-foreground mb-6 font-display text-4xl font-normal tracking-tight sm:text-5xl lg:text-6xl"
+              className="text-foreground mb-6 font-display text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl bg-linear-to-br from-foreground to-foreground/70 bg-clip-text leading-[1.15]"
               itemProp="headline"
             >
               {post.title}
             </h1>
 
-            {/* Excerpt */}
+            {/* Excerpt amélioré */}
             {post.excerpt && (
-              <p className="text-muted-foreground mb-8 text-xl leading-relaxed" itemProp="description">
+              <p className="text-muted-foreground mb-10 text-xl leading-relaxed border-l-4 border-primary/30 pl-6 italic" itemProp="description">
                 {post.excerpt}
               </p>
             )}
 
-            {/* Meta Row */}
-            <div className="border-border flex flex-wrap items-center gap-6 border-b pb-8">
+            {/* Meta Row redesigné */}
+            <div className="flex flex-wrap items-center gap-6 rounded-2xl border border-border/50 bg-muted/30 px-6 py-5 backdrop-blur-sm">
               {/* Author */}
               {post.author && (
-                <div className="flex items-center gap-3" itemScope itemType="https://schema.org/Person">
+                <div className="flex items-center gap-3.5 group" itemScope itemType="https://schema.org/Person">
                   {authorImageUrl && (
-                    <Image
-                      src={authorImageUrl}
-                      alt={post.author.name}
-                      width={48}
-                      height={48}
-                      className="ring-border rounded-full object-cover ring-2"
-                      itemProp="image"
-                    />
+                    <div className="relative">
+                      <Image
+                        src={authorImageUrl}
+                        alt={post.author.name}
+                        width={56}
+                        height={56}
+                        className="rounded-full object-cover ring-2 ring-primary/20 transition-all duration-300 group-hover:ring-4 group-hover:ring-primary/40"
+                        itemProp="image"
+                      />
+                      <div className="absolute -bottom-1 -right-1 h-4 w-4 rounded-full bg-green-500 ring-2 ring-background" />
+                    </div>
                   )}
                   <div>
-                    <p className="text-foreground font-medium" itemProp="name">
+                    <p className="text-foreground font-semibold transition-colors group-hover:text-primary" itemProp="name">
                       {post.author.name}
                     </p>
                     {post.author.role && (
@@ -764,10 +774,13 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
                 </div>
               )}
 
+              {/* Separator */}
+              {post.author && <div className="hidden h-8 w-px bg-border sm:block" />}
+
               {/* Dates */}
               <div className="text-muted-foreground flex items-center gap-2 text-sm">
-                <CalendarIcon className="h-4 w-4" />
-                <time dateTime={post.publishedAt} itemProp="datePublished">
+                <CalendarIcon className="h-4 w-4 text-primary" />
+                <time dateTime={post.publishedAt} itemProp="datePublished" className="font-medium">
                   {new Date(post.publishedAt).toLocaleDateString('fr-FR', {
                     year: 'numeric',
                     month: 'long',
@@ -777,163 +790,243 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
               </div>
 
               {post.updatedAt && post.updatedAt !== post.publishedAt && (
-                <div className="text-muted-foreground text-sm">
-                  <span>Mis à jour : </span>
-                  <time dateTime={post.updatedAt} itemProp="dateModified">
-                    {new Date(post.updatedAt).toLocaleDateString('fr-FR', {
-                      day: 'numeric',
-                      month: 'short',
-                      year: 'numeric',
-                    })}
-                  </time>
-                </div>
+                <>
+                  <div className="hidden h-8 w-px bg-border sm:block" />
+                  <div className="text-muted-foreground flex items-center gap-2 text-sm">
+                    <span className="rounded-full bg-mist-500/10 px-2.5 py-1 text-xs font-medium text-mist-700 dark:text-mist-400">
+                      Mis à jour
+                    </span>
+                    <time dateTime={post.updatedAt} itemProp="dateModified">
+                      {new Date(post.updatedAt).toLocaleDateString('fr-FR', {
+                        day: 'numeric',
+                        month: 'short',
+                        year: 'numeric',
+                      })}
+                    </time>
+                  </div>
+                </>
               )}
 
               {/* Reading Time */}
               {post.readingTime && (
-                <div className="text-muted-foreground flex items-center gap-2 text-sm">
-                  <ClockIcon className="h-4 w-4" />
-                  <span>{post.readingTime} min de lecture</span>
-                </div>
+                <>
+                  <div className="hidden h-8 w-px bg-border sm:block" />
+                  <div className="text-muted-foreground flex items-center gap-2 text-sm">
+                    <ClockIcon className="h-4 w-4 text-primary" />
+                    <span className="font-medium">{post.readingTime} min</span>
+                  </div>
+                </>
               )}
             </div>
 
-            {/* Reviewer (E-E-A-T) */}
+            {/* Reviewer (E-E-A-T) - Design amélioré */}
             {post.reviewer && (
-              <div className="mt-6 rounded-xl border border-green-200 bg-green-50 p-4 dark:border-green-800 dark:bg-green-950/30">
-                <p className="text-sm text-green-800 dark:text-green-200">
-                  <strong>Révisé par un expert :</strong> {post.reviewer.name}
-                  {post.reviewer.role && (
-                    <span className="text-green-600 dark:text-green-400"> — {post.reviewer.role}</span>
-                  )}
-                </p>
-                {post.lastReviewedAt && (
-                  <p className="mt-1 text-xs text-green-600 dark:text-green-400">
-                    Dernière révision : {new Date(post.lastReviewedAt).toLocaleDateString('fr-FR')}
-                  </p>
-                )}
+              <div className="mt-8 overflow-hidden rounded-2xl border border-emerald-200/50 bg-linear-to-r from-emerald-50 to-teal-50 p-6 shadow-sm dark:border-emerald-800/30 dark:from-emerald-950/40 dark:to-teal-950/20">
+                <div className="flex items-start gap-4">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+                    <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-semibold text-emerald-900 dark:text-emerald-100">
+                      Vérifié par un expert
+                    </p>
+                    <p className="mt-1 text-sm text-emerald-800 dark:text-emerald-200">
+                      <strong>{post.reviewer.name}</strong>
+                      {post.reviewer.role && (
+                        <span className="text-emerald-700 dark:text-emerald-300"> • {post.reviewer.role}</span>
+                      )}
+                    </p>
+                    {post.lastReviewedAt && (
+                      <p className="mt-2 text-xs text-emerald-600 dark:text-emerald-400">
+                        Dernière vérification : {new Date(post.lastReviewedAt).toLocaleDateString('fr-FR')}
+                      </p>
+                    )}
+                  </div>
+                </div>
               </div>
             )}
           </header>
 
-          {/* Hero Image */}
+          {/* Hero Image - Design amélioré */}
           {postImageUrl && (
-            <div className="mb-16 max-w-4xl">
+            <div className="group mb-20 max-w-4xl">
               <ImageLightbox src={postImageUrl} alt={post.image?.alt || post.title}>
-                <div className="relative aspect-video w-full overflow-hidden rounded-2xl shadow-2xl">
+                <div className="relative aspect-video w-full overflow-hidden rounded-3xl shadow-2xl ring-1 ring-black/5 transition-all duration-500 hover:shadow-primary/10 hover:ring-primary/20 dark:ring-white/5">
                   <Image
                     src={postImageUrl}
                     alt={post.image?.alt || post.title}
                     fill
-                    className="object-cover"
+                    className="object-cover transition-transform duration-700 group-hover:scale-[1.02]"
                     priority
                     itemProp="image"
                   />
+                  {/* Overlay gradient subtil */}
+                  <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-black/10 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
                 </div>
               </ImageLightbox>
+              {/* Caption si disponible */}
+              {post.image?.alt && (
+                <p className="mt-4 text-center text-sm italic text-muted-foreground">
+                  {post.image.alt}
+                </p>
+              )}
             </div>
           )}
 
           {/* Two-Column Layout */}
-          <div className="lg:grid lg:grid-cols-[1fr_280px] lg:gap-16">
+          <div className="lg:grid lg:grid-cols-[1fr_300px] lg:gap-20">
             {/* Main Content */}
             <div className="min-w-0">
               {/* Mobile TOC */}
               {headings.length > 0 && <TableOfContents headings={headings} variant="mobile" />}
 
-              {/* Article Body */}
-              <div className="prose-article" itemProp="articleBody">
+              {/* Article Body avec meilleur espacement */}
+              <div className="prose-article prose-lg max-w-none" itemProp="articleBody">
                 {post.body && Array.isArray(post.body) && (
                   <PortableText value={post.body} components={portableTextComponents} />
                 )}
               </div>
 
-              {/* Tags */}
-              {post.tags && post.tags.length > 0 && (
-                <div className="border-border mt-12 border-t pt-8">
-                  <h3 className="text-foreground mb-4 text-sm font-semibold">Tags</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {post.tags.map((tag, idx) => (
-                      <span
-                        key={idx}
-                        className="bg-muted text-muted-foreground rounded-lg px-3 py-1.5 text-sm"
-                        itemProp="keywords"
-                      >
-                        #{tag}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
+          
 
-              {/* Mobile Social Share */}
-              <div className="mt-8 lg:hidden">
-                <p className="text-foreground mb-3 text-sm font-medium">Partager cet article</p>
+              {/* Mobile Social Share - Design amélioré */}
+              <div className="mt-12 rounded-2xl border border-border/50 bg-muted/30 p-6 backdrop-blur-sm lg:hidden">
+                <p className="text-foreground mb-4 flex items-center gap-2 text-sm font-semibold">
+                  <svg className="h-4 w-4 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                  </svg>
+                  Partager cet article
+                </p>
                 <SocialShareButtons url={articleUrl} title={post.title} variant="horizontal" />
               </div>
             </div>
 
-            {/* Sidebar (Desktop) */}
+            {/* Sidebar (Desktop) - Design amélioré */}
             <aside className="hidden lg:block">
-              <div className="sticky top-28 space-y-8">
-                {/* Desktop TOC */}
-                {headings.length > 0 && <TableOfContents headings={headings} variant="desktop" />}
+              <div className="sticky top-28 space-y-6">
+                {/* Desktop TOC - Card design */}
+                {headings.length > 0 && (
+                  <div className="rounded-2xl border border-border/50 bg-muted/30 p-6 backdrop-blur-sm">
+                    <h3 className="mb-4 flex items-center gap-2 text-sm font-semibold text-foreground">
+                      <svg className="h-4 w-4 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h7" />
+                      </svg>
+                      Table des matières
+                    </h3>
+                    <TableOfContents headings={headings} variant="desktop" />
+                  </div>
+                )}
 
-                {/* Social Share */}
-                <div className="border-border bg-card rounded-xl border p-5">
-                  <p className="text-foreground mb-4 text-sm font-semibold">Partager</p>
+                {/* Social Share - Card design */}
+                <div className="rounded-2xl border border-border/50 bg-linear-to-br from-primary/5 to-primary/10 p-6 backdrop-blur-sm">
+                  <p className="text-foreground mb-4 flex items-center gap-2 text-sm font-semibold">
+                    <svg className="h-4 w-4 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                    </svg>
+                    Partager
+                  </p>
                   <SocialShareButtons url={articleUrl} title={post.title} variant="horizontal" />
                 </div>
               </div>
             </aside>
           </div>
 
-          {/* Author Card */}
+          <Divider className="my-12" />
+
+          {/* Author Card - Section améliorée */}
           {post.author && (
-            <div className="mt-16 max-w-4xl">
-              <AuthorCard
-                author={{
-                  name: post.author.name,
-                  role: post.author.role,
-                  bio: post.author.bio,
-                  image: authorImageUrl,
-                  slug: post.author.slug?.current,
-                  social: post.author.social,
-                }}
-              />
+            <div className="mt-20 max-w-4xl">
+              <div className="mb-6 flex items-center gap-3">
+                <div className="h-px flex-1 bg-linear-to-r from-transparent via-border to-transparent" />
+                <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+                  À propos de l&apos;auteur
+                </h2>
+                <div className="h-px flex-1 bg-linear-to-r from-transparent via-border to-transparent" />
+              </div>
+              <div className="overflow-hidden rounded-3xl border border-border/50 bg-linear-to-br from-muted/50 to-muted/30 p-8 shadow-xl backdrop-blur-sm transition-all duration-500 hover:shadow-2xl">
+                <AuthorCard
+                  author={{
+                    name: post.author.name,
+                    role: post.author.role,
+                    bio: post.author.bio,
+                    image: authorImageUrl,
+                    slug: post.author.slug?.current,
+                    social: post.author.social,
+                  }}
+                />
+              </div>
             </div>
           )}
 
-          {/* Related Articles */}
+          {/* Related Articles - Section améliorée */}
           {relatedPosts.length > 0 && (
-            <div className="max-w-4xl">
-              <RelatedArticles posts={relatedPosts} />
+            <div className="mt-24 max-w-4xl">
+              <div className="mb-8 text-center">
+                <h2 className="mb-3 bg-linear-to-r from-foreground to-foreground/70 bg-clip-text text-3xl font-bold text-transparent">
+                  Articles similaires
+                </h2>
+                <p className="text-muted-foreground">
+                  Découvrez d&apos;autres articles qui pourraient vous intéresser
+                </p>
+              </div>
+              <div className="rounded-3xl border border-border/50 bg-linear-to-br from-muted/30 to-background p-8 shadow-xl backdrop-blur-sm">
+                <RelatedArticles posts={relatedPosts} />
+              </div>
             </div>
           )}
 
-          {/* Previous/Next Navigation */}
+          {/* Previous/Next Navigation - Design moderne */}
           {(adjacentPosts.prev || adjacentPosts.next) && (
-            <nav className="border-border mt-16 max-w-4xl border-t pt-10" aria-label="Navigation articles">
+            <nav className="mt-20 max-w-4xl" aria-label="Navigation articles">
+              <div className="mb-6 flex items-center gap-3">
+                <div className="h-px flex-1 bg-linear-to-r from-transparent via-border to-transparent" />
+                <span className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+                  Continuez votre lecture
+                </span>
+                <div className="h-px flex-1 bg-linear-to-r from-transparent via-border to-transparent" />
+              </div>
               <div className="grid gap-6 sm:grid-cols-2">
                 {adjacentPosts.prev && (
                   <Link
                     href={`/blog/${adjacentPosts.prev.slug}`}
-                    className="group border-border bg-card hover:border-primary rounded-xl border p-6 transition-all hover:shadow-lg"
+                    className="group relative overflow-hidden rounded-2xl border border-border/50 bg-linear-to-br from-muted/50 to-muted/30 p-6 transition-all duration-300 hover:border-primary/50 hover:shadow-xl hover:shadow-primary/5"
                   >
-                    <div className="text-muted-foreground mb-2 text-sm">← Article précédent</div>
-                    <div className="text-foreground group-hover:text-primary line-clamp-2 font-semibold transition-colors">
-                      {adjacentPosts.prev.title}
+                    {/* Decorative gradient */}
+                    <div className="pointer-events-none absolute -left-10 -top-10 h-32 w-32 rounded-full bg-primary/10 opacity-0 blur-2xl transition-opacity duration-500 group-hover:opacity-100" />
+                    
+                    <div className="relative">
+                      <div className="mb-3 flex items-center gap-2 text-sm font-medium text-primary">
+                        <svg className="h-4 w-4 transition-transform duration-300 group-hover:-translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                        </svg>
+                        Article précédent
+                      </div>
+                      <div className="text-foreground line-clamp-2 text-lg font-semibold transition-colors group-hover:text-primary">
+                        {adjacentPosts.prev.title}
+                      </div>
                     </div>
                   </Link>
                 )}
                 {adjacentPosts.next && (
                   <Link
                     href={`/blog/${adjacentPosts.next.slug}`}
-                    className="group border-border bg-card hover:border-primary rounded-xl border p-6 text-right transition-all hover:shadow-lg sm:ml-auto"
+                    className="group relative overflow-hidden rounded-2xl border border-border/50 bg-linear-to-br from-muted/50 to-muted/30 p-6 text-right transition-all duration-300 hover:border-primary/50 hover:shadow-xl hover:shadow-primary/5 sm:ml-auto"
                   >
-                    <div className="text-muted-foreground mb-2 text-sm">Article suivant →</div>
-                    <div className="text-foreground group-hover:text-primary line-clamp-2 font-semibold transition-colors">
-                      {adjacentPosts.next.title}
+                    {/* Decorative gradient */}
+                    <div className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-primary/10 opacity-0 blur-2xl transition-opacity duration-500 group-hover:opacity-100" />
+                    
+                    <div className="relative">
+                      <div className="mb-3 flex items-center justify-end gap-2 text-sm font-medium text-primary">
+                        Article suivant
+                        <svg className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                      </div>
+                      <div className="text-foreground line-clamp-2 text-lg font-semibold transition-colors group-hover:text-primary">
+                        {adjacentPosts.next.title}
+                      </div>
                     </div>
                   </Link>
                 )}

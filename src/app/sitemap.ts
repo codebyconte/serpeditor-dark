@@ -1,5 +1,4 @@
 import { client } from '@/sanity/lib/client'
-import { SITEMAP_QUERY } from '@/sanity/lib/queries'
 import { MetadataRoute } from 'next'
 
 const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.serpeditor.fr'
@@ -88,19 +87,27 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ]
 
-  // Récupérer les pages dynamiques depuis Sanity (articles de blog, catégories, auteurs)
+  // Récupérer uniquement les articles de blog depuis Sanity
+  // Les catégories ne sont pas indexées (noindex) donc pas dans le sitemap
   let dynamicPages: MetadataRoute.Sitemap = []
 
   try {
-    const sanityData = await client.fetch<SitemapItem[]>(SITEMAP_QUERY, {}, {
-      next: { revalidate: 3600 }, // Cache 1 heure
-    })
+    const posts = await client.fetch<SitemapItem[]>(
+      `*[_type == "post" && status == "published" && !(seo.noIndex == true)]{
+        "href": "/blog/" + slug.current,
+        _updatedAt
+      }`,
+      {},
+      {
+        next: { revalidate: 3600 }, // Cache 1 heure
+      }
+    )
 
-    dynamicPages = sanityData.map((item) => ({
+    dynamicPages = posts.map((item) => ({
       url: `${baseUrl}${item.href}`,
       lastModified: item._updatedAt ? new Date(item._updatedAt) : new Date(),
-      changeFrequency: (item.changeFrequency || 'weekly') as MetadataRoute.Sitemap[number]['changeFrequency'],
-      priority: item.priority || 0.7,
+      changeFrequency: 'weekly' as const,
+      priority: 0.8,
     }))
   } catch (error) {
     console.error('Erreur lors de la récupération du sitemap depuis Sanity:', error)

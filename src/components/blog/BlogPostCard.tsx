@@ -15,7 +15,6 @@ interface Author {
 interface Category {
   title: string
   slug: { current: string }
-  color?: string
 }
 
 interface BlogPostCardProps {
@@ -85,8 +84,8 @@ export function BlogPostCard({
                     key={idx}
                     className="rounded-full px-2.5 py-0.5 text-xs font-medium"
                     style={{
-                      backgroundColor: category.color ? `${category.color}15` : 'rgb(var(--primary) / 0.1)',
-                      color: category.color || 'rgb(var(--primary))',
+                      backgroundColor: 'rgb(var(--primary) / 0.1)',
+                      color: 'rgb(var(--primary))',
                     }}
                   >
                     {category.title}
@@ -183,7 +182,7 @@ export function BlogPostCard({
                   <span
                     key={idx}
                     className="rounded-full bg-white/90 px-3 py-1 text-xs font-medium shadow-sm backdrop-blur-sm dark:bg-gray-900/90"
-                    style={{ color: category.color || 'inherit' }}
+                    style={{ color: 'inherit' }}
                   >
                     {category.title}
                   </span>

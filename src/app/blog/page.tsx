@@ -96,7 +96,7 @@ interface Category {
   _id: string
   title: string
   slug: { current: string }
-  color?: string
+  excerpt?: string
   postCount?: number
 }
 
@@ -119,7 +119,6 @@ interface Post {
   categories?: Array<{
     title: string
     slug: { current: string }
-    color?: string
   }>
 }
 

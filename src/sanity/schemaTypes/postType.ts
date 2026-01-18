@@ -1,15 +1,9 @@
-import {
-  DocumentTextIcon,
-  SearchIcon,
-  ImageIcon,
-  CogIcon,
-  RocketIcon,
-} from '@sanity/icons'
+import { DocumentTextIcon } from '@sanity/icons'
 import { defineArrayMember, defineField, defineType } from 'sanity'
 
 /**
- * Type Post - Article de Blog
- * Configuration SEO professionnelle avec E-E-A-T, Schema.org, et copywriting
+ * Type Post - Article de Blog (Simplifié)
+ * Configuration SEO optimisée sans surcharge de champs
  */
 export const postType = defineType({
   name: 'post',
@@ -17,35 +11,23 @@ export const postType = defineType({
   type: 'document',
   icon: DocumentTextIcon,
 
-  groups: [
-    { name: 'content', title: 'Contenu', icon: DocumentTextIcon, default: true },
-    { name: 'seo', title: 'SEO', icon: SearchIcon },
-    { name: 'media', title: 'Médias', icon: ImageIcon },
-    { name: 'metadata', title: 'Métadonnées', icon: CogIcon },
-    { name: 'advanced', title: 'Avancé', icon: RocketIcon },
-  ],
-
   fields: [
     // =========================
     // CONTENU PRINCIPAL
     // =========================
     defineField({
       name: 'title',
-      title: 'Titre H1',
+      title: 'Titre',
       type: 'string',
-      description: 'Titre principal de l\'article. Doit inclure le mot-clé principal. 50-70 caractères recommandés pour le SEO.',
-      validation: (rule) => rule.required().min(10).max(80).warning('Idéalement entre 50 et 70 caractères pour le SEO'),
-      options: {
-        search: { weight: 10 },
-      },
-      group: 'content',
+      description: 'Titre de l\'article (50-70 caractères recommandés)',
+      validation: (rule) => rule.required().min(10).max(80),
     }),
 
     defineField({
       name: 'slug',
       type: 'slug',
       title: 'Slug URL',
-      description: 'URL de l\'article (ex: /blog/mon-article-seo). Doit être unique.',
+      description: 'URL de l\'article (ex: mon-article-seo)',
       options: {
         source: 'title',
         maxLength: 96,
@@ -55,73 +37,26 @@ export const postType = defineType({
             .replace(/\s+/g, '-')
             .replace(/[^a-z0-9-]/g, ''),
       },
-      validation: (rule) =>
-        rule.required().custom(async (slug, context) => {
-          if (!slug?.current) return 'Le slug est requis'
-          // Validation du format
-          if (!/^[a-z0-9-]+$/.test(slug.current)) {
-            return 'Le slug doit contenir uniquement des lettres minuscules, chiffres et tirets'
-          }
-          // Vérification de l'unicité
-          const client = context.getClient({ apiVersion: '2024-01-01' })
-          const currentId = context.document?._id || ''
-          
-          // Trouver tous les documents (publiés et drafts) avec ce slug
-          const conflictingDocs = await client.fetch(
-            `*[_type == "post" && slug.current == $slug]{
-              _id,
-              title,
-              _id
-            }`,
-            {
-              slug: slug.current,
-            }
-          )
-          
-          // Filtrer pour exclure le document actuel et son équivalent draft/publié
-          const currentIdBase = currentId.replace(/^drafts\./, '')
-          const filtered = conflictingDocs.filter((doc: { _id: string }) => {
-            const docIdBase = doc._id.replace(/^drafts\./, '')
-            // Exclure le document actuel et son équivalent (draft ou publié)
-            return docIdBase !== currentIdBase
-          })
-          
-          if (filtered.length > 0) {
-            const conflictingDoc = filtered[0]
-            const isDraft = conflictingDoc._id.startsWith('drafts.')
-            const docTitle = conflictingDoc.title || 'Sans titre'
-            const docType = isDraft ? 'brouillon' : 'article publié'
-            
-            return `Ce slug est déjà utilisé par un ${docType}: "${docTitle}" (ID: ${conflictingDoc._id}). ${isDraft ? 'Supprimez le brouillon dans Sanity Studio ou utilisez un autre slug.' : 'Utilisez un autre slug.'}`
-          }
-          
-          return true
-        }),
-      group: 'content',
+      validation: (rule) => rule.required(),
     }),
 
     defineField({
       name: 'excerpt',
-      title: 'Résumé / Chapeau',
+      title: 'Résumé',
       type: 'text',
-      rows: 4,
-      description:
-        'Résumé accrocheur affiché dans les listes. Utilisé comme fallback pour la meta description. Inclure un Call-to-Action.',
-      validation: (rule) => rule.required().min(120).max(200).warning('120-200 caractères pour un bon équilibre'),
-      options: {
-        search: { weight: 8 }, // Poids élevé pour le résumé (recherche secondaire)
-      },
-      group: 'content',
+      rows: 3,
+      description: 'Résumé de l\'article (140-160 caractères pour le SEO)',
+      validation: (rule) => rule.required().min(120).max(200),
     }),
 
     defineField({
       name: 'body',
-      title: "Contenu de l'article",
+      title: 'Contenu',
       type: 'array',
-      description: 'Contenu principal de l\'article. Minimum 1000 mots recommandé pour le SEO.',
+      description: 'Contenu principal de l\'article',
       of: [
         { type: 'block' },
-        { type: 'image' }, // Type natif pour compatibilité avec données existantes
+        { type: 'image' },
         defineArrayMember({ type: 'customImage' }),
         defineArrayMember({ type: 'code' }),
         defineArrayMember({ type: 'youtube' }),
@@ -129,80 +64,54 @@ export const postType = defineType({
         defineArrayMember({ type: 'infoBox' }),
         defineArrayMember({ type: 'faqBlock' }),
         defineArrayMember({ type: 'relatedArticles' }),
-        defineArrayMember({ type: 'tableBlock' }), // Tableau personnalisé
-        // Plugin @sanity/table - Tableaux simples pour articles de blog
-        // https://www.sanity.io/plugins/@sanity/table
+        defineArrayMember({ type: 'tableBlock' }),
         { type: 'table' },
       ],
       validation: (rule) => rule.required(),
-      options: {
-        search: { weight: 5 }, // Poids moyen pour le contenu (recherche dans Portable Text avec groq2024)
-      },
-      group: 'content',
-    }),
-    defineField({
-      name: 'markdownContent',
-      title: 'Contenu Markdown',
-      type: 'markdown',
-      description: 'Contenu en Markdown avec support des images',
-      group: 'content',
     }),
 
     // =========================
-    // SEO (Type réutilisable)
-    // =========================
-    defineField({
-      name: 'seo',
-      type: 'seo',
-      description: 'Métadonnées SEO pour Google et réseaux sociaux (Open Graph, Twitter Cards)',
-      group: 'seo',
-    }),
-
-    // =========================
-    // IMAGE PRINCIPALE
+    // IMAGE PRINCIPALE (utilisée aussi pour OpenGraph)
     // =========================
     defineField({
       name: 'image',
-      title: 'Image Principale',
+      title: 'Image',
       type: 'image',
-      description: 'Image de couverture de l\'article. Format recommandé: 1200x630px. Utilisée pour Open Graph si aucune image OG spécifique n\'est définie.',
+      description: 'Image de couverture (1200x630px recommandé). Utilisée aussi pour Open Graph.',
       options: {
         hotspot: true,
-        // Configuration AI Assist pour génération automatique de descriptions d'images
-        aiAssist: {
-          imageDescriptionField: 'alt', // Génère automatiquement le alt text avec IA
-        },
       },
       fields: [
         defineField({
           name: 'alt',
           title: 'Alt text',
           type: 'string',
-          description: 'Description SEO de l\'image avec mots-clés naturels. Peut être généré automatiquement avec AI Assist.',
+          description: 'Description SEO de l\'image',
           validation: (rule) => rule.required().min(10).max(125),
-        }),
-        defineField({
-          name: 'caption',
-          title: 'Légende',
-          type: 'string',
-          description: 'Crédit photo ou description longue',
         }),
       ],
       validation: (rule) => rule.required(),
-      group: 'media',
     }),
 
     // =========================
-    // AUTEUR & E-E-A-T
+    // SEO (simplifié)
+    // =========================
+    defineField({
+      name: 'seo',
+      type: 'seo',
+      description: 'Métadonnées SEO (optionnel, utilise titre/résumé/image par défaut)',
+    }),
+
+    // =========================
+    // AUTEUR
     // =========================
     defineField({
       name: 'author',
       title: 'Auteur',
       type: 'reference',
       to: [{ type: 'author' }],
-      description: 'Auteur principal de l\'article. Crucial pour E-E-A-T (Experience, Expertise, Authoritativeness, Trustworthiness) et crédibilité.',
+      description: 'Auteur principal',
       validation: (rule) => rule.required(),
-      group: 'metadata',
     }),
 
     defineField({
@@ -211,205 +120,96 @@ export const postType = defineType({
       type: 'array',
       of: [{ type: 'reference', to: [{ type: 'author' }] }],
       description: 'Auteurs supplémentaires (optionnel)',
-      group: 'metadata',
-    }),
-
-    defineField({
-      name: 'reviewer',
-      title: 'Réviseur / Expert',
-      type: 'reference',
-      to: [{ type: 'author' }],
-      description: 'Expert qui a validé le contenu. Renforce l\'E-E-A-T et est affiché dans Schema.org.',
-      group: 'metadata',
     }),
 
     // =========================
-    // MÉTADONNÉES TEMPORELLES
+    // DATES
     // =========================
     defineField({
       name: 'publishedAt',
       title: 'Date de Publication',
       type: 'datetime',
-      description: 'Date de première publication',
       initialValue: () => new Date().toISOString(),
       validation: (rule) => rule.required(),
-      group: 'metadata',
     }),
 
     defineField({
       name: 'updatedAt',
       title: 'Dernière Mise à Jour',
       type: 'datetime',
-      description: 'Date de dernière modification (utilisée pour "dateModified" Schema.org)',
-      group: 'metadata',
-    }),
-
-    defineField({
-      name: 'lastReviewedAt',
-      title: 'Dernière Révision Éditoriale',
-      type: 'datetime',
-      description: 'Date de la dernière vérification de l\'exactitude du contenu. Important pour E-E-A-T.',
-      group: 'metadata',
+      description: 'Date de modification (optionnel)',
     }),
 
     defineField({
       name: 'readingTime',
-      title: 'Temps de Lecture (minutes)',
+      title: 'Temps de Lecture (min)',
       type: 'number',
-      description: 'Calculé automatiquement ou défini manuellement',
+      description: 'Temps de lecture estimé',
       validation: (rule) => rule.min(1).max(60),
-      group: 'metadata',
-    }),
-
-    defineField({
-      name: 'wordCount',
-      title: 'Nombre de Mots',
-      type: 'number',
-      description: 'Nombre total de mots (calculé automatiquement recommandé)',
-      readOnly: true,
-      group: 'metadata',
     }),
 
     // =========================
-    // TAXONOMIE & ORGANISATION
+    // CATÉGORIES & TAGS
     // =========================
     defineField({
       name: 'categories',
       title: 'Catégories',
       type: 'array',
       of: [{ type: 'reference', to: [{ type: 'category' }] }],
-      description: '1-2 catégories principales (structure silo SEO). Utilisé pour Schema.org articleSection.',
-      validation: (rule) => rule.min(1).max(3).error('Sélectionnez entre 1 et 3 catégories'),
-      group: 'metadata',
+      description: '1-3 catégories',
+      validation: (rule) => rule.min(1).max(3),
     }),
 
     defineField({
       name: 'tags',
-      title: 'Tags / Mots-clés',
+      title: 'Tags',
       type: 'array',
       of: [{ type: 'string' }],
-      description: 'Mots-clés additionnels pour classification et recherche interne',
-      validation: (rule) => rule.max(15).unique().warning('Maximum 15 tags recommandés'),
-      options: {
-        search: { weight: 7 }, // Poids élevé pour les tags (aide à trouver rapidement)
-      },
-      group: 'metadata',
+      description: 'Mots-clés pour recherche',
+      validation: (rule) => rule.max(15).unique(),
     }),
 
     // =========================
-    // SCHEMA.ORG & STRUCTURED DATA
-    // =========================
-    defineField({
-      name: 'articleSection',
-      title: 'Section Article (Schema.org)',
-      type: 'string',
-      description: 'Section principale de l\'article pour Schema.org. Généralement la première catégorie, mais peut être personnalisée.',
-      group: 'metadata',
-    }),
-
-    defineField({
-      name: 'keywords',
-      title: 'Mots-clés (Meta Keywords)',
-      type: 'array',
-      of: [{ type: 'string' }],
-      description: 'Mots-clés pour Schema.org keywords. Généralement déprécié pour Google mais utile pour d\'autres moteurs de recherche.',
-      validation: (rule) => rule.max(10),
-      group: 'metadata',
-    }),
-
-    // =========================
-    // STATUT & QUALITÉ
+    // STATUT
     // =========================
     defineField({
       name: 'status',
-      title: 'Statut de Publication',
+      title: 'Statut',
       type: 'string',
-      description: "État de l'article",
       options: {
         list: [
           { title: 'Brouillon', value: 'draft' },
           { title: 'En Révision', value: 'review' },
           { title: 'Publié', value: 'published' },
-          { title: 'À Mettre à Jour', value: 'needs_update' },
           { title: 'Archivé', value: 'archived' },
         ],
         layout: 'radio',
       },
       initialValue: 'draft',
-      group: 'advanced',
-    }),
-
-    defineField({
-      name: 'contentQuality',
-      title: 'Score de Qualité SEO',
-      type: 'number',
-      description: 'Score de qualité SEO sur 100. Peut être généré par un outil SEO externe.',
-      validation: (rule) => rule.min(0).max(100),
-      group: 'advanced',
     }),
 
     defineField({
       name: 'featured',
       title: 'Article Mis en Avant',
       type: 'boolean',
-      description: 'Afficher cet article en tête de page d\'accueil ou de catégorie',
+      description: 'Afficher en tête de page',
       initialValue: false,
-      group: 'advanced',
     }),
 
     defineField({
       name: 'isPillarContent',
-      title: 'Contenu Pilier (Pillar Page)',
+      title: 'Contenu Pilier',
       type: 'boolean',
-      description: 'Article de référence long-format (2000+ mots) au centre d\'un topic cluster. Contenu pilier pour le SEO.',
+      description: 'Article de référence long-format',
       initialValue: false,
-      group: 'advanced',
     }),
 
-    // =========================
-    // TABLE DES MATIÈRES
-    // =========================
     defineField({
       name: 'showTableOfContents',
-      title: 'Afficher la Table des Matières',
+      title: 'Table des Matières',
       type: 'boolean',
-      description: 'Génère automatiquement une table des matières à partir des titres H2/H3',
+      description: 'Afficher la table des matières',
       initialValue: true,
-      group: 'advanced',
-    }),
-
-    // =========================
-    // NOTES INTERNES
-    // =========================
-    defineField({
-      name: 'internalNotes',
-      title: 'Notes Internes (Non Publiques)',
-      type: 'text',
-      rows: 3,
-      description: 'Notes internes pour l\'équipe éditoriale. Non affichées sur le site public.',
-      group: 'advanced',
-    }),
-
-    // =========================
-    // SEO TECHNIQUE
-    // =========================
-    defineField({
-      name: 'focusKeyword',
-      title: 'Mot-clé Principal (Focus Keyword)',
-      type: 'string',
-      description: 'Mot-clé principal ciblé pour cet article. Doit apparaître dans le titre, la description et le contenu. Utilisé pour l\'analyse SEO.',
-      validation: (rule) => rule.min(2).max(50),
-      group: 'seo',
-    }),
-
-    defineField({
-      name: 'relatedKeywords',
-      title: 'Mots-clés Associés (LSI Keywords)',
-      type: 'array',
-      of: [{ type: 'string' }],
-      description: 'Mots-clés sémantiques et variantes (LSI Keywords). Aide Google à comprendre le contexte. 5-10 recommandés.',
-      validation: (rule) => rule.max(15).unique(),
-      group: 'seo',
     }),
   ],
 
