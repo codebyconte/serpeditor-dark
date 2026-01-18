@@ -1,5 +1,6 @@
 import { ClientToaster } from '@/components/client-toaster'
 import { Main } from '@/components/elements/main'
+import { Analytics } from "@vercel/analytics/next"
 import 'easymde/dist/easymde.min.css'
 import type { Metadata } from 'next'
 import { Instrument_Serif, Inter } from 'next/font/google'
@@ -162,6 +163,7 @@ export default function RootLayout({
         <Main>{children}</Main>
         {/* Client-side Toaster with dynamic import for better TTI */}
         <ClientToaster />
+        <Analytics />
       </body>
     </html>
   )
