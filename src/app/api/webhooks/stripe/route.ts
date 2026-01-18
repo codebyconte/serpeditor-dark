@@ -1,16 +1,16 @@
-import { NextResponse } from 'next/server'
-import { headers } from 'next/headers'
-import Stripe from 'stripe'
 import { prisma } from '@/lib/prisma'
 import { updateSubscriptionFromStripe } from '@/lib/subscription-utils'
+import { headers } from 'next/headers'
+import { NextResponse } from 'next/server'
+import Stripe from 'stripe'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2025-12-15.clover',
 })
 
 const PRICE_TO_PLAN: Record<string, string> = {
-  price_1SqYh8IY7EONGwxefLuSKWsy: 'Pro',
-  price_1SqYjOIY7EONGwxeSIg8SPzO: 'Agency',
+  price_1SqwPlRQkqRAWbxYjcxJylw3: 'Pro',
+  price_1SqwQKRQkqRAWbxYwCT9G3Pl: 'Agency',
 }
 
 // Helper type pour accéder aux propriétés qui peuvent ne pas être dans le type TypeScript

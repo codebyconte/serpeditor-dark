@@ -1,5 +1,5 @@
-import { Main } from '@/components/elements/main'
 import { ClientToaster } from '@/components/client-toaster'
+import { Main } from '@/components/elements/main'
 import 'easymde/dist/easymde.min.css'
 import type { Metadata } from 'next'
 import { Instrument_Serif, Inter } from 'next/font/google'
@@ -107,7 +107,7 @@ const jsonLd = {
       "url": "https://www.serpeditor.fr",
       "logo": {
         "@type": "ImageObject",
-        "url": "https://www.serpeditor.fr/serpeditor.svg",
+        "url": "https://www.serpeditor.fr/logo.png",
         "width": 180,
         "height": 60,
         "caption": "SerpEditor - Outil SEO Français"
