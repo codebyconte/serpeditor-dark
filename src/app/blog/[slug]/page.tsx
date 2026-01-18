@@ -630,25 +630,20 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
         id="navbar"
         links={
           <>
-            <NavbarLink href="/pricing">Pricing</NavbarLink>
+            <NavbarLink href="/features">Fonctionnalités</NavbarLink>
+            <NavbarLink href="/pricing">Tarifs</NavbarLink>
             <NavbarLink href="/blog">Blog</NavbarLink>
             <NavbarLink href="/login" className="sm:hidden">
-              Log in
+              Connexion
             </NavbarLink>
           </>
         }
         logo={
           <NavbarLogo href="/">
+            <Image src="/serpeditor.svg" alt="SerpEditor Outil SEO" className="dark:hidden" width={85} height={28} />
             <Image
-              src="https://assets.tailwindplus.com/logos/oatmeal-instrument.svg?color=mist-950"
-              alt="SerpEditor"
-              className="dark:hidden"
-              width={85}
-              height={28}
-            />
-            <Image
-              src="https://assets.tailwindplus.com/logos/oatmeal-instrument.svg?color=white"
-              alt="SerpEditor"
+              src="/serpeditor-white.svg"
+              alt="SerpEditor Outil SEO"
               className="not-dark:hidden"
               width={85}
               height={28}
@@ -658,9 +653,9 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
         actions={
           <>
             <PlainButtonLink href="/login" className="max-sm:hidden">
-              Log in
+              Connexion
             </PlainButtonLink>
-            <ButtonLink href="/register">Get started</ButtonLink>
+            <ButtonLink href="/register">Essai Gratuit</ButtonLink>
           </>
         }
       />
@@ -1036,38 +1031,37 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
         </article>
       </Main>
 
-      <FooterWithNewsletterFormCategoriesAndSocialIcons
+        <FooterWithNewsletterFormCategoriesAndSocialIcons
         id="footer"
         cta={
           <NewsletterForm
-            headline="Restez informé"
+            headline="Restez en avance en SEO"
             subheadline={
-              <p>Recevez nos derniers articles sur le SEO et le marketing digital directement dans votre boîte mail.</p>
+              <p>
+                Recevez chaque semaine des conseils pratiques, des astuces SEO, et des mises à jour de notre outil pour
+                booster votre visibilité en ligne directement dans votre boîte mail.
+              </p>
             }
             action="#"
           />
         }
         links={
           <>
-            <FooterCategory title="Product">
-              <FooterLink href="/pricing">Pricing</FooterLink>
-              <FooterLink href="#">Features</FooterLink>
-              <FooterLink href="#">Integrations</FooterLink>
-            </FooterCategory>
-            <FooterCategory title="Company">
-              <FooterLink href="#">About</FooterLink>
-              <FooterLink href="#">Careers</FooterLink>
-              <FooterLink href="/blog">Blog</FooterLink>
+            <FooterCategory title="Fonctionnalités">
+              <FooterLink href="/features/recherche-mots-cles">Recherche de mots-clés</FooterLink>
+              <FooterLink href="/features/analyse-mots-cles-concurrents">Analyse Mots-Clés Concurrents</FooterLink>
+              <FooterLink href="/features/analyse-seo">Analyse SEO</FooterLink>
+              <FooterLink href="/features/suivi-position-seo">Suivi de position SEO</FooterLink>
+              <FooterLink href="/features/analyse-backlinks">Analyse de backlinks</FooterLink>
             </FooterCategory>
             <FooterCategory title="Resources">
-              <FooterLink href="#">Help Center</FooterLink>
-              <FooterLink href="#">API Docs</FooterLink>
-              <FooterLink href="#">Contact</FooterLink>
+              <FooterLink href="/blog">Blog</FooterLink>
+              <FooterLink href="/outils-seo-gratuits">Outils SEO Gratuits</FooterLink>
             </FooterCategory>
             <FooterCategory title="Legal">
               <FooterLink href="/privacy-policy">Politique de confidentialité</FooterLink>
-              <FooterLink href="#">Terms of Service</FooterLink>
-              <FooterLink href="#">Security</FooterLink>
+              <FooterLink href="/mentions-legales">Mentions Légales</FooterLink>
+              <FooterLink href="/conditions-generales-vente">Conditions Générales de Vente</FooterLink>
             </FooterCategory>
           </>
         }
