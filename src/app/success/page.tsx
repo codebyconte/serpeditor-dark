@@ -1,11 +1,37 @@
 import { redirect } from 'next/navigation'
 import { CheckCircle2, Mail, Sparkles } from 'lucide-react'
-import Link from 'next/link'
-
 import { stripe } from '../../lib/stripe'
 import { ButtonLink } from '@/components/elements/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Main } from '@/components/elements/main'
+import type { Metadata } from 'next'
+
+const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.serpeditor.fr'
+
+export const metadata: Metadata = {
+  title: 'Paiement Réussi | Bienvenue sur SerpEditor',
+  description: 'Votre paiement a été effectué avec succès. Vous pouvez maintenant accéder à votre dashboard et commencer à utiliser SerpEditor.',
+  robots: {
+    index: false, // On ne veut pas indexer cette page
+    follow: true,
+  },
+}
+
+/**
+ * JSON-LD pour la page Success
+ */
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "@id": `${baseUrl}/success#webpage`,
+  "url": `${baseUrl}/success`,
+  "name": "Paiement Réussi",
+  "description": "Confirmation de paiement et accès au dashboard SerpEditor",
+  "inLanguage": "fr-FR",
+  "isPartOf": {
+    "@id": `${baseUrl}/#website`
+  }
+}
 
 export default async function Success({ searchParams }: { searchParams: Promise<{ session_id?: string }> }) {
   const { session_id } = await searchParams
@@ -28,10 +54,17 @@ export default async function Success({ searchParams }: { searchParams: Promise<
     const planName = lineItems[0]?.description || 'votre abonnement'
 
     return (
-      <Main>
-        <section id="success" className="flex min-h-[80vh] items-center justify-center px-4 py-16">
-          <div className="w-full max-w-2xl">
-            <Card className="via-background border-2 border-green-500/20 bg-gradient-to-br from-green-500/10 to-green-500/5 shadow-xl">
+      <>
+        {/* JSON-LD pour le SEO structuré */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+
+        <Main>
+          <section id="success" className="flex min-h-[80vh] items-center justify-center px-4 py-16">
+            <div className="w-full max-w-2xl">
+              <Card className="via-background border-2 border-green-500/20 bg-gradient-to-br from-green-500/10 to-green-500/5 shadow-xl">
               <CardHeader className="space-y-6 pb-8 text-center">
                 <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-green-500/20 shadow-lg">
                   <CheckCircle2 className="h-12 w-12 text-green-600 dark:text-green-400" />
@@ -93,23 +126,32 @@ export default async function Success({ searchParams }: { searchParams: Promise<
                 </ButtonLink>
               
               </CardFooter>
-            </Card>
-          </div>
-        </section>
-      </Main>
+              </Card>
+            </div>
+          </section>
+        </Main>
+      </>
     )
   }
 
   return (
-    <Main>
-      <section id="success" className="flex min-h-[80vh] items-center justify-center px-4 py-16">
-        <Card className="w-full max-w-2xl">
-          <CardHeader className="text-center">
-            <CardTitle className="text-2xl">Traitement en cours...</CardTitle>
-            <CardDescription>Veuillez patienter pendant que nous finalisons votre paiement.</CardDescription>
-          </CardHeader>
-        </Card>
-      </section>
-    </Main>
+    <>
+      {/* JSON-LD pour le SEO structuré */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+
+      <Main>
+        <section id="success" className="flex min-h-[80vh] items-center justify-center px-4 py-16">
+          <Card className="w-full max-w-2xl">
+            <CardHeader className="text-center">
+              <CardTitle className="text-2xl">Traitement en cours...</CardTitle>
+              <CardDescription>Veuillez patienter pendant que nous finalisons votre paiement.</CardDescription>
+            </CardHeader>
+          </Card>
+        </section>
+      </Main>
+    </>
   )
 }

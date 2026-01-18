@@ -17,11 +17,65 @@ import {
   NavbarLogo,
   NavbarWithLinksActionsAndCenteredLogo,
 } from '@/components/sections/navbar-with-links-actions-and-centered-logo'
+import type { Metadata } from 'next'
 import Image from 'next/image'
+
+const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.serpeditor.fr'
+
+export const metadata: Metadata = {
+  title: 'Conditions Générales de Vente | SerpEditor - CGV Logiciel SEO',
+  description: 'Conditions Générales de Vente de SerpEditor : tarifs, abonnements, paiements et conditions d\'utilisation du logiciel SEO.',
+  robots: {
+    index: true,
+    follow: true,
+  },
+  alternates: {
+    canonical: `${baseUrl}/conditions-generales-vente`,
+  },
+}
+
+/**
+ * JSON-LD pour la page CGV
+ */
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "@id": `${baseUrl}/conditions-generales-vente#webpage`,
+  "url": `${baseUrl}/conditions-generales-vente`,
+  "name": "Conditions Générales de Vente",
+  "description": "Conditions Générales de Vente de SerpEditor : tarifs, abonnements et modalités d'utilisation",
+  "inLanguage": "fr-FR",
+  "isPartOf": {
+    "@id": `${baseUrl}/#website`
+  },
+  "breadcrumb": {
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Accueil",
+        "item": baseUrl
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Conditions Générales de Vente",
+        "item": `${baseUrl}/conditions-generales-vente`
+      }
+    ]
+  }
+}
 
 export default function Page() {
   return (
     <>
+      {/* JSON-LD pour le SEO structuré */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+
       <NavbarWithLinksActionsAndCenteredLogo
         id="navbar"
         links={

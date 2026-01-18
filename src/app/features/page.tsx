@@ -30,6 +30,8 @@ import Image from 'next/image'
 import { TiktokIcon } from '@/components/icons/social/tiktok-icon'
 
 // SEO OPTIMISÉ POUR "LOGICIEL SEO" & "SOLUTION SEO"
+const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.serpeditor.fr'
+
 export const metadata: Metadata = {
   title: 'Logiciel SEO Complet : Toutes les Fonctionnalités SerpEditor',
   description:
@@ -42,11 +44,209 @@ export const metadata: Metadata = {
     'audit seo automatique',
     'visibilité IA google',
   ],
+  alternates: {
+    canonical: `${baseUrl}/features`,
+  },
+  openGraph: {
+    title: 'Logiciel SEO Complet | Toutes les Fonctionnalités SerpEditor',
+    description: 'Dashboard SEO tout-en-un : Audit technique, Backlinks, Suivi de positions, Visibilité IA et plus encore.',
+    url: `${baseUrl}/features`,
+    siteName: 'SerpEditor',
+    type: 'website',
+    locale: 'fr_FR',
+    images: [
+      {
+        url: `${baseUrl}/serpeditor.webp`,
+        width: 3440,
+        height: 1990,
+        alt: 'Logiciel SEO SerpEditor - Dashboard complet',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Logiciel SEO Complet | Toutes les Fonctionnalités SerpEditor',
+    description: 'La solution SEO tout-en-un pour dominer Google en 2026.',
+    images: [`${baseUrl}/serpeditor.webp`],
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+}
+
+/**
+ * JSON-LD pour la page Features
+ * Inclut: WebPage, SoftwareApplication, ItemList, FAQPage, BreadcrumbList
+ */
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebPage",
+      "@id": `${baseUrl}/features#webpage`,
+      "url": `${baseUrl}/features`,
+      "name": "Logiciel SEO Complet : Toutes les Fonctionnalités SerpEditor",
+      "isPartOf": {
+        "@id": `${baseUrl}/#website`
+      },
+      "about": {
+        "@id": `${baseUrl}/#software`
+      },
+      "description": "Découvrez toutes les fonctionnalités de SerpEditor : Recherche de mots-clés, Suivi de positions, Analyse de backlinks, Audit SEO et Visibilité IA.",
+      "inLanguage": "fr-FR",
+      "breadcrumb": {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Accueil",
+            "item": baseUrl
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Fonctionnalités",
+            "item": `${baseUrl}/features`
+          }
+        ]
+      }
+    },
+    {
+      "@type": "SoftwareApplication",
+      "@id": `${baseUrl}/features#software`,
+      "name": "SerpEditor - Logiciel SEO Complet",
+      "applicationCategory": "BusinessApplication",
+      "applicationSubCategory": "SEO Software",
+      "operatingSystem": "Web",
+      "description": "Logiciel SEO tout-en-un pour l'audit technique, la recherche de mots-clés, l'analyse de backlinks, le suivi de positions et la visibilité IA.",
+      "offers": {
+        "@type": "AggregateOffer",
+        "lowPrice": "0",
+        "highPrice": "99",
+        "priceCurrency": "EUR",
+        "offerCount": 3
+      },
+      "featureList": [
+        "213M+ mots-clés français",
+        "Suivi de positions quotidien",
+        "2,8 trillions de backlinks analysés",
+        "Audit technique SEO",
+        "Analyse de la visibilité IA",
+        "Monitoring SERP",
+        "Analyse concurrentielle",
+        "GEO (Generative Engine Optimization)"
+      ],
+      "screenshot": `${baseUrl}/serpeditor.webp`
+    },
+    {
+      "@type": "ItemList",
+      "name": "Fonctionnalités SerpEditor",
+      "description": "Liste complète des modules du logiciel SEO SerpEditor",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "item": {
+            "@type": "SoftwareApplication",
+            "name": "Recherche de Mots-Clés",
+            "description": "Accès à 213M+ mots-clés français avec analyse de difficulté et intention de recherche",
+            "url": `${baseUrl}/features/recherche-mots-cles`
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "item": {
+            "@type": "SoftwareApplication",
+            "name": "Suivi de Positions",
+            "description": "Tracking quotidien des classements Google en Desktop et Mobile",
+            "url": `${baseUrl}/features/suivi-position-seo`
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "item": {
+            "@type": "SoftwareApplication",
+            "name": "Visibilité IA & GEO",
+            "description": "Analyse de la visibilité dans les moteurs IA (ChatGPT, Perplexity, Gemini)",
+            "url": `${baseUrl}/features/geo-seo`
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 4,
+          "item": {
+            "@type": "SoftwareApplication",
+            "name": "Analyse de Backlinks",
+            "description": "Base de 2,8 trillions de liens pour auditer votre netlinking",
+            "url": `${baseUrl}/features/analyse-backlinks`
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 5,
+          "item": {
+            "@type": "SoftwareApplication",
+            "name": "Audit SEO Technique",
+            "description": "Scan de plus de 120 points techniques pour optimiser votre site",
+            "url": `${baseUrl}/features/analyse-seo`
+          }
+        }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "@id": `${baseUrl}/features#faq`,
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Pourquoi utiliser un logiciel SEO complet ?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "L'utilisation d'un logiciel tout-en-un comme SerpEditor permet de centraliser vos données. Au lieu de payer plusieurs outils pour les mots-clés, l'audit et le suivi, vous avez un dashboard unique qui croise les métriques pour une meilleure prise de décision."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Comment fonctionne le module de visibilité IA ?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Notre solution scanne les sources citées par les agents IA (Perplexity, ChatGPT Search). Nous mesurons la fréquence d'apparition de votre marque dans les recommandations générées artificiellement, ce qui est crucial pour le SEO en 2026."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Quelle est la différence entre SerpEditor et les autres outils SEO ?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "SerpEditor combine tous les modules essentiels (mots-clés, backlinks, audit, suivi de positions, visibilité IA) dans une seule interface, à un prix accessible (39€/mois). Contrairement aux suites premium qui coûtent 100€+ par mois, nous offrons une alternative complète et abordable pour les professionnels du SEO."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Puis-je essayer le logiciel avant de m'abonner ?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Oui, nous offrons un essai gratuit qui vous permet de tester toutes les fonctionnalités du logiciel sans engagement. Vous pouvez explorer nos modules de recherche de mots-clés, d'analyse de backlinks, d'audit SEO et bien plus encore."
+          }
+        }
+      ]
+    }
+  ]
 }
 
 export default function FeaturesPage() {
   return (
     <>
+      {/* JSON-LD pour le SEO structuré */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+
       <NavbarWithLinksActionsAndCenteredLogo
         id="navbar"
         links={

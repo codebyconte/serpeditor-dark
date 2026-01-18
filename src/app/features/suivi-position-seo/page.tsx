@@ -43,6 +43,8 @@ import type { Metadata } from 'next'
 import Image from 'next/image'
 import { FacebookIcon } from '@/components/icons/social/facebook-icon'
 
+const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.serpeditor.fr'
+
 export const metadata: Metadata = {
   title: 'Suivi Position SEO : Outil de Tracking Précis & Analyse SERP',
   description:
@@ -54,11 +56,150 @@ export const metadata: Metadata = {
     'analyse serp historique',
     'suivi de position google',
   ],
+  alternates: {
+    canonical: `${baseUrl}/features/suivi-position-seo`,
+  },
+  openGraph: {
+    title: 'Suivi Position SEO | Rank Tracker Quotidien & Analyse SERP',
+    description: 'Suivez vos positions Google en temps réel. Historique SERP, alertes de chutes et analyse des pages positionnées.',
+    url: `${baseUrl}/features/suivi-position-seo`,
+    siteName: 'SerpEditor',
+    type: 'website',
+    locale: 'fr_FR',
+    images: [
+      {
+        url: `${baseUrl}/suivie-position.webp`,
+        width: 1800,
+        height: 1250,
+        alt: 'Outil de suivi de position SEO - Interface SerpEditor',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Suivi Position SEO | Rank Tracker Quotidien & Analyse SERP',
+    description: 'Tracking quotidien de vos positions Google Desktop & Mobile.',
+    images: [`${baseUrl}/suivie-position.webp`],
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+}
+
+/**
+ * JSON-LD pour la page Suivi Position SEO
+ * Inclut: WebPage, SoftwareApplication, FAQPage, BreadcrumbList
+ */
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebPage",
+      "@id": `${baseUrl}/features/suivi-position-seo#webpage`,
+      "url": `${baseUrl}/features/suivi-position-seo`,
+      "name": "Suivi Position SEO : Outil de Tracking Précis & Analyse SERP",
+      "isPartOf": {
+        "@id": `${baseUrl}/#website`
+      },
+      "about": {
+        "@id": `${baseUrl}/#software`
+      },
+      "description": "Outil de suivi de position SEO professionnel avec tracking quotidien, historique SERP et analyse des pages positionnées.",
+      "inLanguage": "fr-FR",
+      "breadcrumb": {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Accueil",
+            "item": baseUrl
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Fonctionnalités",
+            "item": `${baseUrl}/features`
+          },
+          {
+            "@type": "ListItem",
+            "position": 3,
+            "name": "Suivi Position SEO",
+            "item": `${baseUrl}/features/suivi-position-seo`
+          }
+        ]
+      }
+    },
+    {
+      "@type": "SoftwareApplication",
+      "@id": `${baseUrl}/features/suivi-position-seo#software`,
+      "name": "SerpEditor - Suivi Position SEO",
+      "applicationCategory": "BusinessApplication",
+      "applicationSubCategory": "SEO Software",
+      "operatingSystem": "Web",
+      "description": "Outil de rank tracking pour suivre vos positions Google. Mise à jour quotidienne, historique SERP et alertes.",
+      "offers": {
+        "@type": "Offer",
+        "price": "39",
+        "priceCurrency": "EUR",
+        "availability": "https://schema.org/InStock",
+        "priceValidUntil": "2025-12-31"
+      },
+      "featureList": [
+        "Tracking quotidien Desktop & Mobile",
+        "Suivi local & Google Maps",
+        "Comparateur SERP historique",
+        "Analyse des pages positionnées",
+        "Alertes de chutes de positions",
+        "Trafic organique estimé",
+        "Synthèse des positions",
+        "Export des données"
+      ],
+      "screenshot": `${baseUrl}/suivie-position.webp`
+    },
+    {
+      "@type": "FAQPage",
+      "@id": `${baseUrl}/features/suivi-position-seo#faq`,
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Quelle est la fréquence de mise à jour des positions ?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Les positions sont mises à jour quotidiennement pour tous les mots-clés suivis. Le plan Free permet 1 refresh par jour, le plan Pro un refresh quotidien, et le plan Agency permet plusieurs refreshs par jour pour un suivi en temps quasi-réel."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Puis-je suivre mes positions sur mobile et desktop ?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Oui, notre outil de suivi position SEO track simultanément vos positions sur Google Desktop et Mobile. Vous pouvez voir les différences de classement entre les deux appareils dans un tableau unifié."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Combien de mots-clés puis-je suivre ?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Le plan Free permet de suivre 10 mots-clés, le plan Pro jusqu'à 1 000 mots-clés, et le plan Agency jusqu'à 10 000 mots-clés. Tous les plans incluent l'historique complet des positions."
+          }
+        }
+      ]
+    }
+  ]
 }
 
 export default function SuiviPositionSEOPage() {
   return (
     <>
+      {/* JSON-LD pour le SEO structuré */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+
       <NavbarWithLinksActionsAndCenteredLogo
         id="navbar"
         links={

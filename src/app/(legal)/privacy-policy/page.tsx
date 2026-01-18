@@ -17,11 +17,65 @@ import {
   NavbarLogo,
   NavbarWithLinksActionsAndCenteredLogo,
 } from '@/components/sections/navbar-with-links-actions-and-centered-logo'
+import type { Metadata } from 'next'
 import Image from 'next/image'
+
+const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.serpeditor.fr'
+
+export const metadata: Metadata = {
+  title: 'Politique de Confidentialité | SerpEditor - Protection de vos Données',
+  description: 'Découvrez comment SerpEditor collecte, utilise et protège vos données personnelles. Conformité RGPD et respect de votre vie privée.',
+  robots: {
+    index: true,
+    follow: true,
+  },
+  alternates: {
+    canonical: `${baseUrl}/privacy-policy`,
+  },
+}
+
+/**
+ * JSON-LD pour la page Privacy Policy
+ */
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "@id": `${baseUrl}/privacy-policy#webpage`,
+  "url": `${baseUrl}/privacy-policy`,
+  "name": "Politique de Confidentialité",
+  "description": "Politique de confidentialité et protection des données de SerpEditor - Conformité RGPD",
+  "inLanguage": "fr-FR",
+  "isPartOf": {
+    "@id": `${baseUrl}/#website`
+  },
+  "breadcrumb": {
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Accueil",
+        "item": baseUrl
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Politique de Confidentialité",
+        "item": `${baseUrl}/privacy-policy`
+      }
+    ]
+  }
+}
 
 export default function Page() {
   return (
     <>
+      {/* JSON-LD pour le SEO structuré */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+
       <NavbarWithLinksActionsAndCenteredLogo
         id="navbar"
         links={

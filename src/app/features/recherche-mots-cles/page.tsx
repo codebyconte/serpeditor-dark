@@ -45,6 +45,8 @@ import {
 import type { Metadata } from 'next'
 import Image from 'next/image'
 
+const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.serpeditor.fr'
+
 export const metadata: Metadata = {
   title: 'Outil de Recherche de Mots-Clés SEO | 213M+ Keywords | Essai Gratuit 7 Jours',
   description:
@@ -57,11 +59,181 @@ export const metadata: Metadata = {
     'mots cles longue traine',
     'analyse sémantique',
   ],
+  alternates: {
+    canonical: `${baseUrl}/features/recherche-mots-cles`,
+  },
+  openGraph: {
+    title: 'Outil de Recherche de Mots-Clés SEO | 213M+ Keywords',
+    description: 'La plus grande base de données française pour trouver des mots-clés rentables. Analyse de difficulté, volume et intention de recherche.',
+    url: `${baseUrl}/features/recherche-mots-cles`,
+    siteName: 'SerpEditor',
+    type: 'website',
+    locale: 'fr_FR',
+    images: [
+      {
+        url: `${baseUrl}/recherche-mot-cle.webp`,
+        width: 1800,
+        height: 1250,
+        alt: 'Outil de recherche de mots-clés SEO - Interface SerpEditor',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Outil de Recherche de Mots-Clés SEO | 213M+ Keywords',
+    description: 'Trouvez les meilleurs mots-clés pour votre SEO avec notre base de 213M+ keywords français.',
+    images: [`${baseUrl}/recherche-mot-cle.webp`],
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+}
+
+/**
+ * JSON-LD pour la page Recherche de Mots-Clés
+ * Inclut: WebPage, SoftwareApplication, FAQPage, HowTo, BreadcrumbList
+ */
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebPage",
+      "@id": `${baseUrl}/features/recherche-mots-cles#webpage`,
+      "url": `${baseUrl}/features/recherche-mots-cles`,
+      "name": "Outil de Recherche de Mots-Clés SEO | 213M+ Keywords",
+      "isPartOf": {
+        "@id": `${baseUrl}/#website`
+      },
+      "about": {
+        "@id": `${baseUrl}/#software`
+      },
+      "description": "Outil de recherche de mots-clés professionnel avec 213M+ keywords français. Analyse de difficulté, volume et intention de recherche.",
+      "inLanguage": "fr-FR",
+      "breadcrumb": {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Accueil",
+            "item": baseUrl
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Fonctionnalités",
+            "item": `${baseUrl}/features`
+          },
+          {
+            "@type": "ListItem",
+            "position": 3,
+            "name": "Recherche de Mots-Clés",
+            "item": `${baseUrl}/features/recherche-mots-cles`
+          }
+        ]
+      }
+    },
+    {
+      "@type": "SoftwareApplication",
+      "@id": `${baseUrl}/features/recherche-mots-cles#software`,
+      "name": "SerpEditor - Recherche de Mots-Clés",
+      "applicationCategory": "BusinessApplication",
+      "applicationSubCategory": "SEO Software",
+      "operatingSystem": "Web",
+      "description": "Outil de recherche de mots-clés avec accès à 213M+ keywords français, analyse de difficulté SEO et intention de recherche.",
+      "offers": {
+        "@type": "Offer",
+        "price": "39",
+        "priceCurrency": "EUR",
+        "availability": "https://schema.org/InStock",
+        "priceValidUntil": "2025-12-31"
+      },
+      "featureList": [
+        "213M+ mots-clés français",
+        "Analyse de difficulté SEO (KD)",
+        "Volume de recherche exact",
+        "Intention de recherche (Search Intent)",
+        "Générateur de mots-clés longue traîne",
+        "Questions des internautes",
+        "Analyse concurrentielle",
+        "Métriques SERP détaillées"
+      ],
+      "screenshot": `${baseUrl}/recherche-mot-cle.webp`
+    },
+    {
+      "@type": "HowTo",
+      "name": "Comment trouver les bons mots-clés SEO",
+      "description": "Guide pour utiliser notre outil de recherche de mots-clés et trouver les mots-clés les plus rentables",
+      "step": [
+        {
+          "@type": "HowToStep",
+          "position": 1,
+          "name": "Utilisez notre générateur",
+          "text": "Listez toutes les variations autour de votre thématique avec notre générateur de mots-clés."
+        },
+        {
+          "@type": "HowToStep",
+          "position": 2,
+          "name": "Filtrez par difficulté",
+          "text": "Si votre site est récent, ciblez des mots-clés Low Difficulty (0-30) pour maximiser vos chances de ranker."
+        },
+        {
+          "@type": "HowToStep",
+          "position": 3,
+          "name": "Vérifiez l'intention",
+          "text": "Assurez-vous que votre page répond exactement à ce que l'internaute cherche (information ou achat)."
+        },
+        {
+          "@type": "HowToStep",
+          "position": 4,
+          "name": "Misez sur la longue traîne",
+          "text": "Ces mots-clés de 3+ mots convertissent 3x plus que les termes génériques et ont moins de concurrence."
+        }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "@id": `${baseUrl}/features/recherche-mots-cles#faq`,
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Puis-je utiliser le générateur de mots-clés gratuitement ?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Pour garantir la fraîcheur de nos données et la puissance de nos serveurs, l'accès complet nécessite un compte. Vous pouvez toutefois bénéficier de 7 jours d'essai gratuit pour tester toutes les fonctionnalités (recherche, audit, backlinks) sans sortir votre carte bancaire."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "C'est quoi un mot-clé de longue traîne ?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Il s'agit de requêtes de plus de 3 mots, très spécifiques (ex: 'recherche de mots cles pour referencement immobilier'). Ils ont moins de volume mais une concurrence plus faible et un taux de conversion bien plus élevé."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Comment est calculée la difficulté des mots-clés ?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Nous analysons la force des 10 premiers résultats Google : autorité du domaine, nombre de backlinks et qualité du contenu. Cela vous donne un score de 0 à 100 pour évaluer vos chances de ranker."
+          }
+        }
+      ]
+    }
+  ]
 }
 
 export default function RechercheMotsClesPage() {
   return (
     <>
+      {/* JSON-LD pour le SEO structuré */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+
       <NavbarWithLinksActionsAndCenteredLogo
         id="navbar"
         links={

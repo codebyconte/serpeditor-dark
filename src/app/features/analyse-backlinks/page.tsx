@@ -45,6 +45,8 @@ import {
 import type { Metadata } from 'next'
 import Image from 'next/image'
 
+const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.serpeditor.fr'
+
 export const metadata: Metadata = {
   title: "Analyse de Backlinks Gratuit — Vérifiez le Netlinking de n'importe quel site",
   description:
@@ -58,11 +60,158 @@ export const metadata: Metadata = {
     'nouveaux backlinks',
     'netlinking',
   ],
+  alternates: {
+    canonical: `${baseUrl}/features/analyse-backlinks`,
+  },
+  openGraph: {
+    title: 'Analyse de Backlinks | 2,8T+ Liens | Netlinking Pro',
+    description: 'Analysez votre profil de backlinks avec notre base de 2,8 trillions de liens. Domaines référents, ancres et liens toxiques.',
+    url: `${baseUrl}/features/analyse-backlinks`,
+    siteName: 'SerpEditor',
+    type: 'website',
+    locale: 'fr_FR',
+    images: [
+      {
+        url: `${baseUrl}/backlinks.webp`,
+        width: 1800,
+        height: 1250,
+        alt: "Outil d'analyse de backlinks et netlinking - Interface SerpEditor",
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Analyse de Backlinks | 2,8T+ Liens | Netlinking Pro',
+    description: 'Outil complet d\'analyse de backlinks avec 2,8 trillions de liens indexés.',
+    images: [`${baseUrl}/backlinks.webp`],
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+}
+
+/**
+ * JSON-LD pour la page Analyse de Backlinks
+ * Inclut: WebPage, SoftwareApplication, FAQPage, BreadcrumbList
+ */
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebPage",
+      "@id": `${baseUrl}/features/analyse-backlinks#webpage`,
+      "url": `${baseUrl}/features/analyse-backlinks`,
+      "name": "Analyse de Backlinks Gratuit — Vérifiez le Netlinking de n'importe quel site",
+      "isPartOf": {
+        "@id": `${baseUrl}/#website`
+      },
+      "about": {
+        "@id": `${baseUrl}/#software`
+      },
+      "description": "Outil d'analyse de backlinks professionnel avec 2,8 trillions de liens. Domaines référents, ancres, nouveaux et perdus.",
+      "inLanguage": "fr-FR",
+      "breadcrumb": {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Accueil",
+            "item": baseUrl
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Fonctionnalités",
+            "item": `${baseUrl}/features`
+          },
+          {
+            "@type": "ListItem",
+            "position": 3,
+            "name": "Analyse de Backlinks",
+            "item": `${baseUrl}/features/analyse-backlinks`
+          }
+        ]
+      }
+    },
+    {
+      "@type": "SoftwareApplication",
+      "@id": `${baseUrl}/features/analyse-backlinks#software`,
+      "name": "SerpEditor - Analyse de Backlinks",
+      "applicationCategory": "BusinessApplication",
+      "applicationSubCategory": "SEO Software",
+      "operatingSystem": "Web",
+      "description": "Outil d'analyse de backlinks avec accès à 2,8 trillions de liens. Analysez domaines référents, ancres et liens toxiques.",
+      "offers": {
+        "@type": "Offer",
+        "price": "39",
+        "priceCurrency": "EUR",
+        "availability": "https://schema.org/InStock",
+        "priceValidUntil": "2025-12-31"
+      },
+      "featureList": [
+        "2,8 trillions de backlinks analysés",
+        "Analyse des domaines référents",
+        "Suivi des ancres de liens",
+        "Détection nouveaux/perdus liens",
+        "Domain Rating (DR)",
+        "Analyse de liens toxiques",
+        "Backlink Gap Analysis",
+        "Mise à jour toutes les 15 min"
+      ],
+      "screenshot": `${baseUrl}/backlinks.webp`
+    },
+    {
+      "@type": "FAQPage",
+      "@id": `${baseUrl}/features/analyse-backlinks#faq`,
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Puis-je utiliser le backlink checker gratuitement ?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Nous proposons un essai gratuit de 7 jours sans carte bancaire. Cela vous permet d'accéder à l'intégralité de notre base de données (2,8 trillions de liens) pour effectuer une analyse de backlinks complète de votre site et de vos concurrents."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "C'est quoi un domaine référent ?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Un domaine référent est un site web unique qui pointe vers votre site. Si le site A fait 10 liens vers vous, vous avez 10 backlinks mais seulement 1 domaine référent. Pour Google, le nombre de domaines référents est souvent plus important que le nombre total de liens."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Comment obtenir plus de backlinks ?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Les meilleures stratégies incluent : Le Link Baiting (créer du contenu exceptionnel), le Guest Blogging (articles invités), la Récupération de liens cassés, et le Netlinking direct (contacter des influenceurs de votre thématique)."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Combien de temps faut-il pour qu'un nouveau backlink impacte mon SEO ?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "En général, Google prend entre 2 semaines et 2 mois pour crawler un nouveau lien et ajuster vos positions. Notre outil détecte les nouveaux liens en seulement 15 minutes, vous donnant une longueur d'avance sur votre stratégie."
+          }
+        }
+      ]
+    }
+  ]
 }
 
 export default function AnalyseBacklinksPage() {
   return (
     <>
+      {/* JSON-LD pour le SEO structuré */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+
       <NavbarWithLinksActionsAndCenteredLogo
         id="navbar"
         links={

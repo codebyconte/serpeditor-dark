@@ -2,10 +2,10 @@
 import { ButtonLink, PlainButtonLink, SoftButtonLink } from '@/components/elements/button'
 import { Main } from '@/components/elements/main'
 import { ChevronIcon } from '@/components/icons/chevron-icon'
-import { XIcon } from '@/components/icons/social/x-icon'
-import { YouTubeIcon } from '@/components/icons/social/youtube-icon'
 import { FacebookIcon } from '@/components/icons/social/facebook-icon'
 import { TiktokIcon } from '@/components/icons/social/tiktok-icon'
+import { XIcon } from '@/components/icons/social/x-icon'
+import { YouTubeIcon } from '@/components/icons/social/youtube-icon'
 import { CallToActionSimpleCentered } from '@/components/sections/call-to-action-simple-centered'
 import { FAQsAccordion, Faq } from '@/components/sections/faqs-accordion'
 import {
@@ -22,13 +22,285 @@ import {
 } from '@/components/sections/navbar-with-links-actions-and-centered-logo'
 import { PlanComparisonTable } from '@/components/sections/plan-comparison-table'
 import { Plan, PricingHeroMultiTier } from '@/components/sections/pricing-hero-multi-tier'
+import type { Metadata } from 'next'
 import Image from 'next/image'
+
+export const metadata: Metadata = {
+    title: "Tarifs SerpEditor – Outil SEO avec plan gratuit & offres Pro dès 39€/mois",
+  description:
+    "Découvrez SerpEditor : plan gratuit + offres Pro & Agency. Recherche de mots-clés, analyse SERP et audit SEO IA. Sans engagement, annulation en 1 clic.",
+
+  keywords: [
+    "tarif outil seo",
+    "serpeditor prix",
+    "outil seo gratuit",
+    "abonnement seo",
+    "logiciel seo français",
+    "recherche mots clés seo",
+    "analyse serp",
+    "audit seo ia",
+    "alternative semrush",
+    "alternative ahrefs"
+  ],
+
+  alternates: {
+    canonical: "https://www.serpeditor.fr/pricing",
+  },
+
+  openGraph: {
+    title: "Tarifs SerpEditor – Plan gratuit + offres Pro dès 39€/mois",
+    description:
+      "Accédez à 213M+ de mots-clés, analyse SERP et audit SEO IA. Essayez gratuitement ou passez en Pro. Sans engagement.",
+    url: "https://www.serpeditor.fr/pricing",
+    siteName: "SerpEditor",
+    type: "website",
+    locale: "fr_FR",
+    images: [
+      {
+        url: "https://www.serpeditor.fr/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Tarifs, plan gratuit et abonnements SerpEditor",
+      },
+    ],
+  },
+
+  twitter: {
+    card: "summary_large_image",
+    title: "Tarifs SerpEditor – Plan gratuit + offres Pro dès 39€/mois",
+    description:
+      "Un outil SEO tout-en-un avec plan gratuit. Recherche de mots-clés, analyse SERP, audit SEO IA. Sans engagement.",
+    images: ["https://www.serpeditor.fr/og-image.jpg"],
+  },
+
+  robots: {
+    index: true,
+    follow: true,
+  },
+};
+
+
+/**
+ * JSON-LD Schema pour la page Pricing
+ * Inclut: WebPage, SoftwareApplication, OfferCatalog, FAQPage
+ * @see https://schema.org/FAQPage
+ * @see https://schema.org/SoftwareApplication
+ */
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebPage",
+      "@id": "https://www.serpeditor.fr/pricing#webpage",
+      "url": "https://www.serpeditor.fr/pricing",
+      "name": "Tarifs SerpEditor – Plan gratuit + offres Pro dès 39€/mois",
+      "isPartOf": {
+        "@id": "https://www.serpeditor.fr/#website"
+      },
+      "about": {
+        "@id": "https://www.serpeditor.fr/#software"
+      },
+      "mainEntity": {
+        "@id": "https://www.serpeditor.fr/#offercatalog"
+      },
+      "description": "Comparez les tarifs SerpEditor : plan gratuit, recherche de mots-clés, analyse SERP et audit SEO IA. Sans engagement.",
+      "inLanguage": "fr-FR",
+      "breadcrumb": {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Accueil",
+            "item": "https://www.serpeditor.fr"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Tarifs",
+            "item": "https://www.serpeditor.fr/pricing"
+          }
+        ]
+      }
+    },
+    {
+      "@type": "SoftwareApplication",
+      "@id": "https://www.serpeditor.fr/#software",
+      "name": "SerpEditor",
+      "operatingSystem": "Web",
+      "applicationCategory": "BusinessApplication",
+      "applicationSubCategory": "SEO Software",
+      "description": "Outil SEO tout-en-un pour la recherche de mots-clés, l'analyse SERP et l'audit SEO assisté par IA.",
+      "publisher": {
+        "@id": "https://www.serpeditor.fr/#organization"
+      },
+      "offers": {
+        "@type": "AggregateOffer",
+        "lowPrice": "0",
+        "highPrice": "99",
+        "priceCurrency": "EUR",
+        "offerCount": 3,
+        "offers": [
+          {
+            "@type": "Offer",
+            "name": "Plan Free",
+            "price": "0",
+            "priceCurrency": "EUR"
+          },
+          {
+            "@type": "Offer",
+            "name": "Plan Pro",
+            "price": "39",
+            "priceCurrency": "EUR"
+          },
+          {
+            "@type": "Offer",
+            "name": "Plan Agency",
+            "price": "99",
+            "priceCurrency": "EUR"
+          }
+        ]
+      },
+      "featureList": [
+        "Recherche de mots-clés (213M+ mots-clés FR)",
+        "Suivi de positions Google",
+        "Analyse de backlinks",
+        "Audit SEO technique",
+        "Analyse de la concurrence"
+      ]
+    },
+    {
+      "@type": "OfferCatalog",
+      "@id": "https://www.serpeditor.fr/#offercatalog",
+      "name": "Plans et abonnements SerpEditor",
+      "numberOfItems": 3,
+      "itemListElement": [
+        {
+          "@type": "Offer",
+          "name": "Plan Free",
+          "description": "Pour découvrir l'outil et tester les bases",
+          "url": "https://www.serpeditor.fr/pricing",
+          "price": "0",
+          "priceCurrency": "EUR",
+          "availability": "https://schema.org/InStock",
+          "priceValidUntil": "2025-12-31",
+          "priceSpecification": {
+            "@type": "UnitPriceSpecification",
+            "price": "0",
+            "priceCurrency": "EUR",
+            "billingDuration": {
+              "@type": "QuantitativeValue",
+              "value": 1,
+              "unitCode": "MON"
+            }
+          },
+          "eligibleQuantity": {
+            "@type": "QuantitativeValue",
+            "value": 1,
+            "unitText": "projet"
+          }
+        },
+        {
+          "@type": "Offer",
+          "name": "Plan Pro",
+          "description": "Pour freelances et consultants SEO",
+          "url": "https://www.serpeditor.fr/pricing",
+          "price": "39",
+          "priceCurrency": "EUR",
+          "availability": "https://schema.org/InStock",
+          "priceValidUntil": "2025-12-31",
+          "priceSpecification": {
+            "@type": "UnitPriceSpecification",
+            "price": "39",
+            "priceCurrency": "EUR",
+            "billingDuration": {
+              "@type": "QuantitativeValue",
+              "value": 1,
+              "unitCode": "MON"
+            }
+          },
+          "eligibleQuantity": {
+            "@type": "QuantitativeValue",
+            "value": 5,
+            "unitText": "projets"
+          }
+        },
+        {
+          "@type": "Offer",
+          "name": "Plan Agency",
+          "description": "Pour agences et équipes SEO avancées",
+          "url": "https://www.serpeditor.fr/pricing",
+          "price": "99",
+          "priceCurrency": "EUR",
+          "availability": "https://schema.org/InStock",
+          "priceValidUntil": "2025-12-31",
+          "priceSpecification": {
+            "@type": "UnitPriceSpecification",
+            "price": "99",
+            "priceCurrency": "EUR",
+            "billingDuration": {
+              "@type": "QuantitativeValue",
+              "value": 1,
+              "unitCode": "MON"
+            }
+          },
+          "eligibleQuantity": {
+            "@type": "QuantitativeValue",
+            "value": 50,
+            "unitText": "projets"
+          }
+        }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "@id": "https://www.serpeditor.fr/pricing#faq",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Puis-je tester l'outil gratuitement sans carte bancaire ?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Oui ! Créez simplement un compte avec votre email et accédez immédiatement à toutes les fonctionnalités de notre forfait Free, limité en volumes mais totalement gratuit, sans carte bancaire."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Puis-je utiliser l'outil pour plusieurs clients ?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Oui, avec plusieurs projets ! Le plan Pro permet jusqu'à 5 projets, et Agency jusqu'à 50."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Les données sont-elles précises pour le marché français ?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Absolument. SerpEditor s'appuie sur une technologie de scan propriétaire qui agrège des milliards de points de données issus directement des résultats de recherche Google France. Notre base de données de 213M+ de mots-clés est mise à jour quotidiennement pour garantir une précision maximale."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "SerpEditor remplace-t-il d'autres outils SEO ?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Oui, c'est un tout-en-un : audits, mots-clés, backlinks et suivi, pour simplifier votre workflow SEO."
+          }
+        }
+      ]
+    }
+  ]
+};
+
+
+
 
 function plans(option: string) {
   return (
     <>
       <Plan
-        name="Free"
+           name="Free"
         price={option === 'Mensuel' ? '0€' : '0€'}
         period={option === 'Mensuel' ? '/mois' : '/année'}
         subheadline={<p>Pour découvrir l&apos;outil et tester les bases</p>}
@@ -96,6 +368,12 @@ function plans(option: string) {
 export default function Page() {
   return (
     <>
+      {/* JSON-LD pour le SEO structuré */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+
       <NavbarWithLinksActionsAndCenteredLogo
         id="navbar"
         links={

@@ -43,6 +43,8 @@ import Image from 'next/image'
 import { FacebookIcon } from '@/components/icons/social/facebook-icon'
 import { TiktokIcon } from '@/components/icons/social/tiktok-icon'
 
+const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.serpeditor.fr'
+
 export const metadata: Metadata = {
   title: 'Analyse Mots-Clés Concurrents : Révélez leur Stratégie SEO',
   description:
@@ -55,12 +57,151 @@ export const metadata: Metadata = {
     "analyseur d'écart de mots-clés",
     'keyword gap',
   ],
+  alternates: {
+    canonical: `${baseUrl}/features/analyse-mots-cles-concurrents`,
+  },
+  openGraph: {
+    title: 'Analyse Mots-Clés Concurrents | Keyword Gap & Espionnage SEO',
+    description: 'Découvrez les mots-clés de vos concurrents et identifiez les opportunités manquées avec notre Keyword Gap.',
+    url: `${baseUrl}/features/analyse-mots-cles-concurrents`,
+    siteName: 'SerpEditor',
+    type: 'website',
+    locale: 'fr_FR',
+    images: [
+      {
+        url: `${baseUrl}/analyse-concurence.webp`,
+        width: 1800,
+        height: 1250,
+        alt: 'Outil d\'analyse de mots-clés concurrents - Interface SerpEditor',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Analyse Mots-Clés Concurrents | Keyword Gap & Espionnage SEO',
+    description: 'Révélez la stratégie SEO de vos concurrents et volez leur trafic.',
+    images: [`${baseUrl}/analyse-concurence.webp`],
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+}
+
+/**
+ * JSON-LD pour la page Analyse Mots-Clés Concurrents
+ * Inclut: WebPage, SoftwareApplication, FAQPage, BreadcrumbList
+ */
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebPage",
+      "@id": `${baseUrl}/features/analyse-mots-cles-concurrents#webpage`,
+      "url": `${baseUrl}/features/analyse-mots-cles-concurrents`,
+      "name": "Analyse Mots-Clés Concurrents : Révélez leur Stratégie SEO",
+      "isPartOf": {
+        "@id": `${baseUrl}/#website`
+      },
+      "about": {
+        "@id": `${baseUrl}/#software`
+      },
+      "description": "Outil d'analyse de mots-clés concurrents avec Keyword Gap. Identifiez les opportunités SEO et espionnez la stratégie de vos rivaux.",
+      "inLanguage": "fr-FR",
+      "breadcrumb": {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Accueil",
+            "item": baseUrl
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Fonctionnalités",
+            "item": `${baseUrl}/features`
+          },
+          {
+            "@type": "ListItem",
+            "position": 3,
+            "name": "Analyse Mots-Clés Concurrents",
+            "item": `${baseUrl}/features/analyse-mots-cles-concurrents`
+          }
+        ]
+      }
+    },
+    {
+      "@type": "SoftwareApplication",
+      "@id": `${baseUrl}/features/analyse-mots-cles-concurrents#software`,
+      "name": "SerpEditor - Analyse Mots-Clés Concurrents",
+      "applicationCategory": "BusinessApplication",
+      "applicationSubCategory": "SEO Software",
+      "operatingSystem": "Web",
+      "description": "Outil d'analyse concurrentielle SEO avec Keyword Gap. Découvrez les mots-clés de vos rivaux et identifiez les opportunités.",
+      "offers": {
+        "@type": "Offer",
+        "price": "39",
+        "priceCurrency": "EUR",
+        "availability": "https://schema.org/InStock",
+        "priceValidUntil": "2025-12-31"
+      },
+      "featureList": [
+        "Keyword Gap Analysis",
+        "Mots-clés organiques des concurrents",
+        "Identification des concurrents",
+        "Vue d'ensemble des domaines",
+        "Possibilités de mots-clés",
+        "Trafic organique estimé",
+        "Pages les plus performantes",
+        "Analyse comparative multi-concurrents"
+      ],
+      "screenshot": `${baseUrl}/analyse-concurence.webp`
+    },
+    {
+      "@type": "FAQPage",
+      "@id": `${baseUrl}/features/analyse-mots-cles-concurrents#faq`,
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "C'est quoi l'analyse de mots-clés concurrents ?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "L'analyse de mots-clés concurrents consiste à découvrir sur quels mots-clés vos rivaux se positionnent dans Google. Cela permet d'identifier rapidement les opportunités SEO que vous avez manquées et de copier les stratégies qui fonctionnent déjà."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Comment utiliser le Keyword Gap ?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Le Keyword Gap compare votre site avec jusqu'à 4 concurrents simultanément. Il révèle les mots-clés sur lesquels vos concurrents rankent mais pas vous (les gaps), ceux où vous êtes tous présents, et ceux où vous dominez seul."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Combien de concurrents puis-je analyser ?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Le plan Free permet d'analyser 10 domaines par mois de manière basique. Le plan Pro permet 100 analyses complètes, et le plan Agency jusqu'à 1 000 analyses mensuelles avec des données détaillées."
+          }
+        }
+      ]
+    }
+  ]
 }
 
 
 export default function AnalyseMotsClesConcurrentsPage() {
   return (
     <>
+      {/* JSON-LD pour le SEO structuré */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+
       <NavbarWithLinksActionsAndCenteredLogo
         id="navbar"
         links={

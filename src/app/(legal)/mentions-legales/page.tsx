@@ -17,11 +17,65 @@ import {
   NavbarLogo,
   NavbarWithLinksActionsAndCenteredLogo,
 } from '@/components/sections/navbar-with-links-actions-and-centered-logo'
+import type { Metadata } from 'next'
 import Image from 'next/image'
+
+const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.serpeditor.fr'
+
+export const metadata: Metadata = {
+  title: 'Mentions Légales | SerpEditor - Outil SEO Français',
+  description: 'Mentions légales de SerpEditor : informations sur l\'éditeur, hébergeur, paiements et propriété intellectuelle.',
+  robots: {
+    index: true,
+    follow: true,
+  },
+  alternates: {
+    canonical: `${baseUrl}/mentions-legales`,
+  },
+}
+
+/**
+ * JSON-LD pour la page Mentions Légales
+ */
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "@id": `${baseUrl}/mentions-legales#webpage`,
+  "url": `${baseUrl}/mentions-legales`,
+  "name": "Mentions Légales",
+  "description": "Informations légales sur SerpEditor : éditeur, hébergeur et paiements",
+  "inLanguage": "fr-FR",
+  "isPartOf": {
+    "@id": `${baseUrl}/#website`
+  },
+  "breadcrumb": {
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Accueil",
+        "item": baseUrl
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Mentions Légales",
+        "item": `${baseUrl}/mentions-legales`
+      }
+    ]
+  }
+}
 
 export default function Page() {
   return (
     <>
+      {/* JSON-LD pour le SEO structuré */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+
       <NavbarWithLinksActionsAndCenteredLogo
         id="navbar"
         links={

@@ -41,24 +41,161 @@ import { Card, CardContent } from '@/components/ui/card'
 import type { Metadata } from 'next'
 import Image from 'next/image'
 
-// OPTIMISATION 1 : METADATA
-// Le titre doit commencer par le mot clé principal.
-// La description doit inclure les sémantiques clés (Audit, Backlinks, Mots-clés).
+/**
+ * Metadata optimisées pour le SEO
+ * - Title : Mot-clé principal en premier, < 60 caractères
+ * - Description : Inclut les sémantiques clés, < 160 caractères
+ */
 export const metadata: Metadata = {
-  title: 'Outil SEO Tout-en-un Français : Audit, Mots-clés & Backlinks (Essai Gratuit)',
+  title: 'Outil SEO Tout-en-un Français : Audit, Mots-clés & Backlinks',
   description:
-    "L'outil SEO complet pour dominer Google en 2024. Remplacez Semrush pour 39€/mois. +213M mots-clés, Audit technique illimité, Analyse de backlinks et Suivi de positions précis.",
-  keywords: ['outil seo', 'logiciel seo', 'audit seo', 'suivi de position google', 'alternative semrush'],
-  openGraph: {
-    title: 'Outil SEO Tout-en-un Français : SerpEditor',
-    description: "L'alternative française aux géants du SEO. Plus puissant, moins cher.",
-    images: ['/serpeditor-og.jpg'], // Assure-toi d'avoir une image OG
+    "L'outil SEO complet pour dominer Google. Remplacez Semrush pour 39€/mois. +213M mots-clés FR, Audit technique, Analyse backlinks et Suivi de positions.",
+  keywords: [
+    'outil seo',
+    'logiciel seo',
+    'audit seo',
+    'suivi de position google',
+    'alternative semrush',
+    'recherche mots clés',
+    'analyse backlinks',
+    'outil seo français'
+  ],
+  alternates: {
+    canonical: 'https://www.serpeditor.fr',
   },
+  openGraph: {
+    title: "SerpEditor | L'Outil SEO Français Tout-en-un",
+    description: "L'alternative française aux géants du SEO. +213M mots-clés, audit technique, backlinks. Dès 39€/mois.",
+    url: 'https://www.serpeditor.fr',
+    siteName: 'SerpEditor',
+    type: 'website',
+    locale: 'fr_FR',
+    images: [
+      {
+        url: 'https://www.serpeditor.fr/og-image.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'SerpEditor - Outil SEO Français Tout-en-un',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: "SerpEditor | L'Outil SEO Français Tout-en-un",
+    description: "L'alternative française à Semrush. +213M mots-clés, audit technique et backlinks.",
+    images: ['https://www.serpeditor.fr/og-image.jpg'],
+  },
+}
+
+/**
+ * JSON-LD pour la page d'accueil
+ * Inclut : SoftwareApplication, FAQPage, BreadcrumbList
+ */
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebPage",
+      "@id": "https://www.serpeditor.fr/#webpage",
+      "url": "https://www.serpeditor.fr",
+      "name": "SerpEditor | L'Outil SEO Français Tout-en-un",
+      "isPartOf": {
+        "@id": "https://www.serpeditor.fr/#website"
+      },
+      "about": {
+        "@id": "https://www.serpeditor.fr/#software"
+      },
+      "description": "Outil SEO complet pour dominer Google : recherche de mots-clés, audit technique, analyse backlinks et suivi de positions.",
+      "inLanguage": "fr-FR",
+      "primaryImageOfPage": {
+        "@type": "ImageObject",
+        "url": "https://www.serpeditor.fr/og-image.jpg"
+      }
+    },
+    {
+      "@type": "SoftwareApplication",
+      "@id": "https://www.serpeditor.fr/#software",
+      "name": "SerpEditor",
+      "operatingSystem": "Web",
+      "applicationCategory": "BusinessApplication",
+      "applicationSubCategory": "SEO Software",
+      "description": "Outil SEO tout-en-un pour la recherche de mots-clés, l'analyse de backlinks, l'audit technique et le suivi de positions Google.",
+      "publisher": {
+        "@id": "https://www.serpeditor.fr/#organization"
+      },
+      "offers": {
+        "@type": "AggregateOffer",
+        "lowPrice": "0",
+        "highPrice": "99",
+        "priceCurrency": "EUR",
+        "offerCount": 3
+      },
+      "featureList": [
+        "213M+ mots-clés français",
+        "Suivi de positions quotidien",
+        "2,8 trillions de backlinks analysés",
+        "Audit technique SEO",
+        "Analyse de la concurrence"
+      ],
+      "screenshot": "https://www.serpeditor.fr/serpeditor.webp"
+    },
+    {
+      "@type": "FAQPage",
+      "@id": "https://www.serpeditor.fr/#faq",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Qu'est-ce qu'un outil SEO tout-en-un ?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Un outil SEO tout-en-un comme SerpEditor permet de centraliser toutes les tâches nécessaires au référencement naturel : audit technique du site, recherche de mots-clés, analyse des backlinks concurrents et suivi du positionnement sur Google. Cela évite de payer plusieurs abonnements différents."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Pourquoi SerpEditor est-il moins cher que Semrush ?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Semrush est une suite marketing globale (réseaux sociaux, publicité, content marketing, etc.). SerpEditor se concentre uniquement sur le SEO pur (les fonctionnalités que vous utilisez vraiment). En supprimant le superflu, nous réduisons drastiquement les coûts."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Est-ce un bon outil SEO pour débutant ?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Oui, c'est l'outil idéal pour débuter. Contrairement aux usines à gaz du marché, notre interface guide l'utilisateur : scores de difficulté clairs, suggestions automatiques et rapports d'audit priorisés par importance."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Les données sont-elles fiables pour le marché français ?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Oui. SerpEditor s'appuie sur une base de données SEO optimisée pour le marché français, avec plus de 200 millions de mots-clés et des millions de pages analysées en continu."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Puis-je tester l'outil gratuitement ?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Oui, nous offrons un essai gratuit de 7 jours sans obligation de carte bancaire. Vous pouvez lancer votre premier audit et vos premières recherches de mots-clés immédiatement."
+          }
+        }
+      ]
+    }
+  ]
 }
 
 export default function Page() {
   return (
     <>
+      {/* JSON-LD pour le SEO structuré */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <NavbarWithLinksActionsAndCenteredLogo
         id="navbar"
         links={

@@ -1,12 +1,10 @@
 import { ButtonLink, PlainButtonLink } from '@/components/elements/button'
-import { Link } from '@/components/elements/link'
 import { Main } from '@/components/elements/main'
 import { ArrowNarrowRightIcon } from '@/components/icons/arrow-narrow-right-icon'
-import { GitHubIcon } from '@/components/icons/social/github-icon'
-import { XIcon } from '@/components/icons/social/x-icon'
-import { YouTubeIcon } from '@/components/icons/social/youtube-icon'
 import { FacebookIcon } from '@/components/icons/social/facebook-icon'
 import { TiktokIcon } from '@/components/icons/social/tiktok-icon'
+import { XIcon } from '@/components/icons/social/x-icon'
+import { YouTubeIcon } from '@/components/icons/social/youtube-icon'
 import {
   FooterCategory,
   FooterLink,
@@ -20,34 +18,63 @@ import {
   NavbarLogo,
   NavbarWithLinksActionsAndCenteredLogo,
 } from '@/components/sections/navbar-with-links-actions-and-centered-logo'
+import type { Metadata } from 'next'
+import Image from 'next/image'
+
+const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.serpeditor.fr'
+
+export const metadata: Metadata = {
+  title: 'Page Non Trouvée (404) | SerpEditor',
+  description: 'La page que vous recherchez n\'existe pas ou a été déplacée. Retournez à l\'accueil pour découvrir nos outils SEO.',
+  robots: {
+    index: false, // On ne veut pas indexer la page 404
+    follow: true,
+  },
+}
+
+/**
+ * JSON-LD pour la page 404
+ */
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "@id": `${baseUrl}/404#webpage`,
+  "url": `${baseUrl}/404`,
+  "name": "Page Non Trouvée",
+  "description": "Erreur 404 - La page demandée n'existe pas",
+  "inLanguage": "fr-FR",
+  "isPartOf": {
+    "@id": `${baseUrl}/#website`
+  }
+}
 
 export default function Page() {
   return (
     <>
+      {/* JSON-LD pour le SEO structuré */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+
       <NavbarWithLinksActionsAndCenteredLogo
         id="navbar"
         links={
           <>
-            <NavbarLink href="#">Pricing</NavbarLink>
-            <NavbarLink href="#">About</NavbarLink>
-            <NavbarLink href="#">Docs</NavbarLink>
-            <NavbarLink href="#" className="sm:hidden">
-              Log in
+            <NavbarLink href="/features">Fonctionnalités</NavbarLink>
+            <NavbarLink href="/pricing">Tarifs</NavbarLink>
+            <NavbarLink href="/blog">Blog</NavbarLink>
+            <NavbarLink href="/login" className="sm:hidden">
+              Connexion
             </NavbarLink>
           </>
         }
         logo={
-          <NavbarLogo href="#">
-            <img
-              src="https://assets.tailwindplus.com/logos/oatmeal-instrument.svg?color=mist-950"
-              alt="Oatmeal"
-              className="dark:hidden"
-              width={85}
-              height={28}
-            />
-            <img
-              src="https://assets.tailwindplus.com/logos/oatmeal-instrument.svg?color=white"
-              alt="Oatmeal"
+          <NavbarLogo href="/">
+            <Image src="/serpeditor.svg" alt="SerpEditor Outil SEO" className="dark:hidden" width={85} height={28} />
+            <Image
+              src="/serpeditor-white.svg"
+              alt="SerpEditor Outil SEO"
               className="not-dark:hidden"
               width={85}
               height={28}
@@ -56,22 +83,33 @@ export default function Page() {
         }
         actions={
           <>
-            <PlainButtonLink href="#" className="max-sm:hidden">
-              Log in
+            <PlainButtonLink href="/login" className="max-sm:hidden">
+              Connexion
             </PlainButtonLink>
-            <ButtonLink href="#">Get started</ButtonLink>
+            <ButtonLink href="/register">Essai Gratuit</ButtonLink>
           </>
         }
       />
 
       <Main>
         <HeroSimpleCentered
-          headline="Page not found"
-          subheadline={<p>Sorry, but the page you were looking for could not be found.</p>}
+          headline="Page non trouvée"
+          subheadline={
+            <p>
+              Désolé, la page que vous recherchez n'existe pas ou a été déplacée.
+              <br />
+              Retournez à l'accueil pour découvrir nos outils SEO professionnels.
+            </p>
+          }
           cta={
-            <Link href="#">
-              Go back home <ArrowNarrowRightIcon />
-            </Link>
+            <div className="flex flex-wrap items-center gap-4">
+              <ButtonLink href="/" size="lg">
+                Retour à l'accueil
+              </ButtonLink>
+              <PlainButtonLink href="/features" size="lg">
+                Voir les fonctionnalités <ArrowNarrowRightIcon />
+              </PlainButtonLink>
+            </div>
           }
         />
       </Main>
@@ -80,11 +118,11 @@ export default function Page() {
         id="footer"
         cta={
           <NewsletterForm
-            headline="Stay in the loop"
+            headline="Restez en avance en SEO"
             subheadline={
               <p>
-                Get customer support tips, product updates and customer stories that you can archive as soon as they
-                arrive.
+                Recevez chaque semaine des conseils pratiques, des astuces SEO, et des mises à jour de notre outil pour
+                booster votre visibilité en ligne directement dans votre boîte mail.
               </p>
             }
             action="#"
@@ -92,34 +130,28 @@ export default function Page() {
         }
         links={
           <>
-            <FooterCategory title="Product">
-              <FooterLink href="#">Features</FooterLink>
-              <FooterLink href="#">Pricing</FooterLink>
-              <FooterLink href="#">Integrations</FooterLink>
-            </FooterCategory>
-            <FooterCategory title="Company">
-              <FooterLink href="#">About</FooterLink>
-              <FooterLink href="#">Careers</FooterLink>
-              <FooterLink href="#">Blog</FooterLink>
-              <FooterLink href="#">Press Kit</FooterLink>
+            <FooterCategory title="Fonctionnalités">
+              <FooterLink href="/features/recherche-mots-cles">Recherche de mots-clés</FooterLink>
+              <FooterLink href="/features/analyse-mots-cles-concurrents">Analyse Mots-Clés Concurrents</FooterLink>
+              <FooterLink href="/features/analyse-seo">Analyse SEO</FooterLink>
+              <FooterLink href="/features/suivi-position-seo">Suivi de position SEO</FooterLink>
+              <FooterLink href="/features/analyse-backlinks">Analyse de backlinks</FooterLink>
             </FooterCategory>
             <FooterCategory title="Resources">
-              <FooterLink href="#">Help Center</FooterLink>
-              <FooterLink href="#">API Docs</FooterLink>
-              <FooterLink href="#">Status</FooterLink>
-              <FooterLink href="#">Contact</FooterLink>
+              <FooterLink href="/blog">Blog</FooterLink>
+              <FooterLink href="/outils-seo-gratuits">Outils SEO Gratuits</FooterLink>
             </FooterCategory>
             <FooterCategory title="Legal">
               <FooterLink href="/privacy-policy">Politique de confidentialité</FooterLink>
-              <FooterLink href="#">Terms of Service</FooterLink>
-              <FooterLink href="#">Security</FooterLink>
+              <FooterLink href="/mentions-legales">Mentions Légales</FooterLink>
+              <FooterLink href="/conditions-generales-vente">Conditions Générales de Vente</FooterLink>
             </FooterCategory>
           </>
         }
-        fineprint="© 2026 SerpEditor"
+        fineprint="© 2025 SerpEditor, Inc."
         socialLinks={
           <>
-               <SocialLink href="https://x.com/serpeditor" name="X">
+            <SocialLink href="https://x.com/serpeditor" name="X">
               <XIcon />
             </SocialLink>
             <SocialLink href="https://www.facebook.com/profile.php?id=61586300626787" name="Facebook">

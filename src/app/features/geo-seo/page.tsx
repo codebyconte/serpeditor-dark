@@ -30,6 +30,8 @@ import { Brain, CheckCircle2, Search } from 'lucide-react'
 import type { Metadata } from 'next'
 import Image from 'next/image'
 
+const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.serpeditor.fr'
+
 export const metadata: Metadata = {
   title: "GEO SEO : Logiciel d'Optimisation pour ChatGPT, Perplexity & Gemini",
   description:
@@ -43,11 +45,150 @@ export const metadata: Metadata = {
     'analyse mentions LLM',
     'optimisation Perplexity',
   ],
+  alternates: {
+    canonical: `${baseUrl}/features/geo-seo`,
+  },
+  openGraph: {
+    title: 'GEO SEO | Optimisez votre Visibilité dans l\'IA (ChatGPT, Perplexity)',
+    description: 'Le futur du SEO est le GEO. Analysez vos citations IA, optimisez pour les LLM et dominez les réponses génératives.',
+    url: `${baseUrl}/features/geo-seo`,
+    siteName: 'SerpEditor',
+    type: 'website',
+    locale: 'fr_FR',
+    images: [
+      {
+        url: `${baseUrl}/geo-seo.webp`,
+        width: 1800,
+        height: 1250,
+        alt: 'Outil GEO SEO - Visibilité IA - Interface SerpEditor',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'GEO SEO | Optimisez votre Visibilité dans l\'IA',
+    description: 'Dominez ChatGPT, Perplexity et Gemini avec le GEO (Generative Engine Optimization).',
+    images: [`${baseUrl}/geo-seo.webp`],
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+}
+
+/**
+ * JSON-LD pour la page GEO SEO
+ * Inclut: WebPage, SoftwareApplication, FAQPage, BreadcrumbList
+ */
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebPage",
+      "@id": `${baseUrl}/features/geo-seo#webpage`,
+      "url": `${baseUrl}/features/geo-seo`,
+      "name": "GEO SEO : Logiciel d'Optimisation pour ChatGPT, Perplexity & Gemini",
+      "isPartOf": {
+        "@id": `${baseUrl}/#website`
+      },
+      "about": {
+        "@id": `${baseUrl}/#software`
+      },
+      "description": "Outil GEO (Generative Engine Optimization) pour optimiser votre visibilité dans les IA comme ChatGPT, Perplexity et Gemini.",
+      "inLanguage": "fr-FR",
+      "breadcrumb": {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Accueil",
+            "item": baseUrl
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Fonctionnalités",
+            "item": `${baseUrl}/features`
+          },
+          {
+            "@type": "ListItem",
+            "position": 3,
+            "name": "GEO SEO",
+            "item": `${baseUrl}/features/geo-seo`
+          }
+        ]
+      }
+    },
+    {
+      "@type": "SoftwareApplication",
+      "@id": `${baseUrl}/features/geo-seo#software`,
+      "name": "SerpEditor - GEO SEO & Visibilité IA",
+      "applicationCategory": "BusinessApplication",
+      "applicationSubCategory": "SEO Software",
+      "operatingSystem": "Web",
+      "description": "Premier outil français de GEO (Generative Engine Optimization). Analysez vos citations dans ChatGPT, Perplexity et Gemini.",
+      "offers": {
+        "@type": "Offer",
+        "price": "39",
+        "priceCurrency": "EUR",
+        "availability": "https://schema.org/InStock",
+        "priceValidUntil": "2025-12-31"
+      },
+      "featureList": [
+        "Analyse des citations IA",
+        "Score de visibilité dans les LLM",
+        "Tracking mots-clés ChatGPT",
+        "Suivi mentions Perplexity",
+        "Analyse sources SGE",
+        "Optimisation pour l'IA générative",
+        "Comparaison concurrents IA",
+        "Recommandations GEO"
+      ],
+      "screenshot": `${baseUrl}/geo-seo.webp`
+    },
+    {
+      "@type": "FAQPage",
+      "@id": `${baseUrl}/features/geo-seo#faq`,
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "C'est quoi le GEO SEO ?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Le GEO (Generative Engine Optimization) est la nouvelle discipline du référencement pour l'ère de l'IA. Au lieu d'optimiser pour Google Search, vous optimisez pour être cité par ChatGPT, Perplexity, Gemini et autres agents IA qui génèrent des réponses directes."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Pourquoi investir dans le GEO en 2026 ?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "En 2026, plus de 60% des recherches ne génèrent plus de clic car l'IA fournit la réponse directement. Si vous n'êtes pas cité par les LLM, vous perdez une part massive de visibilité. Le GEO vous permet d'anticiper ce changement de paradigme."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Comment fonctionne le tracking des citations IA ?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Notre outil interroge régulièrement ChatGPT, Perplexity et Gemini avec vos mots-clés cibles, puis analyse si votre marque ou site est cité dans les réponses. Nous mesurons la fréquence, le positionnement et le contexte de vos mentions."
+          }
+        }
+      ]
+    }
+  ]
 }
 
 export default function GeoSeoPage() {
   return (
     <>
+      {/* JSON-LD pour le SEO structuré */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+
       <NavbarWithLinksActionsAndCenteredLogo
         id="navbar"
         links={

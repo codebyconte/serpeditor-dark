@@ -29,6 +29,8 @@ import { CheckCircle2, FileSearch, Gauge, Shield } from 'lucide-react'
 import type { Metadata } from 'next'
 import Image from 'next/image'
 
+const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.serpeditor.fr'
+
 export const metadata: Metadata = {
   title: 'Analyse SEO : Obtenez votre On-Page Score et Audit Technique',
   description:
@@ -41,11 +43,150 @@ export const metadata: Metadata = {
     'analyse technique seo',
     'analyse seo en ligne',
   ],
+  alternates: {
+    canonical: `${baseUrl}/features/analyse-seo`,
+  },
+  openGraph: {
+    title: 'Analyse SEO : Audit Technique Complet de votre Site',
+    description: 'Analysez la santé SEO de votre site en 60 secondes. Score technique, erreurs de crawl et recommandations priorisées.',
+    url: `${baseUrl}/features/analyse-seo`,
+    siteName: 'SerpEditor',
+    type: 'website',
+    locale: 'fr_FR',
+    images: [
+      {
+        url: `${baseUrl}/audit-de-site.webp`,
+        width: 1800,
+        height: 1250,
+        alt: "Outil d'analyse et d'audit SEO technique - Interface SerpEditor",
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Analyse SEO : Audit Technique Complet de votre Site',
+    description: 'Scan de 120+ points techniques pour optimiser votre référencement.',
+    images: [`${baseUrl}/audit-de-site.webp`],
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+}
+
+/**
+ * JSON-LD pour la page Analyse SEO
+ * Inclut: WebPage, SoftwareApplication, FAQPage, BreadcrumbList
+ */
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebPage",
+      "@id": `${baseUrl}/features/analyse-seo#webpage`,
+      "url": `${baseUrl}/features/analyse-seo`,
+      "name": "Analyse SEO : Obtenez votre On-Page Score et Audit Technique",
+      "isPartOf": {
+        "@id": `${baseUrl}/#website`
+      },
+      "about": {
+        "@id": `${baseUrl}/#software`
+      },
+      "description": "Outil d'analyse SEO professionnel pour auditer votre site. Score technique, détection des erreurs et recommandations priorisées.",
+      "inLanguage": "fr-FR",
+      "breadcrumb": {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Accueil",
+            "item": baseUrl
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Fonctionnalités",
+            "item": `${baseUrl}/features`
+          },
+          {
+            "@type": "ListItem",
+            "position": 3,
+            "name": "Analyse SEO",
+            "item": `${baseUrl}/features/analyse-seo`
+          }
+        ]
+      }
+    },
+    {
+      "@type": "SoftwareApplication",
+      "@id": `${baseUrl}/features/analyse-seo#software`,
+      "name": "SerpEditor - Analyse SEO & Audit Technique",
+      "applicationCategory": "BusinessApplication",
+      "applicationSubCategory": "SEO Software",
+      "operatingSystem": "Web",
+      "description": "Outil d'analyse SEO technique pour auditer votre site. Scan de 120+ points, détection des erreurs et recommandations.",
+      "offers": {
+        "@type": "Offer",
+        "price": "39",
+        "priceCurrency": "EUR",
+        "availability": "https://schema.org/InStock",
+        "priceValidUntil": "2025-12-31"
+      },
+      "featureList": [
+        "Scan de 120+ points techniques",
+        "Score de santé SEO global",
+        "Détection erreurs 404",
+        "Analyse des balises meta",
+        "Vérification du balisage sémantique",
+        "Analyse de vitesse de chargement",
+        "Détection du contenu dupliqué",
+        "Recommandations priorisées"
+      ],
+      "screenshot": `${baseUrl}/audit-de-site.webp`
+    },
+    {
+      "@type": "FAQPage",
+      "@id": `${baseUrl}/features/analyse-seo#faq`,
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Qu'est-ce qu'une analyse SEO technique ?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Une analyse SEO technique est un audit approfondi de tous les éléments techniques de votre site qui impactent votre référencement : vitesse de chargement, structure HTML, balises meta, erreurs 404, redirections, robots.txt, sitemap XML, etc. Notre outil scanne plus de 120 points pour identifier tous les blocages."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Combien de pages puis-je analyser ?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Le plan Free permet d'auditer jusqu'à 100 pages. Le plan Pro vous donne accès à 10 000 pages par mois (10 audits maximum) et le plan Agency offre 100 000 pages par mois avec une file d'attente illimitée pour les gros sites."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "À quelle fréquence dois-je faire un audit SEO ?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Il est recommandé de faire une analyse SEO complète au minimum une fois par mois pour détecter les nouvelles erreurs et suivre l'évolution de votre score de santé. Si vous publiez beaucoup de contenu, un audit hebdomadaire est idéal."
+          }
+        }
+      ]
+    }
+  ]
 }
 
 export default function AnalyseSeoPage() {
   return (
     <>
+      {/* JSON-LD pour le SEO structuré */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+
       <NavbarWithLinksActionsAndCenteredLogo
         id="navbar"
         links={
