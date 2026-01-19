@@ -39,7 +39,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { Suspense } from 'react'
 
-const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.serpeditor.fr/'
 
 export const metadata: Metadata = {
   title: 'Blog SEO : Actualités, stratégies IA & Guides référencement 2026',

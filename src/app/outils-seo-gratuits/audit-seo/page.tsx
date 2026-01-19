@@ -48,6 +48,9 @@ export const metadata: Metadata = {
     "Réalisez un audit SEO en ligne complet et gratuit. Analysez +120 points (Technique, Contenu, Backlinks). Outil d'analyse SEO immédiat sans inscription.",
   keywords:
     'audit seo, audit seo gratuit, audit seo technique, outil audit seo, analyse seo, audit site web, audit seo complet',
+  alternates: {
+    canonical: 'https://www.serpeditor.fr/outils-seo-gratuits/audit-seo',
+  },
 }
 
 export default function AuditSeoPage() {
@@ -276,12 +279,8 @@ export default function AuditSeoPage() {
           <div className="mt-8 rounded-xl border border-mist-200 bg-mist-50 p-6 dark:border-mist-800 dark:bg-mist-900/50">
             <p className="text-mist-700 dark:text-mist-300">
               <strong className="text-primary">Note :</strong> Notre audit SEO gratuit se concentre sur les{' '}
-              <strong>piliers 1 et 2</strong> (technique + on-page) qui représentent 70% des optimisations SEO. Pour
-              analyser vos backlinks, utilisez notre{' '}
-              <a href="/check-backlinks" className="text-primary hover:underline">
-                outil d&apos;analyse de backlinks
-              </a>
-              .
+              <strong>piliers 1 et 2</strong> (technique + on-page) qui représentent 70% des optimisations SEO. 
+            
             </p>
           </div>
         </Section>

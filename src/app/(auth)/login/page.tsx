@@ -8,6 +8,9 @@ export const metadata: Metadata = {
   title: 'Connexion à Serpeditor | Accédez à votre espace SEO',
   description:
     'Connectez-vous à votre compte Serpeditor pour suivre vos performances, explorer vos mots-clés et gérer vos projets SEO en toute simplicité.',
+  alternates: {
+    canonical: 'https://www.serpeditor.fr/login',
+  },
 }
 
 export default async function PageLogin() {

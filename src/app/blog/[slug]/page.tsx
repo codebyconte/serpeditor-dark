@@ -179,56 +179,60 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       }
     }
 
-  const seoTitle = post.seo?.title || post.title
-  const seoDescription = post.seo?.description || post.excerpt || ''
-  const imageUrl = post.seo?.image || post.image
-  const ogImage = imageUrl ? urlFor(imageUrl)?.width(1200).height(630).url() : undefined
-  const canonicalUrl = post.seo?.canonicalUrl || `${baseUrl}/blog/${post.slug.current}`
-  const articleUrl = `${baseUrl}/blog/${post.slug.current}`
+    const seoTitle = post.seo?.title || post.title
+    const seoDescription = post.seo?.description || post.excerpt || ''
+    const imageUrl = post.seo?.image || post.image
+    const ogImage = imageUrl ? urlFor(imageUrl)?.width(1200).height(630).url() : undefined
+    const canonicalUrl = post.seo?.canonicalUrl || `${baseUrl}/blog/${post.slug.current}`
+    const articleUrl = `${baseUrl}/blog/${post.slug.current}`
 
-  return {
-    title: seoTitle,
-    description: seoDescription,
-    alternates: { canonical: canonicalUrl },
-    openGraph: {
+    // Valeurs robots explicites pour garantir la génération correcte des meta tags
+    const shouldIndex = post.seo?.noIndex !== true
+    const shouldFollow = post.seo?.noIndex !== true && post.seo?.noFollow !== true
+
+    return {
       title: seoTitle,
       description: seoDescription,
-      url: articleUrl,
-      siteName: 'SerpEditor',
-      images: ogImage ? [{ url: ogImage, width: 1200, height: 630, alt: post.image?.alt || post.title }] : [],
-      locale: 'fr_FR',
-      type: 'article',
-      publishedTime: post.publishedAt,
-      modifiedTime: post.updatedAt,
-      authors: post.author ? [post.author.name] : undefined,
-      section: post.articleSection || post.categories?.[0]?.title,
-      tags: post.tags,
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title: seoTitle,
-      description: seoDescription,
-      images: ogImage ? [ogImage] : [],
-      creator: post.author?.social?.twitter ? `@${post.author.social.twitter.split('/').pop()}` : undefined,
-    },
-    robots: {
-      index: !post.seo?.noIndex,
-      follow: !(post.seo?.noIndex || post.seo?.noFollow),
-      googleBot: {
-        index: !post.seo?.noIndex,
-        follow: !(post.seo?.noIndex || post.seo?.noFollow),
-        'max-image-preview': 'large',
-        'max-snippet': -1,
+      alternates: { canonical: canonicalUrl },
+      openGraph: {
+        title: seoTitle,
+        description: seoDescription,
+        url: articleUrl,
+        siteName: 'SerpEditor',
+        images: ogImage ? [{ url: ogImage, width: 1200, height: 630, alt: post.image?.alt || post.title }] : [],
+        locale: 'fr_FR',
+        type: 'article',
+        publishedTime: post.publishedAt,
+        modifiedTime: post.updatedAt,
+        authors: post.author ? [post.author.name] : undefined,
+        section: post.articleSection || post.categories?.[0]?.title,
+        tags: post.tags,
       },
-    },
-    other: {
-      'article:author': post.author?.name || '',
-      'article:published_time': post.publishedAt,
-      'article:modified_time': post.updatedAt || post.publishedAt,
-      'article:section': post.articleSection || post.categories?.[0]?.title || '',
-      'article:tag': post.tags?.join(', ') || '',
-    },
-  }
+      twitter: {
+        card: 'summary_large_image',
+        title: seoTitle,
+        description: seoDescription,
+        images: ogImage ? [ogImage] : [],
+        creator: post.author?.social?.twitter ? `@${post.author.social.twitter.split('/').pop()}` : undefined,
+      },
+      robots: {
+        index: shouldIndex,
+        follow: shouldFollow,
+        googleBot: {
+          index: shouldIndex,
+          follow: shouldFollow,
+          'max-image-preview': 'large',
+          'max-snippet': -1,
+        },
+      },
+      other: {
+        'article:author': post.author?.name || '',
+        'article:published_time': post.publishedAt,
+        'article:modified_time': post.updatedAt || post.publishedAt,
+        'article:section': post.articleSection || post.categories?.[0]?.title || '',
+        'article:tag': post.tags?.join(', ') || '',
+      },
+    }
   } catch (error) {
     console.error('❌ Erreur lors de la génération des métadonnées:', error)
     return {

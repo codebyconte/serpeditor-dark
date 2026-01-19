@@ -39,6 +39,9 @@ export const metadata: Metadata = {
     'meilleur outil seo gratuit',
     'test seo gratuit',
   ],
+  alternates: {
+    canonical: 'https://www.serpeditor.fr/outils-seo-gratuits',
+  },
 }
 
 export default function OutilsSeoGratuitPage() {
