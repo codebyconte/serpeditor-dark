@@ -1,15 +1,15 @@
-import { redirect } from 'next/navigation'
-import { CheckCircle2, Mail, Sparkles } from 'lucide-react'
-import { stripe } from '../../lib/stripe'
 import { ButtonLink } from '@/components/elements/button'
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Main } from '@/components/elements/main'
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { CheckCircle2, Mail, Sparkles } from 'lucide-react'
 import type { Metadata } from 'next'
+import { redirect } from 'next/navigation'
+import { stripe } from '../../lib/stripe'
 
 const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.serpeditor.fr'
 
 export const metadata: Metadata = {
-  title: 'Paiement Réussi | Bienvenue sur SerpEditor',
+  title: 'Paiement réussi | Bienvenue sur SerpEditor',
   description: 'Votre paiement a été effectué avec succès. Vous pouvez maintenant accéder à votre dashboard et commencer à utiliser SerpEditor.',
   robots: {
     index: false, // On ne veut pas indexer cette page

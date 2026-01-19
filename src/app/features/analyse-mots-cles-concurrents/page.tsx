@@ -12,6 +12,8 @@ import { CallToActionSimpleCentered } from '@/components/sections/call-to-action
 import { FAQsTwoColumnAccordion, Faq } from '@/components/sections/faqs-two-column-accordion'
 import { Feature, FeaturesThreeColumn } from '@/components/sections/features-three-column'
 
+import { FacebookIcon } from '@/components/icons/social/facebook-icon'
+import { TiktokIcon } from '@/components/icons/social/tiktok-icon'
 import {
   FooterCategory,
   FooterLink,
@@ -40,13 +42,11 @@ import {
 } from 'lucide-react'
 import type { Metadata } from 'next'
 import Image from 'next/image'
-import { FacebookIcon } from '@/components/icons/social/facebook-icon'
-import { TiktokIcon } from '@/components/icons/social/tiktok-icon'
 
 const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.serpeditor.fr'
 
 export const metadata: Metadata = {
-  title: 'Analyse Mots-Clés Concurrents : Révélez leur Stratégie SEO',
+  title: 'Analyse mots-clés concurrents : Révélez leur stratégie SEO',
   description:
     'Effectuez une analyse de mots-clés concurrents complète. Utilisez notre Keyword Gap pour découvrir les opportunités manquées et boostez votre trafic organique.',
   keywords: [
@@ -61,7 +61,7 @@ export const metadata: Metadata = {
     canonical: `${baseUrl}/features/analyse-mots-cles-concurrents`,
   },
   openGraph: {
-    title: 'Analyse Mots-Clés Concurrents | Keyword Gap & Espionnage SEO',
+    title: 'Analyse mots-clés concurrents | Keyword Gap & Espionnage SEO',
     description: 'Découvrez les mots-clés de vos concurrents et identifiez les opportunités manquées avec notre Keyword Gap.',
     url: `${baseUrl}/features/analyse-mots-cles-concurrents`,
     siteName: 'SerpEditor',
@@ -78,7 +78,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Analyse Mots-Clés Concurrents | Keyword Gap & Espionnage SEO',
+    title: 'Analyse mots-clés concurrents | Keyword gap & espionnage SEO',
     description: 'Révélez la stratégie SEO de vos concurrents et volez leur trafic.',
     images: [`${baseUrl}/analyse-concurence.webp`],
   },
@@ -240,9 +240,9 @@ export default function AnalyseMotsClesConcurrentsPage() {
         <HeroLeftAlignedWithDemo
           id="hero"
           eyebrow={
-            <AnnouncementBadge href="/pricing" text="Nouveau : Analyse Concurrentielle Avancée" cta="Voir l'offre" />
+            <AnnouncementBadge href="/pricing" text="Nouveau : Analyse concurrentielle avancée" cta="Voir l'offre" />
           }
-          headline="Analyse Mots-Clés Concurrents — Identifiez vos Opportunités de Croissance"
+          headline="Analyse mots-clés concurrents — Identifiez vos opportunités de croissance"
           subheadline={
             <>
               <p>

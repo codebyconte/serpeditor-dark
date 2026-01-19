@@ -6,10 +6,10 @@ import { Section } from '@/components/elements/section'
 import { Subheading } from '@/components/elements/subheading'
 import { Text } from '@/components/elements/text'
 import { ArrowNarrowRightIcon } from '@/components/icons/arrow-narrow-right-icon'
-import { XIcon } from '@/components/icons/social/x-icon'
-import { YouTubeIcon } from '@/components/icons/social/youtube-icon'
 import { FacebookIcon } from '@/components/icons/social/facebook-icon'
 import { TiktokIcon } from '@/components/icons/social/tiktok-icon'
+import { XIcon } from '@/components/icons/social/x-icon'
+import { YouTubeIcon } from '@/components/icons/social/youtube-icon'
 import { CallToActionSimpleCentered } from '@/components/sections/call-to-action-simple-centered'
 import { Faq, FAQsAccordion } from '@/components/sections/faqs-accordion'
 import { Feature } from '@/components/sections/features-three-column'
@@ -33,7 +33,7 @@ import Image from 'next/image'
 const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.serpeditor.fr'
 
 export const metadata: Metadata = {
-  title: "GEO SEO : Logiciel d'Optimisation pour ChatGPT, Perplexity & Gemini",
+  title: "GEO SEO : Logiciel d'optimisation pour ChatGPT, Perplexity & Gemini",
   description:
     'Passez du SEO au GEO (Generative Engine Optimization). Analysez vos mentions LLM, suivez vos mots-clés IA et dominez les réponses de ChatGPT et Perplexity.',
   keywords: [
@@ -49,7 +49,7 @@ export const metadata: Metadata = {
     canonical: `${baseUrl}/features/geo-seo`,
   },
   openGraph: {
-    title: 'GEO SEO | Optimisez votre Visibilité dans l\'IA (ChatGPT, Perplexity)',
+    title: 'GEO SEO | Optimisez votre visibilité dans l\'IA (ChatGPT, Perplexity)',
     description: 'Le futur du SEO est le GEO. Analysez vos citations IA, optimisez pour les LLM et dominez les réponses génératives.',
     url: `${baseUrl}/features/geo-seo`,
     siteName: 'SerpEditor',
@@ -60,13 +60,13 @@ export const metadata: Metadata = {
         url: `${baseUrl}/geo-seo.webp`,
         width: 1800,
         height: 1250,
-        alt: 'Outil GEO SEO - Visibilité IA - Interface SerpEditor',
+        alt: 'Outil GEO SEO - visibilité IA - Interface SerpEditor',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'GEO SEO | Optimisez votre Visibilité dans l\'IA',
+    title: 'GEO SEO | Optimisez votre visibilité dans l\'IA',
     description: 'Dominez ChatGPT, Perplexity et Gemini avec le GEO (Generative Engine Optimization).',
     images: [`${baseUrl}/geo-seo.webp`],
   },
@@ -87,7 +87,7 @@ const jsonLd = {
       "@type": "WebPage",
       "@id": `${baseUrl}/features/geo-seo#webpage`,
       "url": `${baseUrl}/features/geo-seo`,
-      "name": "GEO SEO : Logiciel d'Optimisation pour ChatGPT, Perplexity & Gemini",
+      "name": "GEO SEO : Logiciel d'optimisation pour ChatGPT, Perplexity & Gemini",
       "isPartOf": {
         "@id": `${baseUrl}/#website`
       },
@@ -123,7 +123,7 @@ const jsonLd = {
     {
       "@type": "SoftwareApplication",
       "@id": `${baseUrl}/features/geo-seo#software`,
-      "name": "SerpEditor - GEO SEO & Visibilité IA",
+      "name": "SerpEditor - GEO SEO & visibilité IA",
       "applicationCategory": "BusinessApplication",
       "applicationSubCategory": "SEO Software",
       "operatingSystem": "Web",
@@ -227,9 +227,9 @@ export default function GeoSeoPage() {
         <HeroCenteredWithDemo
           id="hero"
           eyebrow={
-            <AnnouncementBadge href="/pricing" text="Nouveau : Module Visibilité IA & GEO (2026)" cta="Voir l'offre" />
+            <AnnouncementBadge href="/pricing" text="Nouveau : Module visibilité IA & GEO (2026)" cta="Voir l'offre" />
           }
-          headline="GEO SEO — Optimisez votre Visibilité dans l'ère de l'Intelligence Artificielle"
+          headline="GEO SEO — Optimisez votre visibilité dans l'ère de l'intelligence artificielle"
           subheadline={
             <>
               <p>
@@ -262,7 +262,7 @@ export default function GeoSeoPage() {
               <Image
                 className="bg-black/75"
                 src="/geo-seo.webp"
-                alt="Logiciel GEO SEO - Visibilité IA et Analyse de Mentions LLM"
+                alt="Logiciel GEO SEO - visibilité IA et analyse de mentions LLM"
                 width={1800}
                 height={1250}
                 priority

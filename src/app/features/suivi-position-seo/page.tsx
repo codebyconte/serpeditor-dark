@@ -6,12 +6,13 @@ import { Section } from '@/components/elements/section'
 import { Subheading } from '@/components/elements/subheading'
 import { Text } from '@/components/elements/text'
 import { ArrowNarrowRightIcon } from '@/components/icons/arrow-narrow-right-icon'
+import { FacebookIcon } from '@/components/icons/social/facebook-icon'
+import { TiktokIcon } from '@/components/icons/social/tiktok-icon'
 import { XIcon } from '@/components/icons/social/x-icon'
 import { YouTubeIcon } from '@/components/icons/social/youtube-icon'
 import { CallToActionSimpleCentered } from '@/components/sections/call-to-action-simple-centered'
 import { FAQsAccordion, Faq } from '@/components/sections/faqs-accordion'
 import { Feature, FeaturesThreeColumn } from '@/components/sections/features-three-column'
-import { TiktokIcon } from '@/components/icons/social/tiktok-icon'
 import {
   FooterCategory,
   FooterLink,
@@ -41,12 +42,11 @@ import {
 } from 'lucide-react'
 import type { Metadata } from 'next'
 import Image from 'next/image'
-import { FacebookIcon } from '@/components/icons/social/facebook-icon'
 
 const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.serpeditor.fr'
 
 export const metadata: Metadata = {
-  title: 'Suivi Position SEO : Outil de Tracking Précis & Analyse SERP',
+  title: 'Suivi position SEO : Outil de tracking précis & analyse SERP',
   description:
     'Dominez Google avec notre outil de suivi position SEO. Analyse des pages positionnées, historique SERP et métriques organiques en temps réel. Essai gratuit 7 jours.',
   keywords: [
@@ -60,7 +60,7 @@ export const metadata: Metadata = {
     canonical: `${baseUrl}/features/suivi-position-seo`,
   },
   openGraph: {
-    title: 'Suivi Position SEO | Rank Tracker Quotidien & Analyse SERP',
+    title: 'Suivi position SEO | Rank tracker quotidien & analyse SERP',
     description: 'Suivez vos positions Google en temps réel. Historique SERP, alertes de chutes et analyse des pages positionnées.',
     url: `${baseUrl}/features/suivi-position-seo`,
     siteName: 'SerpEditor',
@@ -77,7 +77,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Suivi Position SEO | Rank Tracker Quotidien & Analyse SERP',
+    title: 'Suivi position SEO | Rank tracker quotidien & analyse SERP',
     description: 'Tracking quotidien de vos positions Google Desktop & Mobile.',
     images: [`${baseUrl}/suivie-position.webp`],
   },
@@ -98,7 +98,7 @@ const jsonLd = {
       "@type": "WebPage",
       "@id": `${baseUrl}/features/suivi-position-seo#webpage`,
       "url": `${baseUrl}/features/suivi-position-seo`,
-      "name": "Suivi Position SEO : Outil de Tracking Précis & Analyse SERP",
+      "name": "Suivi position SEO : Outil de tracking précis & analyse SERP",
       "isPartOf": {
         "@id": `${baseUrl}/#website`
       },
@@ -134,7 +134,7 @@ const jsonLd = {
     {
       "@type": "SoftwareApplication",
       "@id": `${baseUrl}/features/suivi-position-seo#software`,
-      "name": "SerpEditor - Suivi Position SEO",
+      "name": "SerpEditor - Suivi position SEO",
       "applicationCategory": "BusinessApplication",
       "applicationSubCategory": "SEO Software",
       "operatingSystem": "Web",
@@ -237,8 +237,8 @@ export default function SuiviPositionSEOPage() {
         {/* Hero Section */}
         <HeroCenteredWithDemo
           id="hero"
-          eyebrow={<AnnouncementBadge href="/pricing" text="Nouveau : Suivi en Temps Réel" cta="Voir l'offre" />}
-          headline="Suivi Position SEO — Un Dashboard conçu pour la performance organique"
+          eyebrow={<AnnouncementBadge href="/pricing" text="Nouveau : Suivi en temps réel" cta="Voir l'offre" />}
+          headline="Suivi position SEO — Un dashboard conçu pour la performance organique"
           subheadline={
             <>
               <p>
@@ -254,7 +254,7 @@ export default function SuiviPositionSEOPage() {
           cta={
             <div className="flex flex-wrap items-center gap-4">
               <ButtonLink href="/register" size="lg">
-                Accéder à mon Dashboard (Essai 7 jours sans CB)
+                Accéder à mon dashboard (Essai 7 jours sans CB)
               </ButtonLink>
               <PlainButtonLink href="/features" size="lg">
                 Découvrir les fonctionnalités <ArrowNarrowRightIcon />
@@ -303,7 +303,7 @@ export default function SuiviPositionSEOPage() {
         <Section id="features">
           <div className="flex flex-col gap-16">
             <div className="flex flex-col gap-6 text-center">
-              <Subheading>Les 3 Piliers de notre outil de Suivi Position SEO</Subheading>
+              <Subheading>Les 3 piliers de notre outil de suivi position SEO</Subheading>
               <Text className="mx-auto max-w-3xl">
                 Oubliez les outils complexes et illisibles. Nous avons condensé la puissance du SEO technique dans une
                 interface intuitive.

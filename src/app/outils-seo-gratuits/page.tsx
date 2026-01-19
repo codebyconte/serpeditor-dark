@@ -3,6 +3,8 @@ import { Main } from '@/components/elements/main'
 import { Section } from '@/components/elements/section'
 import { Subheading } from '@/components/elements/subheading'
 import { Text } from '@/components/elements/text'
+import { FacebookIcon } from '@/components/icons/social/facebook-icon'
+import { TiktokIcon } from '@/components/icons/social/tiktok-icon'
 import { XIcon } from '@/components/icons/social/x-icon'
 import { YouTubeIcon } from '@/components/icons/social/youtube-icon'
 import { CallToActionSimpleCentered } from '@/components/sections/call-to-action-simple-centered'
@@ -25,8 +27,6 @@ import { Divider } from '@/components/ui/divider'
 import { ExternalLink } from 'lucide-react'
 import type { Metadata } from 'next'
 import Image from 'next/image'
-import { FacebookIcon } from '@/components/icons/social/facebook-icon'
-import { TiktokIcon } from '@/components/icons/social/tiktok-icon'
 
 export const metadata: Metadata = {
   title: 'Outils SEO Gratuit 2026 : La Liste Ultime (Audit, Mots-Clés, IA)',
@@ -81,7 +81,7 @@ export default function OutilsSeoGratuitPage() {
         {/* Hero Section */}
         <HeroCenteredWithDemo
           id="hero"
-          headline="Outils SEO Gratuit — Boostez votre Référencement sans Budget"
+          headline="Outils SEO gratuit — Boostez votre référencement sans budget"
           subheadline={
             <>
               <p>

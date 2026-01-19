@@ -33,7 +33,7 @@ import Image from 'next/image'
 const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.serpeditor.fr'
 
 export const metadata: Metadata = {
-  title: 'Logiciel SEO Complet : Toutes les Fonctionnalités SerpEditor',
+  title: 'Logiciel SEO complet : Toutes les fonctionnalités SerpEditor',
   description:
     'Découvrez le logiciel SEO le plus complet du marché français. Dashboard tout-en-un : Audit technique, Backlinks, Suivi de positions, Visibilité IA et Analyse de domaine.',
   keywords: [
@@ -48,7 +48,7 @@ export const metadata: Metadata = {
     canonical: `${baseUrl}/features`,
   },
   openGraph: {
-    title: 'Logiciel SEO Complet | Toutes les Fonctionnalités SerpEditor',
+    title: 'Logiciel SEO complet | Toutes les fonctionnalités SerpEditor',
     description: 'Dashboard SEO tout-en-un : Audit technique, Backlinks, Suivi de positions, Visibilité IA et plus encore.',
     url: `${baseUrl}/features`,
     siteName: 'SerpEditor',
@@ -65,7 +65,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Logiciel SEO Complet | Toutes les Fonctionnalités SerpEditor',
+    title: 'Logiciel SEO complet | Toutes les fonctionnalités SerpEditor',
     description: 'La solution SEO tout-en-un pour dominer Google en 2026.',
     images: [`${baseUrl}/serpeditor.webp`],
   },
@@ -86,7 +86,7 @@ const jsonLd = {
       "@type": "WebPage",
       "@id": `${baseUrl}/features#webpage`,
       "url": `${baseUrl}/features`,
-      "name": "Logiciel SEO Complet : Toutes les Fonctionnalités SerpEditor",
+      "name": "Logiciel SEO complet : Toutes les fonctionnalités SerpEditor",
       "isPartOf": {
         "@id": `${baseUrl}/#website`
       },
@@ -116,7 +116,7 @@ const jsonLd = {
     {
       "@type": "SoftwareApplication",
       "@id": `${baseUrl}/features#software`,
-      "name": "SerpEditor - Logiciel SEO Complet",
+      "name": "SerpEditor - Logiciel SEO complet",
       "applicationCategory": "BusinessApplication",
       "applicationSubCategory": "SEO Software",
       "operatingSystem": "Web",
@@ -283,9 +283,9 @@ export default function FeaturesPage() {
       <Main>
         <HeroSimpleLeftAligned
           eyebrow={
-            <AnnouncementBadge href="/pricing" text="Nouveau : Pack Logiciel Complet à 39€/mois" cta="Voir l'offre" />
+            <AnnouncementBadge href="/pricing" text="Nouveau : Pack logiciel complet à 39€/mois" cta="Voir l'offre" />
           }
-          headline="Un Logiciel SEO Tout-en-Un pour Dominer la SERP en 2026"
+          headline="Un logiciel SEO tout-en-un pour dominer la SERP en 2026"
           subheadline={
             <>
               <p>

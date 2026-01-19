@@ -48,7 +48,7 @@ import Image from 'next/image'
 const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.serpeditor.fr'
 
 export const metadata: Metadata = {
-  title: "Analyse de Backlinks — Vérifiez le Netlinking de n'importe quel site",
+  title: "Analyse de backlinks — Vérifiez le netlinking de n'importe quel site",
   description:
     "Outil complet d'analyse de backlinks : domaines référents, ancres, liens nouveaux et perdus. Surveillez votre netlinking et celui de vos concurrents avec SerpEditor.",
   keywords: [
@@ -64,7 +64,7 @@ export const metadata: Metadata = {
     canonical: `${baseUrl}/features/analyse-backlinks`,
   },
   openGraph: {
-    title: 'Analyse de Backlinks | 2,8T+ Liens | Netlinking Pro',
+    title: 'Analyse de backlinks | 2,8T+ Liens | Netlinking Pro',
     description: 'Analysez votre profil de backlinks avec notre base de 2,8 trillions de liens. Domaines référents, ancres et liens toxiques.',
     url: `${baseUrl}/features/analyse-backlinks`,
     siteName: 'SerpEditor',
@@ -81,7 +81,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Analyse de Backlinks | 2,8T+ Liens | Netlinking Pro',
+    title: 'Analyse de backlinks | 2,8T+ Liens | Netlinking Pro',
     description: 'Outil complet d\'analyse de backlinks avec 2,8 trillions de liens indexés.',
     images: [`${baseUrl}/backlinks.webp`],
   },
@@ -102,7 +102,7 @@ const jsonLd = {
       "@type": "WebPage",
       "@id": `${baseUrl}/features/analyse-backlinks#webpage`,
       "url": `${baseUrl}/features/analyse-backlinks`,
-      "name": "Analyse de Backlinks — Vérifiez le Netlinking de n'importe quel site",
+      "name": "Analyse de backlinks — Vérifiez le netlinking de n'importe quel site",
       "isPartOf": {
         "@id": `${baseUrl}/#website`
       },
@@ -138,7 +138,7 @@ const jsonLd = {
     {
       "@type": "SoftwareApplication",
       "@id": `${baseUrl}/features/analyse-backlinks#software`,
-      "name": "SerpEditor - Analyse de Backlinks",
+      "name": "SerpEditor - analyse de backlinks",
       "applicationCategory": "BusinessApplication",
       "applicationSubCategory": "SEO Software",
       "operatingSystem": "Web",
@@ -252,11 +252,11 @@ export default function AnalyseBacklinksPage() {
           eyebrow={
             <AnnouncementBadge
               href="/pricing"
-              text="Nouveau : 2,8 Trillions de Backlinks Analysés"
+              text="Nouveau : 2,8 trillions de backlinks analysés"
               cta="Voir l'offre"
             />
           }
-          headline="Analyse de Backlinks — Le Vérificateur de Liens le plus Complet"
+          headline="Analyse de backlinks — Le vérificateur de liens le plus complet"
           subheadline={
             <>
               <p>

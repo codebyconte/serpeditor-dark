@@ -1,10 +1,10 @@
 import { BlogCategoryFilter, BlogPostsGrid, FeaturedPost } from '@/components/blog'
 import { ButtonLink, PlainButtonLink } from '@/components/elements/button'
 import { Main } from '@/components/elements/main'
-import { XIcon } from '@/components/icons/social/x-icon'
-import { YouTubeIcon } from '@/components/icons/social/youtube-icon'
 import { FacebookIcon } from '@/components/icons/social/facebook-icon'
 import { TiktokIcon } from '@/components/icons/social/tiktok-icon'
+import { XIcon } from '@/components/icons/social/x-icon'
+import { YouTubeIcon } from '@/components/icons/social/youtube-icon'
 import {
   FooterCategory,
   FooterLink,
@@ -42,7 +42,7 @@ import { Suspense } from 'react'
 const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
 
 export const metadata: Metadata = {
-  title: 'Blog SEO : Actualités, Stratégies IA & Guides Référencement 2026',
+  title: 'Blog SEO : Actualités, stratégies IA & Guides référencement 2026',
   description:
     'Le blog SEO n°1 pour maîtriser le référencement naturel. News Google, tutoriels techniques, stratégies GEO et IA. Boostez votre visibilité avec SerpEditor.',
   keywords: [
@@ -58,7 +58,7 @@ export const metadata: Metadata = {
     canonical: `${baseUrl}/blog`,
   },
   openGraph: {
-    title: 'Blog - Articles SEO et Marketing Digital | SerpEditor',
+    title: 'Blog - Articles SEO et marketing digital | SerpEditor',
     description:
       'Découvrez nos articles sur le SEO, le marketing digital et les meilleures pratiques pour améliorer votre visibilité en ligne.',
     url: `${baseUrl}/blog`,
@@ -68,7 +68,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Blog - Articles SEO et Marketing Digital | SerpEditor',
+    title: 'Blog - Articles SEO et marketing digital | SerpEditor',
     description:
       'Découvrez nos articles sur le SEO, le marketing digital et les meilleures pratiques pour améliorer votre visibilité en ligne.',
   },
@@ -308,7 +308,7 @@ export default async function BlogPage({ searchParams }: PageProps) {
         {/* Hero Section - Simple comme les autres pages */}
         <HeroSimpleCentered
           eyebrow="Blog SEO"
-          headline="Blog SEO — Le Guide Ultime de la Visibilité Organique en 2026"
+          headline="Blog SEO — Le guide ultime de la visibilité organique en 2026"
           subheadline="Le monde du référencement naturel évolue plus vite que jamais. Entre les mises à jour d’algorithmes de Google et l’émergence des moteurs de réponse comme Perplexity ou ChatGPT Search, rester informé est une nécessité vitale. Notre blog SEO est conçu pour vous offrir une veille stratégique, des tests techniques réels et des guides actionnables pour dominer la SERP."
         />
         <section className="mx-auto max-w-7xl px-6 py-16 lg:px-8">

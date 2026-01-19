@@ -2,12 +2,13 @@ import { ButtonLink, PlainButtonLink } from '@/components/elements/button'
 import { Container } from '@/components/elements/container'
 import { Main } from '@/components/elements/main'
 import { Section } from '@/components/elements/section'
+import { FacebookIcon } from '@/components/icons/social/facebook-icon'
+import { TiktokIcon } from '@/components/icons/social/tiktok-icon'
 import { XIcon } from '@/components/icons/social/x-icon'
 import { YouTubeIcon } from '@/components/icons/social/youtube-icon'
 import { CallToActionSimple } from '@/components/sections/call-to-action-simple'
 import { Faq, FAQsTwoColumnAccordion } from '@/components/sections/faqs-two-column-accordion'
 import { Feature, FeaturesThreeColumn } from '@/components/sections/features-three-column'
-import { TiktokIcon } from '@/components/icons/social/tiktok-icon'
 import {
   FooterCategory,
   FooterLink,
@@ -40,10 +41,9 @@ import {
 import type { Metadata } from 'next'
 import Image from 'next/image'
 import { AuditSeoForm } from './audit-seo-form'
-import { FacebookIcon } from '@/components/icons/social/facebook-icon'
 
 export const metadata: Metadata = {
-  title: 'Audit SEO Gratuit : Analysez votre Site en 60s',
+  title: 'Audit SEO gratuit : Analysez votre site en 60s',
   description:
     "Réalisez un audit SEO en ligne complet et gratuit. Analysez +120 points (Technique, Contenu, Backlinks). Outil d'analyse SEO immédiat sans inscription.",
   keywords:
@@ -91,7 +91,7 @@ export default function AuditSeoPage() {
         {/* HERO SECTION */}
         <HeroSimpleLeftAligned
           id="hero"
-          headline="Audit SEO Gratuit — Analysez Votre Site Web en 60 Secondes"
+          headline="Audit SEO gratuit — Analysez votre site web en 60 secondes"
           subheadline={
             <>
               <p>

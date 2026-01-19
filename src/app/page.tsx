@@ -6,10 +6,10 @@ import { Section } from '@/components/elements/section'
 import { Subheading } from '@/components/elements/subheading'
 import { Text } from '@/components/elements/text'
 import { ArrowNarrowRightIcon } from '@/components/icons/arrow-narrow-right-icon'
-import { XIcon } from '@/components/icons/social/x-icon'
-import { YouTubeIcon } from '@/components/icons/social/youtube-icon'
 import { FacebookIcon } from '@/components/icons/social/facebook-icon'
 import { TiktokIcon } from '@/components/icons/social/tiktok-icon'
+import { XIcon } from '@/components/icons/social/x-icon'
+import { YouTubeIcon } from '@/components/icons/social/youtube-icon'
 import { CallToActionSimple } from '@/components/sections/call-to-action-simple'
 import { FAQsTwoColumnAccordion, Faq } from '@/components/sections/faqs-two-column-accordion'
 import { Feature as FeatureThreeColumn, FeaturesThreeColumn } from '@/components/sections/features-three-column'
@@ -240,11 +240,11 @@ export default function Page() {
           eyebrow={
             <AnnouncementBadge
               href="/pricing"
-              text="Nouveau : L'Outil SEO n°1 pour les Freelances"
+              text="Nouveau : L'outil SEO n°1 pour les freelances"
               cta="Voir l'offre"
             />
           }
-          headline="L'Outil SEO Français Tout-en-un pour Dominer Google"
+          headline="L'Outil SEO français tout-en-un pour dominer Google"
           subheadline={
             <>
               <p>

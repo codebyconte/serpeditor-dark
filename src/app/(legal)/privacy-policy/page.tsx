@@ -1,9 +1,9 @@
 import { ButtonLink, PlainButtonLink } from '@/components/elements/button'
 import { Main } from '@/components/elements/main'
-import { XIcon } from '@/components/icons/social/x-icon'
-import { YouTubeIcon } from '@/components/icons/social/youtube-icon'
 import { FacebookIcon } from '@/components/icons/social/facebook-icon'
 import { TiktokIcon } from '@/components/icons/social/tiktok-icon'
+import { XIcon } from '@/components/icons/social/x-icon'
+import { YouTubeIcon } from '@/components/icons/social/youtube-icon'
 import { DocumentCentered } from '@/components/sections/document-centered'
 import {
   FooterCategory,
@@ -23,7 +23,7 @@ import Image from 'next/image'
 const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.serpeditor.fr'
 
 export const metadata: Metadata = {
-  title: 'Politique de Confidentialité | SerpEditor - Protection de vos Données',
+  title: 'Politique de confidentialité | SerpEditor - Protection de vos données',
   description: 'Découvrez comment SerpEditor collecte, utilise et protège vos données personnelles. Conformité RGPD et respect de votre vie privée.',
   robots: {
     index: true,
@@ -42,7 +42,7 @@ const jsonLd = {
   "@type": "WebPage",
   "@id": `${baseUrl}/privacy-policy#webpage`,
   "url": `${baseUrl}/privacy-policy`,
-  "name": "Politique de Confidentialité",
+  "name": "Politique de confidentialité",
   "description": "Politique de confidentialité et protection des données de SerpEditor - Conformité RGPD",
   "inLanguage": "fr-FR",
   "isPartOf": {
@@ -60,7 +60,7 @@ const jsonLd = {
       {
         "@type": "ListItem",
         "position": 2,
-        "name": "Politique de Confidentialité",
+        "name": "Politique de confidentialité",
         "item": `${baseUrl}/privacy-policy`
       }
     ]

@@ -6,10 +6,10 @@ import { Section } from '@/components/elements/section'
 import { Subheading } from '@/components/elements/subheading'
 import { Text } from '@/components/elements/text'
 import { ArrowNarrowRightIcon } from '@/components/icons/arrow-narrow-right-icon'
-import { XIcon } from '@/components/icons/social/x-icon'
-import { YouTubeIcon } from '@/components/icons/social/youtube-icon'
 import { FacebookIcon } from '@/components/icons/social/facebook-icon'
 import { TiktokIcon } from '@/components/icons/social/tiktok-icon'
+import { XIcon } from '@/components/icons/social/x-icon'
+import { YouTubeIcon } from '@/components/icons/social/youtube-icon'
 import { CallToActionSimpleCentered } from '@/components/sections/call-to-action-simple-centered'
 import { FAQsAccordion, Faq } from '@/components/sections/faqs-accordion'
 import { Feature, FeaturesThreeColumn } from '@/components/sections/features-three-column'
@@ -48,7 +48,7 @@ import Image from 'next/image'
 const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.serpeditor.fr'
 
 export const metadata: Metadata = {
-  title: 'Outil de Recherche de Mots-Clés SEO | 213M+ Keywords | Essai Gratuit 7 Jours',
+  title: 'Outil de recherche de mots-clés SEO | 213M+ keywords | Essai gratuit 7 jours',
   description:
     "Découvrez l'outil de recherche de mots-clés le plus puissant pour le marché français. 213M+ keywords, volume exact, difficulté et analyse concurrentielle.",
   keywords: [
@@ -63,7 +63,7 @@ export const metadata: Metadata = {
     canonical: `${baseUrl}/features/recherche-mots-cles`,
   },
   openGraph: {
-    title: 'Outil de Recherche de Mots-Clés SEO | 213M+ Keywords',
+    title: 'Outil de recherche de mots-clés SEO | 213M+ keywords',
     description: 'La plus grande base de données française pour trouver des mots-clés rentables. Analyse de difficulté, volume et intention de recherche.',
     url: `${baseUrl}/features/recherche-mots-cles`,
     siteName: 'SerpEditor',
@@ -80,7 +80,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Outil de Recherche de Mots-Clés SEO | 213M+ Keywords',
+    title: 'Outil de recherche de mots-clés SEO | 213M+ keywords',
     description: 'Trouvez les meilleurs mots-clés pour votre SEO avec notre base de 213M+ keywords français.',
     images: [`${baseUrl}/recherche-mot-cle.webp`],
   },
@@ -101,7 +101,7 @@ const jsonLd = {
       "@type": "WebPage",
       "@id": `${baseUrl}/features/recherche-mots-cles#webpage`,
       "url": `${baseUrl}/features/recherche-mots-cles`,
-      "name": "Outil de Recherche de Mots-Clés SEO | 213M+ Keywords",
+      "name": "Outil de recherche de mots-clés SEO | 213M+ keywords",
       "isPartOf": {
         "@id": `${baseUrl}/#website`
       },
@@ -137,7 +137,7 @@ const jsonLd = {
     {
       "@type": "SoftwareApplication",
       "@id": `${baseUrl}/features/recherche-mots-cles#software`,
-      "name": "SerpEditor - Recherche de Mots-Clés",
+      "name": "SerpEditor - recherche de mots-clés",
       "applicationCategory": "BusinessApplication",
       "applicationSubCategory": "SEO Software",
       "operatingSystem": "Web",
@@ -271,8 +271,8 @@ export default function RechercheMotsClesPage() {
         {/* Hero Section */}
         <HeroCenteredWithDemo
           id="hero"
-          eyebrow={<AnnouncementBadge href="/pricing" text="Nouveau : 213M+ Mots-Clés Français" cta="Voir l'offre" />}
-          headline="Recherche de Mots-Clés SEO — L'Outil Professionnel pour Dominer votre Thématique"
+          eyebrow={<AnnouncementBadge href="/pricing" text="Nouveau : 213M+ mots-clés français" cta="Voir l'offre" />}
+          headline="Recherche de mots-clés SEO — L'outil professionnel pour dominer votre thématique"
           subheadline={
             <>
               <p>

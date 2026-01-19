@@ -5,10 +5,10 @@ import { Section } from '@/components/elements/section'
 import { Subheading } from '@/components/elements/subheading'
 import { Text } from '@/components/elements/text'
 import { ArrowNarrowRightIcon } from '@/components/icons/arrow-narrow-right-icon'
-import { XIcon } from '@/components/icons/social/x-icon'
-import { YouTubeIcon } from '@/components/icons/social/youtube-icon'
 import { FacebookIcon } from '@/components/icons/social/facebook-icon'
 import { TiktokIcon } from '@/components/icons/social/tiktok-icon'
+import { XIcon } from '@/components/icons/social/x-icon'
+import { YouTubeIcon } from '@/components/icons/social/youtube-icon'
 import { CallToActionSimpleCentered } from '@/components/sections/call-to-action-simple-centered'
 import { Faq, FAQsTwoColumnAccordion } from '@/components/sections/faqs-two-column-accordion'
 import { Feature, FeaturesThreeColumn } from '@/components/sections/features-three-column'
@@ -32,7 +32,7 @@ import Image from 'next/image'
 const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.serpeditor.fr'
 
 export const metadata: Metadata = {
-  title: 'Analyse SEO : Obtenez votre On-Page Score et Audit Technique',
+  title: 'Analyse SEO : Obtenez votre on-page score et audit technique',
   description:
     'Réalisez une analyse SEO chirurgicale de votre site. On-Page Score, détection des balises manquantes, erreurs de crawl et contenu dupliqué.',
   keywords: [
@@ -47,7 +47,7 @@ export const metadata: Metadata = {
     canonical: `${baseUrl}/features/analyse-seo`,
   },
   openGraph: {
-    title: 'Analyse SEO : Audit Technique Complet de votre Site',
+    title: 'Analyse SEO : Audit technique complet de votre site',
     description: 'Analysez la santé SEO de votre site en 60 secondes. Score technique, erreurs de crawl et recommandations priorisées.',
     url: `${baseUrl}/features/analyse-seo`,
     siteName: 'SerpEditor',
@@ -64,7 +64,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Analyse SEO : Audit Technique Complet de votre Site',
+    title: 'Analyse SEO : Audit technique complet de votre site',
     description: 'Scan de 120+ points techniques pour optimiser votre référencement.',
     images: [`${baseUrl}/audit-de-site.webp`],
   },
@@ -85,7 +85,7 @@ const jsonLd = {
       "@type": "WebPage",
       "@id": `${baseUrl}/features/analyse-seo#webpage`,
       "url": `${baseUrl}/features/analyse-seo`,
-      "name": "Analyse SEO : Obtenez votre On-Page Score et Audit Technique",
+      "name": "Analyse SEO : Obtenez votre on-page score et audit technique",
       "isPartOf": {
         "@id": `${baseUrl}/#website`
       },
@@ -121,7 +121,7 @@ const jsonLd = {
     {
       "@type": "SoftwareApplication",
       "@id": `${baseUrl}/features/analyse-seo#software`,
-      "name": "SerpEditor - Analyse SEO & Audit Technique",
+      "name": "SerpEditor - analyse SEO & audit technique",
       "applicationCategory": "BusinessApplication",
       "applicationSubCategory": "SEO Software",
       "operatingSystem": "Web",
@@ -224,7 +224,7 @@ export default function AnalyseSeoPage() {
         {/* Hero Section */}
         <HeroCenteredWithDemo
           id="hero"
-          headline="Analyse SEO — Mesurez la Santé de votre Site avec Précision"
+          headline="Analyse SEO — Mesurez la santé de votre site avec précision"
           subheadline={
             <>
               <p>
@@ -309,7 +309,7 @@ export default function AnalyseSeoPage() {
                 <>
                   <Feature
                     icon={<Gauge className="h-6 w-6" />}
-                    headline="Le On-Page Score : Votre indicateur de performance"
+                    headline="Le on-page score : Votre indicateur de performance"
                     subheadline={
                       <>
                         <p>
