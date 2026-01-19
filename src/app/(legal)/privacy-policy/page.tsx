@@ -32,6 +32,19 @@ export const metadata: Metadata = {
   alternates: {
     canonical: `${baseUrl}/privacy-policy`,
   },
+  openGraph: {
+    title: 'Politique de confidentialité | SerpEditor',
+    description: 'Découvrez comment SerpEditor protège vos données personnelles. Conformité RGPD.',
+    url: `${baseUrl}/privacy-policy`,
+    siteName: 'SerpEditor',
+    type: 'website',
+    locale: 'fr_FR',
+  },
+  twitter: {
+    card: 'summary',
+    title: 'Politique de confidentialité | SerpEditor',
+    description: 'Protection de vos données personnelles - Conformité RGPD.',
+  },
 }
 
 /**

@@ -39,49 +39,73 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { Suspense } from 'react'
 
-const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.serpeditor.fr/'
+const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.serpeditor.fr'
 
-export const metadata: Metadata = {
-  title: 'Blog SEO : Actualités, stratégies IA & Guides référencement 2026',
-  description:
-    'Le blog SEO n°1 pour maîtriser le référencement naturel. News Google, tutoriels techniques, stratégies GEO et IA. Boostez votre visibilité avec SerpEditor.',
-  keywords: [
-    'blog seo',
-    'actualité seo',
-    'veille seo',
-    'conseils référencement',
-    'stratégie seo 2026',
-    'tutoriel seo',
-    'seo ia blog',
-  ],
-  alternates: {
-    canonical: `${baseUrl}/blog`,
-  },
-  openGraph: {
-    title: 'Blog - Articles SEO et marketing digital | SerpEditor',
+// Normaliser baseUrl pour éviter les doubles slashes
+const normalizeBaseUrl = (url: string) => url.replace(/\/$/, '')
+
+// Générer l'URL canonique en fonction des paramètres
+// La page principale /blog est toujours la version canonique
+// Les versions avec paramètres pointent vers /blog comme canonique
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<{ category?: string; page?: string }>
+}): Promise<Metadata> {
+  const params = await searchParams
+  const normalizedBaseUrl = normalizeBaseUrl(baseUrl)
+  
+  // URL canonique : toujours /blog (sans paramètres) pour éviter les duplications
+  // Les pages avec paramètres (pagination, catégories) pointent vers la version principale
+  const canonicalUrl = `${normalizedBaseUrl}/blog`
+  
+  // URL OpenGraph : inclut les paramètres pour le partage social
+  const ogUrl = params.category || params.page
+    ? `${normalizedBaseUrl}/blog${params.category ? `?category=${params.category}` : ''}${params.page && params.page !== '1' ? `${params.category ? '&' : '?'}page=${params.page}` : ''}`
+    : canonicalUrl
+
+  return {
+    title: 'Blog SEO : Actualités, stratégies IA & Guides référencement 2026',
     description:
-      'Découvrez nos articles sur le SEO, le marketing digital et les meilleures pratiques pour améliorer votre visibilité en ligne.',
-    url: `${baseUrl}/blog`,
-    siteName: 'SerpEditor',
-    locale: 'fr_FR',
-    type: 'website',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Blog - Articles SEO et marketing digital | SerpEditor',
-    description:
-      'Découvrez nos articles sur le SEO, le marketing digital et les meilleures pratiques pour améliorer votre visibilité en ligne.',
-  },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
+      'Le blog SEO n°1 pour maîtriser le référencement naturel. News Google, tutoriels techniques, stratégies GEO et IA. Boostez votre visibilité avec SerpEditor.',
+    keywords: [
+      'blog seo',
+      'actualité seo',
+      'veille seo',
+      'conseils référencement',
+      'stratégie seo 2026',
+      'tutoriel seo',
+      'seo ia blog',
+    ],
+    alternates: {
+      canonical: canonicalUrl,
+    },
+    openGraph: {
+      title: 'Blog - Articles SEO et marketing digital | SerpEditor',
+      description:
+        'Découvrez nos articles sur le SEO, le marketing digital et les meilleures pratiques pour améliorer votre visibilité en ligne.',
+      url: ogUrl,
+      siteName: 'SerpEditor',
+      locale: 'fr_FR',
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: 'Blog - Articles SEO et marketing digital | SerpEditor',
+      description:
+        'Découvrez nos articles sur le SEO, le marketing digital et les meilleures pratiques pour améliorer votre visibilité en ligne.',
+    },
+    robots: {
       index: true,
       follow: true,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
+      },
     },
-  },
+  }
 }
 
 const { projectId, dataset } = client.config()
@@ -89,6 +113,7 @@ const urlFor = (source: SanityImageSource) =>
   projectId && dataset ? imageUrlBuilder({ projectId, dataset }).image(source).url() : null
 
 const options = { next: { revalidate: 30 } }
+const normalizedBaseUrl = normalizeBaseUrl(baseUrl)
 
 const POSTS_PER_PAGE = 12
 
@@ -206,9 +231,9 @@ export default async function BlogPage({ searchParams }: PageProps) {
       publishedAt: post.publishedAt,
       excerpt: post.excerpt,
     })),
-    baseUrl,
+    normalizedBaseUrl,
   )
-  const websiteStructuredData = generateWebsiteStructuredData(baseUrl)
+  const websiteStructuredData = generateWebsiteStructuredData(normalizedBaseUrl)
 
   // Breadcrumb structured data
   const breadcrumbStructuredData = {
@@ -219,13 +244,13 @@ export default async function BlogPage({ searchParams }: PageProps) {
         '@type': 'ListItem' as const,
         position: 1,
         name: 'Accueil',
-        item: baseUrl,
+        item: normalizedBaseUrl,
       },
       {
         '@type': 'ListItem' as const,
         position: 2,
         name: 'Blog',
-        item: `${baseUrl}/blog`,
+        item: `${normalizedBaseUrl}/blog`,
       },
       ...(currentCategory
         ? [
@@ -233,7 +258,7 @@ export default async function BlogPage({ searchParams }: PageProps) {
               '@type': 'ListItem' as const,
               position: 3,
               name: categories.find((c) => c.slug.current === currentCategory)?.title || currentCategory,
-              item: `${baseUrl}/blog?category=${currentCategory}`,
+              item: `${normalizedBaseUrl}/blog?category=${currentCategory}`,
             },
           ]
         : []),
@@ -387,10 +412,15 @@ export default async function BlogPage({ searchParams }: PageProps) {
               {/* Previous */}
               {currentPage > 1 && (
                 <Link
-                  href={`/blog?${new URLSearchParams({
-                    ...(currentCategory && { category: currentCategory }),
-                    page: String(currentPage - 1),
-                  })}`}
+                  href={
+                    currentPage === 2 && !currentCategory
+                      ? '/blog' // Page 1 = version canonique
+                      : currentPage === 2
+                        ? `/blog?category=${currentCategory}` // Page 1 avec catégorie
+                        : currentCategory
+                          ? `/blog?category=${currentCategory}&page=${currentPage - 1}`
+                          : `/blog?page=${currentPage - 1}`
+                  }
                   className="hover:border-primary hover:bg-primary/5 hover:text-primary dark:hover:bg-primary/10 rounded-lg border border-mist-300 bg-mist-50 px-4 py-2 text-sm font-medium text-mist-700 transition-all dark:border-mist-700 dark:bg-mist-950 dark:text-mist-300"
                 >
                   Précédent
@@ -409,14 +439,20 @@ export default async function BlogPage({ searchParams }: PageProps) {
                   .map((page, idx, arr) => {
                     // Add ellipsis where there are gaps
                     const showEllipsis = idx > 0 && page - arr[idx - 1] > 1
+                    // Page 1 : pointer vers la version canonique
+                    const href =
+                      page === 1
+                        ? currentCategory
+                          ? `/blog?category=${currentCategory}`
+                          : '/blog' // Version canonique
+                        : currentCategory
+                          ? `/blog?category=${currentCategory}&page=${page}`
+                          : `/blog?page=${page}`
                     return (
                       <span key={page} className="flex items-center">
                         {showEllipsis && <span className="px-2 text-mist-400 dark:text-mist-600">...</span>}
                         <Link
-                          href={`/blog?${new URLSearchParams({
-                            ...(currentCategory && { category: currentCategory }),
-                            page: String(page),
-                          })}`}
+                          href={href}
                           className={`flex h-10 w-10 items-center justify-center rounded-lg text-sm font-medium transition-all ${
                             page === currentPage
                               ? 'bg-primary text-primary-foreground shadow-md'
@@ -434,10 +470,11 @@ export default async function BlogPage({ searchParams }: PageProps) {
               {/* Next */}
               {currentPage < totalPages && (
                 <Link
-                  href={`/blog?${new URLSearchParams({
-                    ...(currentCategory && { category: currentCategory }),
-                    page: String(currentPage + 1),
-                  })}`}
+                  href={
+                    currentCategory
+                      ? `/blog?category=${currentCategory}&page=${currentPage + 1}`
+                      : `/blog?page=${currentPage + 1}`
+                  }
                   className="hover:border-primary hover:bg-primary/5 hover:text-primary dark:hover:bg-primary/10 rounded-lg border border-mist-300 bg-mist-50 px-4 py-2 text-sm font-medium text-mist-700 transition-all dark:border-mist-700 dark:bg-mist-950 dark:text-mist-300"
                 >
                   Suivant

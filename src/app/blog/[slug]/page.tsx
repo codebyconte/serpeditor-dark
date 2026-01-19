@@ -48,7 +48,10 @@ const urlFor = (source: SanityImageSource) =>
   projectId && dataset ? imageUrlBuilder({ projectId, dataset }).image(source) : null
 
 const options = { next: { revalidate: 30 } }
-const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.serpeditor.fr'
+
+// Normaliser baseUrl pour éviter les doubles slashes
+const normalizeBaseUrl = (url: string) => url.replace(/\/$/, '')
 
 interface Post extends SanityDocument {
   _id: string
@@ -179,42 +182,82 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       }
     }
 
-    const seoTitle = post.seo?.title || post.title
+    const normalizedBaseUrl = normalizeBaseUrl(baseUrl)
+    const seoTitle = post.seo?.title || post.title || 'Article'
     const seoDescription = post.seo?.description || post.excerpt || ''
     const imageUrl = post.seo?.image || post.image
     const ogImage = imageUrl ? urlFor(imageUrl)?.width(1200).height(630).url() : undefined
-    const canonicalUrl = post.seo?.canonicalUrl || `${baseUrl}/blog/${post.slug.current}`
-    const articleUrl = `${baseUrl}/blog/${post.slug.current}`
+    const canonicalUrl = post.seo?.canonicalUrl || `${normalizedBaseUrl}/blog/${post.slug.current}`
+    const articleUrl = `${normalizedBaseUrl}/blog/${post.slug.current}`
 
     // Valeurs robots explicites pour garantir la génération correcte des meta tags
-    const shouldIndex = post.seo?.noIndex !== true
-    const shouldFollow = post.seo?.noIndex !== true && post.seo?.noFollow !== true
+    // Toujours des booléens explicites (true/false) jamais undefined
+    const shouldIndex = post.seo?.noIndex === true ? false : true
+    const shouldFollow = post.seo?.noIndex === true || post.seo?.noFollow === true ? false : true
 
-    return {
+    // S'assurer que toutes les valeurs sont définies pour éviter les problèmes de génération
+    // Construire l'objet OpenGraph de manière conditionnelle pour éviter les valeurs undefined
+    const openGraphConfig: Metadata['openGraph'] = {
       title: seoTitle,
-      description: seoDescription,
-      alternates: { canonical: canonicalUrl },
-      openGraph: {
-        title: seoTitle,
-        description: seoDescription,
-        url: articleUrl,
-        siteName: 'SerpEditor',
-        images: ogImage ? [{ url: ogImage, width: 1200, height: 630, alt: post.image?.alt || post.title }] : [],
-        locale: 'fr_FR',
-        type: 'article',
-        publishedTime: post.publishedAt,
-        modifiedTime: post.updatedAt,
-        authors: post.author ? [post.author.name] : undefined,
-        section: post.articleSection || post.categories?.[0]?.title,
-        tags: post.tags,
+      description: seoDescription || 'Article du blog SerpEditor',
+      url: articleUrl,
+      siteName: 'SerpEditor',
+      locale: 'fr_FR',
+      type: 'article',
+    }
+
+    if (ogImage) {
+      openGraphConfig.images = [{ url: ogImage, width: 1200, height: 630, alt: post.image?.alt || post.title || 'Image article' }]
+    }
+
+    if (post.publishedAt) {
+      openGraphConfig.publishedTime = post.publishedAt
+    }
+
+    if (post.updatedAt) {
+      openGraphConfig.modifiedTime = post.updatedAt
+    } else if (post.publishedAt) {
+      openGraphConfig.modifiedTime = post.publishedAt
+    }
+
+    if (post.author?.name) {
+      openGraphConfig.authors = [post.author.name]
+    }
+
+    const section = post.articleSection || post.categories?.[0]?.title
+    if (section) {
+      openGraphConfig.section = section
+    }
+
+    if (post.tags && post.tags.length > 0) {
+      openGraphConfig.tags = post.tags
+    }
+
+    // Construire l'objet Twitter de manière conditionnelle
+    const twitterConfig: Metadata['twitter'] = {
+      card: 'summary_large_image',
+      title: seoTitle,
+      description: seoDescription || 'Article du blog SerpEditor',
+    }
+
+    if (ogImage) {
+      twitterConfig.images = [ogImage]
+    }
+
+    const twitterCreator = post.author?.social?.twitter ? `@${post.author.social.twitter.split('/').pop()}` : undefined
+    if (twitterCreator) {
+      twitterConfig.creator = twitterCreator
+    }
+
+    // Construire l'objet de métadonnées final avec toutes les valeurs requises
+    const metadata: Metadata = {
+      title: seoTitle,
+      description: seoDescription || 'Article du blog SerpEditor',
+      alternates: {
+        canonical: canonicalUrl,
       },
-      twitter: {
-        card: 'summary_large_image',
-        title: seoTitle,
-        description: seoDescription,
-        images: ogImage ? [ogImage] : [],
-        creator: post.author?.social?.twitter ? `@${post.author.social.twitter.split('/').pop()}` : undefined,
-      },
+      openGraph: openGraphConfig,
+      twitter: twitterConfig,
       robots: {
         index: shouldIndex,
         follow: shouldFollow,
@@ -225,14 +268,22 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
           'max-snippet': -1,
         },
       },
-      other: {
-        'article:author': post.author?.name || '',
-        'article:published_time': post.publishedAt,
-        'article:modified_time': post.updatedAt || post.publishedAt,
-        'article:section': post.articleSection || post.categories?.[0]?.title || '',
-        'article:tag': post.tags?.join(', ') || '',
-      },
     }
+
+    // Ajouter les métadonnées article uniquement si elles ont des valeurs
+    if (post.author?.name || post.publishedAt || post.updatedAt || post.articleSection || post.categories?.[0]?.title || post.tags?.length) {
+      metadata.other = {
+        ...(post.author?.name && { 'article:author': post.author.name }),
+        ...(post.publishedAt && { 'article:published_time': post.publishedAt }),
+        ...(post.updatedAt && { 'article:modified_time': post.updatedAt }),
+        ...((post.articleSection || post.categories?.[0]?.title) && {
+          'article:section': post.articleSection || post.categories?.[0]?.title || '',
+        }),
+        ...(post.tags && post.tags.length > 0 && { 'article:tag': post.tags.join(', ') }),
+      }
+    }
+
+    return metadata
   } catch (error) {
     console.error('❌ Erreur lors de la génération des métadonnées:', error)
     return {
@@ -531,9 +582,10 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
     )
   }
 
+  const normalizedBaseUrl = normalizeBaseUrl(baseUrl)
   const postImageUrl = post.image ? urlFor(post.image)?.width(1200).height(630).url() : null
   const authorImageUrl = post.author?.image ? urlFor(post.author.image)?.width(120).height(120).url() : null
-  const articleUrl = `${baseUrl}/blog/${post.slug.current}`
+  const articleUrl = `${normalizedBaseUrl}/blog/${post.slug.current}`
   const headings = extractHeadings(post.body)
   const portableTextComponents = createPortableTextComponents()
 
@@ -581,7 +633,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
       seo: post.seo,
       body: post.body || [],
     },
-    baseUrl,
+    normalizedBaseUrl,
   )
 
   const breadcrumbStructuredData = generatePostBreadcrumb(
@@ -590,7 +642,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
       slug: post.slug.current,
       categories: post.categories?.map((cat) => ({ title: cat.title, slug: cat.slug.current })),
     },
-    baseUrl,
+    normalizedBaseUrl,
   )
 
   const faqStructuredData =

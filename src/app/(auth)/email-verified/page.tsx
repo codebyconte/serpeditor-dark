@@ -3,10 +3,32 @@ import { Check } from 'lucide-react'
 import type { Metadata } from 'next'
 import Link from 'next/link'
 
+const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.serpeditor.fr'
+
 export const metadata: Metadata = {
   title: 'Adresse e-mail vérifiée | Compte activé avec succès',
   description:
     'Votre adresse e-mail a été confirmée avec succès. Votre compte est désormais actif — connectez-vous pour accéder à votre espace personnel et profiter de toutes les fonctionnalités.',
+  alternates: {
+    canonical: `${baseUrl}/email-verified`,
+  },
+  openGraph: {
+    title: 'Adresse e-mail vérifiée | Serpeditor',
+    description: 'Votre compte est maintenant activé. Connectez-vous pour commencer.',
+    url: `${baseUrl}/email-verified`,
+    siteName: 'SerpEditor',
+    type: 'website',
+    locale: 'fr_FR',
+  },
+  twitter: {
+    card: 'summary',
+    title: 'Adresse e-mail vérifiée',
+    description: 'Votre compte Serpeditor est activé.',
+  },
+  robots: {
+    index: false, // Pages auth ne doivent pas être indexées
+    follow: false,
+  },
 }
 
 export default async function EmailVerifiedPage() {

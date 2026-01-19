@@ -32,6 +32,19 @@ export const metadata: Metadata = {
   alternates: {
     canonical: `${baseUrl}/mentions-legales`,
   },
+  openGraph: {
+    title: 'Mentions Légales | SerpEditor',
+    description: 'Informations légales sur SerpEditor : éditeur, hébergeur et propriété intellectuelle.',
+    url: `${baseUrl}/mentions-legales`,
+    siteName: 'SerpEditor',
+    type: 'website',
+    locale: 'fr_FR',
+  },
+  twitter: {
+    card: 'summary',
+    title: 'Mentions Légales | SerpEditor',
+    description: 'Informations légales sur SerpEditor.',
+  },
 }
 
 /**

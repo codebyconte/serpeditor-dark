@@ -1,9 +1,9 @@
 import { ButtonLink, PlainButtonLink } from '@/components/elements/button'
 import { Main } from '@/components/elements/main'
-import { XIcon } from '@/components/icons/social/x-icon'
-import { YouTubeIcon } from '@/components/icons/social/youtube-icon'
 import { FacebookIcon } from '@/components/icons/social/facebook-icon'
 import { TiktokIcon } from '@/components/icons/social/tiktok-icon'
+import { XIcon } from '@/components/icons/social/x-icon'
+import { YouTubeIcon } from '@/components/icons/social/youtube-icon'
 import { DocumentCentered } from '@/components/sections/document-centered'
 import {
   FooterCategory,
@@ -31,6 +31,19 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: `${baseUrl}/conditions-generales-vente`,
+  },
+  openGraph: {
+    title: 'Conditions Générales de Vente | SerpEditor',
+    description: 'CGV de SerpEditor : tarifs, abonnements et modalités d\'utilisation du logiciel SEO.',
+    url: `${baseUrl}/conditions-generales-vente`,
+    siteName: 'SerpEditor',
+    type: 'website',
+    locale: 'fr_FR',
+  },
+  twitter: {
+    card: 'summary',
+    title: 'Conditions Générales de Vente | SerpEditor',
+    description: 'CGV de SerpEditor : tarifs et conditions d\'utilisation.',
   },
 }
 

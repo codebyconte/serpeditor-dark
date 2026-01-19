@@ -29,16 +29,16 @@ export function BlogCategoryFilter({ categories, totalPosts }: BlogCategoryFilte
   const handleCategoryChange = useCallback(
     (categorySlug: string | null) => {
       startTransition(() => {
-        const params = new URLSearchParams(searchParams.toString())
-        if (categorySlug) {
-          params.set('category', categorySlug)
+        // Si aucune catégorie, pointer vers la version canonique /blog
+        if (!categorySlug) {
+          router.push('/blog', { scroll: false })
         } else {
-          params.delete('category')
+          // Sinon, utiliser le paramètre category
+          router.push(`/blog?category=${categorySlug}`, { scroll: false })
         }
-        router.push(`/blog?${params.toString()}`, { scroll: false })
       })
     },
-    [router, searchParams],
+    [router],
   )
 
   return (

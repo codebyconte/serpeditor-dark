@@ -2,10 +2,32 @@ import type { Metadata } from 'next'
 import { Suspense } from 'react'
 import { ResetPasswordForm } from './reset-reset-password'
 
+const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.serpeditor.fr'
+
 export const metadata: Metadata = {
   title: 'Réinitialiser votre mot de passe | Sécurisez l&apos;accès à votre compte',
   description:
     'Créez un nouveau mot de passe pour sécuriser votre compte. Choisissez un mot de passe fort et unique afin de garantir la confidentialité de vos informations personnelles.',
+  alternates: {
+    canonical: `${baseUrl}/reset-password`,
+  },
+  openGraph: {
+    title: 'Réinitialiser votre mot de passe | Serpeditor',
+    description: 'Créez un nouveau mot de passe sécurisé pour votre compte.',
+    url: `${baseUrl}/reset-password`,
+    siteName: 'SerpEditor',
+    type: 'website',
+    locale: 'fr_FR',
+  },
+  twitter: {
+    card: 'summary',
+    title: 'Réinitialiser votre mot de passe',
+    description: 'Sécurisez votre compte Serpeditor.',
+  },
+  robots: {
+    index: false, // Pages auth ne doivent pas être indexées
+    follow: false,
+  },
 }
 
 function ResetPasswordFormFallback() {
