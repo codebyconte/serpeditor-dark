@@ -7,9 +7,59 @@ import { Resend } from 'resend'
 const resend = new Resend(process.env.RESEND_API_KEY)
 
 export const auth = betterAuth({
+  // App configuration
+  appName: 'SerpEditor',
+  basePath: '/api/auth',
+  // Use environment variables if available, otherwise fallback
+  baseURL: process.env.BETTER_AUTH_URL || process.env.NEXT_PUBLIC_BASE_URL,
+  secret: process.env.BETTER_AUTH_SECRET,
+
+  // Database adapter
   database: prismaAdapter(prisma, {
     provider: 'postgresql',
   }),
+
+  // User configuration
+  user: {
+    // Model name matches Prisma schema (lowercase 'user')
+    modelName: 'user',
+    // Additional fields can be mapped here if needed
+    additionalFields: {},
+    // Email change is disabled by default for security
+    changeEmail: {
+      enabled: false,
+    },
+    // User deletion is disabled by default for data retention
+    deleteUser: {
+      enabled: false,
+    },
+  },
+
+  // Account configuration
+  account: {
+    // Model name matches Prisma schema (lowercase 'account')
+    modelName: 'account',
+    accountLinking: {
+      enabled: true,
+      trustedProviders: ['google'],
+      updateUserInfoOnLink: true,
+      allowDifferentEmails: true,
+    },
+    // Store account info in cookie for stateless OAuth
+    storeAccountCookie: false,
+  },
+
+  // Session management
+  session: {
+    expiresIn: 60 * 60 * 24 * 7, // 7 days (default)
+    updateAge: 60 * 60 * 24, // Update session every 24 hours
+    // Cookie cache strategy for better performance
+    cookieCache: {
+      enabled: true,
+      maxAge: 60 * 60 * 24 * 7, // 7 days
+      version: '1', // Change this to invalidate all sessions
+    },
+  },
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: true,
@@ -236,5 +286,36 @@ export const auth = betterAuth({
       allowDifferentEmails: true,
     },
   },
+  // Security configuration
+  advanced: {
+    // Force HTTPS cookies in production
+    useSecureCookies: process.env.NODE_ENV === 'production',
+    // CSRF protection is enabled by default
+    // disableCSRFCheck: false, // ⚠️ Never disable in production
+    // disableOriginCheck: false, // ⚠️ Never disable in production
+    // Cross-subdomain cookies if needed
+    crossSubDomainCookies: {
+      enabled: false,
+    },
+    // IP address detection for rate limiting
+    ipAddress: {
+      ipAddressHeaders: ['x-forwarded-for', 'x-real-ip'],
+    },
+  },
+
+  // Rate limiting
+  rateLimit: {
+    enabled: true,
+    window: 60, // 1 minute
+    max: 10, // 10 requests per window
+    storage: 'database', // Use database for rate limiting
+  },
+
+  // Trusted origins for CSRF protection
+  trustedOrigins: process.env.BETTER_AUTH_TRUSTED_ORIGINS
+    ? process.env.BETTER_AUTH_TRUSTED_ORIGINS.split(',')
+    : [],
+
+  // Plugins - import from dedicated paths for tree-shaking
   plugins: [nextCookies()],
 })
