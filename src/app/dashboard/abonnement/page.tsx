@@ -7,9 +7,10 @@ import { Plan, PricingHeroMultiTier } from '@/components/sections/pricing-hero-m
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { SoftButton } from '@/components/elements/button'
-import { CheckCircle2, Crown, Sparkles } from 'lucide-react'
+import { CheckCircle2, Crown, Sparkles, CreditCard, Zap, Calendar } from 'lucide-react'
 import { CancelSubscriptionButton } from '@/components/dashboard/cancel-subscription-button'
 import { UsageStats } from '@/components/dashboard/usage-stats'
+import { PageHeader } from '@/components/dashboard/page-header'
 
 export const metadata: Metadata = {
   title: 'Abonnement & Facturation',
@@ -175,111 +176,148 @@ export default async function AbonnementPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 sm:px-6 lg:px-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">Gérer votre abonnement</h1>
-        <p className="mt-2 text-muted-foreground">
-          Consultez votre plan actuel et passez à un niveau supérieur pour débloquer plus de fonctionnalités.
-        </p>
-      </div>
+    <div className="mx-auto max-w-6xl">
+      <PageHeader
+        icon={CreditCard}
+        title="Abonnement"
+        description="Gérez votre plan et consultez votre utilisation"
+      />
 
-      {/* Carte du plan actuel */}
-      <Card className="mb-8 border-2 border-green-500/20 bg-gradient-to-br from-green-500/10 to-green-500/5">
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-500/20">
-                <Crown className="h-6 w-6 text-green-600 dark:text-green-400" />
+      <div className="mt-8 space-y-8">
+        {/* Current plan card */}
+        <Card className="relative overflow-hidden border-white/5 bg-linear-to-br from-mist-800/60 to-mist-900/60 backdrop-blur-sm">
+          {/* Decorative gradient */}
+          <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-emerald-500/50 to-transparent" />
+          <div className="absolute -right-20 -top-20 h-40 w-40 rounded-full bg-emerald-500/10 blur-3xl" />
+
+          <CardHeader className="relative border-b border-white/5 pb-6">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex items-center gap-4">
+                <div className="relative">
+                  <div className="absolute -inset-1 rounded-xl bg-emerald-500/20 opacity-50 blur-md" />
+                  <div className="relative flex h-14 w-14 items-center justify-center rounded-xl border border-white/10 bg-linear-to-br from-emerald-500/20 to-emerald-500/5 shadow-lg">
+                    <Crown className="h-7 w-7 text-emerald-400" />
+                  </div>
+                </div>
+                <div>
+                  <CardTitle className="text-xl">Plan actuel</CardTitle>
+                  <CardDescription>Votre abonnement actif</CardDescription>
+                </div>
               </div>
-              <div>
-                <CardTitle className="text-2xl">Plan actuel</CardTitle>
-                <CardDescription>Votre abonnement actif</CardDescription>
-              </div>
+              <Badge color="green" className="w-fit px-4 py-2 text-base font-semibold">
+                {currentPlan}
+              </Badge>
             </div>
-            <Badge color="green" className="px-4 py-2 text-lg">
-              {currentPlan}
-            </Badge>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <div className="rounded-lg border bg-muted/50 p-4">
-                <p className="text-sm font-medium text-muted-foreground">Prix</p>
-                <p className="text-2xl font-bold">{PLAN_PRICES[currentPlan]}/mois</p>
+          </CardHeader>
+
+          <CardContent className="relative pt-6">
+            <div className="grid gap-4 sm:grid-cols-3">
+              {/* Price card */}
+              <div className="group relative overflow-hidden rounded-xl border border-white/5 bg-white/5 p-5 transition-all hover:border-white/10">
+                <div className="absolute -right-4 -top-4 h-16 w-16 rounded-full bg-emerald-500/10 blur-xl transition-all group-hover:bg-emerald-500/20" />
+                <div className="relative">
+                  <div className="mb-2 flex items-center gap-2">
+                    <Zap className="h-4 w-4 text-emerald-400" />
+                    <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Prix</span>
+                  </div>
+                  <p className="text-2xl font-bold text-foreground">{PLAN_PRICES[currentPlan]}<span className="text-sm font-normal text-muted-foreground">/mois</span></p>
+                </div>
               </div>
+
+              {/* Renewal card */}
               {subscription?.currentPeriodEnd && (
-                <div className="rounded-lg border bg-muted/50 p-4">
-                  <p className="text-sm font-medium text-muted-foreground">Prochain renouvellement</p>
-                  <p className="text-lg font-semibold">{formatDate(subscription.currentPeriodEnd)}</p>
+                <div className="group relative overflow-hidden rounded-xl border border-white/5 bg-white/5 p-5 transition-all hover:border-white/10">
+                  <div className="absolute -right-4 -top-4 h-16 w-16 rounded-full bg-blue-500/10 blur-xl transition-all group-hover:bg-blue-500/20" />
+                  <div className="relative">
+                    <div className="mb-2 flex items-center gap-2">
+                      <Calendar className="h-4 w-4 text-blue-400" />
+                      <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Renouvellement</span>
+                    </div>
+                    <p className="text-lg font-semibold text-foreground">{formatDate(subscription.currentPeriodEnd)}</p>
+                  </div>
                 </div>
               )}
+
+              {/* Status card */}
               {subscription?.status && (
-                <div className="rounded-lg border bg-muted/50 p-4">
-                  <p className="text-sm font-medium text-muted-foreground">Statut</p>
-                  <Badge color={subscription.status === 'active' ? 'green' : 'amber'} className="mt-1">
-                    {subscription.status === 'active' ? 'Actif' : subscription.status}
-                  </Badge>
+                <div className="group relative overflow-hidden rounded-xl border border-white/5 bg-white/5 p-5 transition-all hover:border-white/10">
+                  <div className="absolute -right-4 -top-4 h-16 w-16 rounded-full bg-purple-500/10 blur-xl transition-all group-hover:bg-purple-500/20" />
+                  <div className="relative">
+                    <div className="mb-2 flex items-center gap-2">
+                      <CheckCircle2 className="h-4 w-4 text-purple-400" />
+                      <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Statut</span>
+                    </div>
+                    <Badge color={subscription.status === 'active' ? 'green' : 'amber'} className="mt-1">
+                      {subscription.status === 'active' ? 'Actif' : subscription.status}
+                    </Badge>
+                  </div>
                 </div>
               )}
             </div>
 
-            <div className="rounded-lg border border-green-500/20 bg-green-500/10 p-4">
+            {/* Features included */}
+            <div className="mt-6 rounded-xl border border-emerald-500/10 bg-emerald-500/5 p-5">
               <div className="flex items-start gap-3">
-                <Sparkles className="mt-0.5 h-5 w-5 text-green-600 dark:text-green-400" />
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-emerald-500/20">
+                  <Sparkles className="h-4 w-4 text-emerald-400" />
+                </div>
                 <div className="flex-1">
-                  <p className="text-sm font-semibold">Fonctionnalités incluses</p>
-                  <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
-                    {PLAN_FEATURES[currentPlan].slice(0, 3).map((feature, index) => (
-                      <li key={index}>• {feature}</li>
+                  <p className="font-semibold text-foreground">Fonctionnalités incluses</p>
+                  <ul className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                    {PLAN_FEATURES[currentPlan].map((feature, index) => (
+                      <li key={index} className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <div className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                        {feature}
+                      </li>
                     ))}
                   </ul>
                 </div>
               </div>
             </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
 
-      {/* Usage actuel */}
-      <div className="mb-8">
-        <h2 className="mb-4 text-2xl font-bold tracking-tight">Votre utilisation</h2>
-        <UsageStats />
-      </div>
+        {/* Usage stats */}
+        <div>
+          <h2 className="mb-4 text-lg font-semibold text-foreground">Votre utilisation</h2>
+          <UsageStats />
+        </div>
 
-      {/* Plans disponibles */}
-      <div className="mb-8">
-        <h2 className="mb-4 text-2xl font-bold tracking-tight">Plans disponibles</h2>
-        <PricingHeroMultiTier
-          id="pricing"
-          headline="Choisissez votre plan"
-          subheadline={
-            <p>
-              Passez à un niveau supérieur pour débloquer plus de fonctionnalités et augmenter vos limites.
-            </p>
-          }
-          options={['Mensuel']}
-          plans={{ Mensuel: plans(currentPlan, session.user.id) }}
-        />
-      </div>
-
-      {/* Section d'annulation */}
-      <Card className="border-2 border-red-500/20 bg-gradient-to-br from-red-500/10 to-red-500/5">
-        <CardHeader>
-          <CardTitle className="text-xl">Gérer votre abonnement</CardTitle>
-          <CardDescription>
-            Vous pouvez annuler votre abonnement à tout moment. Votre accès restera actif jusqu&apos;à
-            la fin de la période en cours.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <CancelSubscriptionButton
-            currentPlan={currentPlan}
-            cancelAtPeriodEnd={subscription.cancelAtPeriodEnd || false}
-            currentPeriodEnd={subscription.currentPeriodEnd}
+        {/* Available plans */}
+        <div>
+          <h2 className="mb-4 text-lg font-semibold text-foreground">Plans disponibles</h2>
+          <PricingHeroMultiTier
+            id="pricing"
+            headline="Choisissez votre plan"
+            subheadline={
+              <p className="text-muted-foreground">
+                Passez à un niveau supérieur pour débloquer plus de fonctionnalités
+              </p>
+            }
+            options={['Mensuel']}
+            plans={{ Mensuel: plans(currentPlan, session.user.id) }}
           />
-        </CardContent>
-      </Card>
+        </div>
+
+        {/* Cancellation section */}
+        <Card className="relative overflow-hidden border-red-500/10 bg-linear-to-br from-red-500/5 to-transparent">
+          <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-red-500/30 to-transparent" />
+          <CardHeader className="pb-4">
+            <CardTitle className="text-lg">Gérer votre abonnement</CardTitle>
+            <CardDescription>
+              Vous pouvez annuler votre abonnement à tout moment. Votre accès restera actif jusqu&apos;à la fin de la
+              période en cours.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <CancelSubscriptionButton
+              currentPlan={currentPlan}
+              cancelAtPeriodEnd={subscription.cancelAtPeriodEnd || false}
+              currentPeriodEnd={subscription.currentPeriodEnd}
+            />
+          </CardContent>
+        </Card>
+      </div>
     </div>
   )
 }

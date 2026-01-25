@@ -1,4 +1,4 @@
-// 📁 app/dashboard/page.tsx
+// Dashboard page - SEO Analytics Overview
 import { DeleteProjectButton } from '@/components/dashboard/delete-project-button'
 import { Dropdown, DropdownButton, DropdownMenu } from '@/components/dashboard/dropdown'
 import { PageHeader } from '@/components/dashboard/page-header'
@@ -14,14 +14,14 @@ import { format, subDays } from 'date-fns'
 import {
   Activity,
   AlertTriangle,
+  ArrowUpRight,
   BarChart3,
-  CheckCircle2,
   EllipsisVertical,
-  ExternalLink,
   Eye,
   Folder,
   Globe,
   MousePointerClick,
+  Sparkles,
   TrendingDown,
   TrendingUp,
   Zap,
@@ -173,37 +173,24 @@ function getProjectAlerts(
 }
 
 export default async function DashboardPage() {
-  // Use cached session for per-request deduplication
   const session = await getSession()
   const userId = session?.user?.id
 
-  // Récupérer les projets
   const projects = await prisma.project.findMany({
-    where: {
-      userId,
-    },
-    orderBy: {
-      createdAt: 'desc',
-    },
+    where: { userId },
+    orderBy: { createdAt: 'desc' },
   })
 
-  // Essayer de récupérer l'access token Google (peut échouer si Google n'est pas connecté)
   let accessToken = null
   try {
     accessToken = await auth.api.getAccessToken({
-      body: {
-        providerId: 'google',
-        userId,
-      },
+      body: { providerId: 'google', userId },
       headers: await headers(),
     })
   } catch {
-    // Si l'utilisateur n'a pas encore connecté Google, on continue sans access token
-    // Les données GSC ne seront simplement pas disponibles
     console.log('Google account not connected, continuing without GSC data')
   }
 
-  // ✅ Récupérer les données GSC pour tous les projets
   const projectsData = new Map()
   const projectsDataPrevious = new Map()
 
@@ -215,22 +202,16 @@ export default async function DashboardPage() {
 
     await Promise.all(
       projects.map(async (project) => {
-        // Données actuelles
         const currentData = await getProjectGSCData(project.url, accessToken.accessToken, startDate, endDate)
-        if (currentData) {
-          projectsData.set(project.id, currentData)
-        }
+        if (currentData) projectsData.set(project.id, currentData)
 
-        // Données précédentes (pour comparaison)
         const previousData = await getProjectGSCData(
           project.url,
           accessToken.accessToken,
           previousStartDate,
           previousEndDate,
         )
-        if (previousData) {
-          projectsDataPrevious.set(project.id, previousData)
-        }
+        if (previousData) projectsDataPrevious.set(project.id, previousData)
       }),
     )
   }
@@ -238,9 +219,9 @@ export default async function DashboardPage() {
   const getCrawlStatusBadge = (status: string | null | undefined) => {
     if (!status) return null
     const statusConfig = {
-      PENDING: { color: 'amber' as const, label: 'En attente' },
-      READY: { color: 'green' as const, label: 'Prêt' },
-      ERROR: { color: 'red' as const, label: 'Erreur' },
+      PENDING: { color: 'amber' as const, label: 'En attente', icon: '...' },
+      READY: { color: 'green' as const, label: 'Prêt', icon: null },
+      ERROR: { color: 'red' as const, label: 'Erreur', icon: null },
     }
     const config = statusConfig[status as keyof typeof statusConfig]
     if (!config) return null
@@ -248,238 +229,371 @@ export default async function DashboardPage() {
   }
 
   return (
-    <main className="text-foreground min-h-screen">
-      <div className="container mx-auto px-4 pt-6 sm:px-6 lg:px-8">
+    <main className="text-foreground">
+      <div className="mx-auto max-w-7xl">
         <PageHeader
-          title="Tableau de bord SEO"
-          description="Suivez vos performances, analysez vos concurrents et identifiez des opportunités de croissance en temps réel"
+          title="Tableau de bord"
+          description="Suivez vos performances SEO, analysez vos concurrents et identifiez des opportunités de croissance"
           actions={<OpenModal />}
         />
 
         {projects.length > 0 ? (
-          <section className="space-y-6 pb-8">
-            {projects.map((project) => {
-              const projectData = projectsData.get(project.id)
-              const projectDataPrevious = projectsDataPrevious.get(project.id)
-              const alerts = getProjectAlerts(project, projectData, projectDataPrevious)
+          <section className="mt-8 space-y-6 pb-8">
+            {/* Quick stats summary */}
+            {projectsData.size > 0 && (
+              <div className="mb-8 grid grid-cols-2 gap-4 lg:grid-cols-4">
+                {(() => {
+                  let totalClicks = 0
+                  let totalImpressions = 0
+                  projectsData.forEach((data: ProjectMetrics) => {
+                    totalClicks += data.clicks
+                    totalImpressions += data.impressions
+                  })
+                  const avgCtr = totalImpressions > 0 ? (totalClicks / totalImpressions) * 100 : 0
 
-              // Calculer les changements
-              let clicksChange = 0
-              let impressionsChange = 0
-
-              if (projectData && projectDataPrevious) {
-                clicksChange =
-                  projectDataPrevious.clicks > 0
-                    ? ((projectData.clicks - projectDataPrevious.clicks) / projectDataPrevious.clicks) * 100
-                    : 0
-                impressionsChange =
-                  projectDataPrevious.impressions > 0
-                    ? ((projectData.impressions - projectDataPrevious.impressions) / projectDataPrevious.impressions) *
-                      100
-                    : 0
-              }
-
-              return (
-                <Card key={project.id} className="group transition-all duration-200 hover:shadow-lg">
-                  {/* Header du projet */}
-                  <CardHeader className="border-b">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1 space-y-2">
-                        <div className="flex items-center gap-3">
-                          <div className="flex h-10 w-10 items-center justify-center rounded-lg">
-                            <Globe className="text-primary h-5 w-5" />
+                  return (
+                    <>
+                      <div className="group relative overflow-hidden rounded-2xl border border-white/5 bg-linear-to-br from-mist-800/80 to-mist-900/80 p-5 backdrop-blur-sm transition-all duration-300 hover:border-white/10 hover:shadow-lg hover:shadow-primary/5">
+                        <div className="absolute -right-4 -top-4 h-24 w-24 rounded-full bg-blue-500/10 blur-2xl transition-all duration-500 group-hover:bg-blue-500/20" />
+                        <div className="relative">
+                          <div className="mb-3 flex items-center justify-between">
+                            <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                              Total clics
+                            </span>
+                            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-500/10">
+                              <MousePointerClick className="h-4 w-4 text-blue-400" />
+                            </div>
                           </div>
-                          <div className="flex-1">
-                            <CardTitle className="text-lg font-semibold">
-                              {project.url.replace(/^https?:\/\//, '')}
-                            </CardTitle>
-                            <CardDescription className="mt-1">
+                          <p className="text-3xl font-bold tracking-tight text-blue-400">
+                            {totalClicks.toLocaleString('fr-FR')}
+                          </p>
+                          <p className="mt-1 text-xs text-muted-foreground">30 derniers jours</p>
+                        </div>
+                      </div>
+
+                      <div className="group relative overflow-hidden rounded-2xl border border-white/5 bg-linear-to-br from-mist-800/80 to-mist-900/80 p-5 backdrop-blur-sm transition-all duration-300 hover:border-white/10 hover:shadow-lg hover:shadow-primary/5">
+                        <div className="absolute -right-4 -top-4 h-24 w-24 rounded-full bg-purple-500/10 blur-2xl transition-all duration-500 group-hover:bg-purple-500/20" />
+                        <div className="relative">
+                          <div className="mb-3 flex items-center justify-between">
+                            <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                              Impressions
+                            </span>
+                            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-purple-500/10">
+                              <Eye className="h-4 w-4 text-purple-400" />
+                            </div>
+                          </div>
+                          <p className="text-3xl font-bold tracking-tight text-purple-400">
+                            {totalImpressions.toLocaleString('fr-FR')}
+                          </p>
+                          <p className="mt-1 text-xs text-muted-foreground">30 derniers jours</p>
+                        </div>
+                      </div>
+
+                      <div className="group relative overflow-hidden rounded-2xl border border-white/5 bg-linear-to-br from-mist-800/80 to-mist-900/80 p-5 backdrop-blur-sm transition-all duration-300 hover:border-white/10 hover:shadow-lg hover:shadow-primary/5">
+                        <div className="absolute -right-4 -top-4 h-24 w-24 rounded-full bg-emerald-500/10 blur-2xl transition-all duration-500 group-hover:bg-emerald-500/20" />
+                        <div className="relative">
+                          <div className="mb-3 flex items-center justify-between">
+                            <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                              CTR moyen
+                            </span>
+                            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500/10">
+                              <Zap className="h-4 w-4 text-emerald-400" />
+                            </div>
+                          </div>
+                          <p className="text-3xl font-bold tracking-tight text-emerald-400">{avgCtr.toFixed(2)}%</p>
+                          <p className="mt-1 text-xs text-muted-foreground">Tous projets</p>
+                        </div>
+                      </div>
+
+                      <div className="group relative overflow-hidden rounded-2xl border border-white/5 bg-linear-to-br from-mist-800/80 to-mist-900/80 p-5 backdrop-blur-sm transition-all duration-300 hover:border-white/10 hover:shadow-lg hover:shadow-primary/5">
+                        <div className="absolute -right-4 -top-4 h-24 w-24 rounded-full bg-orange-500/10 blur-2xl transition-all duration-500 group-hover:bg-orange-500/20" />
+                        <div className="relative">
+                          <div className="mb-3 flex items-center justify-between">
+                            <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                              Projets actifs
+                            </span>
+                            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-orange-500/10">
+                              <Globe className="h-4 w-4 text-orange-400" />
+                            </div>
+                          </div>
+                          <p className="text-3xl font-bold tracking-tight text-orange-400">{projects.length}</p>
+                          <p className="mt-1 text-xs text-muted-foreground">Sites suivis</p>
+                        </div>
+                      </div>
+                    </>
+                  )
+                })()}
+              </div>
+            )}
+
+            {/* Projects list */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h2 className="text-lg font-semibold text-foreground">Vos projets</h2>
+                <span className="text-sm text-muted-foreground">{projects.length} site(s)</span>
+              </div>
+
+              {projects.map((project) => {
+                const projectData = projectsData.get(project.id)
+                const projectDataPrevious = projectsDataPrevious.get(project.id)
+                const alerts = getProjectAlerts(project, projectData, projectDataPrevious)
+
+                let clicksChange = 0
+                let impressionsChange = 0
+
+                if (projectData && projectDataPrevious) {
+                  clicksChange =
+                    projectDataPrevious.clicks > 0
+                      ? ((projectData.clicks - projectDataPrevious.clicks) / projectDataPrevious.clicks) * 100
+                      : 0
+                  impressionsChange =
+                    projectDataPrevious.impressions > 0
+                      ? ((projectData.impressions - projectDataPrevious.impressions) /
+                          projectDataPrevious.impressions) *
+                        100
+                      : 0
+                }
+
+                return (
+                  <Card
+                    key={project.id}
+                    className="group relative overflow-hidden border-white/5 bg-linear-to-br from-mist-800/60 to-mist-900/60 backdrop-blur-sm transition-all duration-300 hover:border-white/10 hover:shadow-xl hover:shadow-primary/5"
+                  >
+                    {/* Subtle gradient overlay on hover */}
+                    <div className="absolute inset-0 bg-linear-to-r from-primary/5 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+
+                    <CardHeader className="relative border-b border-white/5 pb-4">
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex flex-1 items-start gap-4">
+                          {/* Project icon with glow */}
+                          <div className="relative">
+                            <div className="absolute -inset-1 rounded-xl bg-primary/20 opacity-0 blur-md transition-opacity duration-300 group-hover:opacity-100" />
+                            <div className="relative flex h-12 w-12 items-center justify-center rounded-xl border border-white/10 bg-linear-to-br from-primary/20 to-primary/5 shadow-lg">
+                              <Globe className="h-6 w-6 text-primary" />
+                            </div>
+                          </div>
+
+                          <div className="flex-1 space-y-1">
+                            <div className="flex items-center gap-3">
+                              <CardTitle className="text-lg font-semibold tracking-tight">
+                                {project.url.replace(/^https?:\/\//, '').replace(/\/$/, '')}
+                              </CardTitle>
+                              {getCrawlStatusBadge(project.crawl_status)}
+                            </div>
+                            <CardDescription>
                               <Link
                                 href={project.url}
                                 target="_blank"
                                 rel="noopener noreferrer nofollow"
-                                className="text-muted-foreground hover:text-foreground flex items-center gap-1.5 text-sm transition-colors"
+                                className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-primary"
                               >
                                 {project.url}
-                                <ExternalLink className="h-3.5 w-3.5" />
+                                <ArrowUpRight className="h-3.5 w-3.5" />
                               </Link>
                             </CardDescription>
-                          </div>
-                        </div>
-                        {project.crawl_status && (
-                          <div className="flex items-center gap-2">
-                            {getCrawlStatusBadge(project.crawl_status)}
                             {project.task_created_at && (
-                              <span className="text-muted-foreground text-xs">
-                                Créé le {format(new Date(project.task_created_at), 'dd/MM/yyyy')}
-                              </span>
+                              <p className="text-xs text-muted-foreground/70">
+                                Ajouté le {format(new Date(project.task_created_at), 'dd/MM/yyyy')}
+                              </p>
                             )}
                           </div>
-                        )}
-                      </div>
-                      <CardAction>
-                        <Dropdown>
-                          <DropdownButton plain aria-label="Plus d'options">
-                            <EllipsisVertical size={16} />
-                          </DropdownButton>
-                          <DropdownMenu>
-                            <DeleteProjectButton projectId={project.id} projectUrl={project.url} />
-                          </DropdownMenu>
-                        </Dropdown>
-                      </CardAction>
-                    </div>
-                  </CardHeader>
+                        </div>
 
-                  {/* Métriques du projet */}
-                  <CardContent className="space-y-6 pt-6">
-                    {projectData ? (
-                      <>
-                        <div>
-                          <div className="mb-4 flex items-center gap-2">
-                            <Activity className="text-muted-foreground h-4 w-4" />
-                            <p className="">Performances - 30 derniers jours</p>
+                        <CardAction>
+                          <Dropdown>
+                            <DropdownButton
+                              plain
+                              aria-label="Plus d'options"
+                              className="rounded-lg border border-transparent p-2 transition-colors hover:border-white/10 hover:bg-white/5"
+                            >
+                              <EllipsisVertical size={16} />
+                            </DropdownButton>
+                            <DropdownMenu>
+                              <DeleteProjectButton projectId={project.id} projectUrl={project.url} />
+                            </DropdownMenu>
+                          </Dropdown>
+                        </CardAction>
+                      </div>
+                    </CardHeader>
+
+                    <CardContent className="relative space-y-5 pt-5">
+                      {projectData ? (
+                        <>
+                          {/* Metrics header */}
+                          <div className="flex items-center gap-2">
+                            <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary/10">
+                              <Activity className="h-3.5 w-3.5 text-primary" />
+                            </div>
+                            <span className="text-sm font-medium text-muted-foreground">
+                              Performances des 30 derniers jours
+                            </span>
                           </div>
-                          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                            {/* Clics */}
-                            <div className="group/stat rounded-lg border bg-gradient-to-br from-blue-50/50 to-blue-100/30 p-4 transition-all hover:shadow-md dark:from-blue-950/20 dark:to-blue-900/10">
-                              <div className="mb-2 flex items-center gap-2">
-                                <div className="rounded-md bg-blue-500/10 p-1.5">
-                                  <MousePointerClick className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+
+                          {/* Metrics grid */}
+                          <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+                            {/* Clicks metric */}
+                            <div className="group/stat relative overflow-hidden rounded-xl border border-white/5 bg-linear-to-br from-blue-500/10 via-blue-500/5 to-transparent p-4 transition-all duration-300 hover:border-blue-500/20 hover:shadow-md">
+                              <div className="mb-2 flex items-center justify-between">
+                                <span className="text-xs font-medium text-muted-foreground">Clics</span>
+                                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-blue-500/10">
+                                  <MousePointerClick className="h-3.5 w-3.5 text-blue-400" />
                                 </div>
-                                <span className="dashboard--sm font-medium">Clics</span>
                               </div>
-                              <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                              <p className="text-2xl font-bold tabular-nums text-blue-400">
                                 {projectData.clicks.toLocaleString('fr-FR')}
                               </p>
                               {projectDataPrevious && (
-                                <p className="dashboard-body-sm mt-1 flex items-center gap-1">
+                                <div className="mt-2 flex items-center gap-1">
                                   {clicksChange > 0 ? (
                                     <>
-                                      <TrendingUp className="h-3 w-3 text-green-600" />
-                                      <span className="text-green-600">+{clicksChange.toFixed(1)}%</span>
+                                      <TrendingUp className="h-3 w-3 text-emerald-400" />
+                                      <span className="text-xs font-medium text-emerald-400">
+                                        +{clicksChange.toFixed(1)}%
+                                      </span>
                                     </>
                                   ) : clicksChange < 0 ? (
                                     <>
-                                      <TrendingDown className="h-3 w-3 text-red-600" />
-                                      <span className="text-red-600">{clicksChange.toFixed(1)}%</span>
+                                      <TrendingDown className="h-3 w-3 text-red-400" />
+                                      <span className="text-xs font-medium text-red-400">
+                                        {clicksChange.toFixed(1)}%
+                                      </span>
                                     </>
                                   ) : (
-                                    <span className="text-muted-foreground">→</span>
+                                    <span className="text-xs text-muted-foreground">Stable</span>
                                   )}
-                                </p>
+                                </div>
                               )}
                             </div>
 
-                            {/* Impressions */}
-                            <div className="group/stat rounded-lg border bg-gradient-to-br from-purple-50/50 to-purple-100/30 p-4 transition-all hover:shadow-md dark:from-purple-950/20 dark:to-purple-900/10">
-                              <div className="mb-2 flex items-center gap-2">
-                                <div className="rounded-md bg-purple-500/10 p-1.5">
-                                  <Eye className="h-4 w-4 text-purple-600 dark:text-purple-400" />
+                            {/* Impressions metric */}
+                            <div className="group/stat relative overflow-hidden rounded-xl border border-white/5 bg-linear-to-br from-purple-500/10 via-purple-500/5 to-transparent p-4 transition-all duration-300 hover:border-purple-500/20 hover:shadow-md">
+                              <div className="mb-2 flex items-center justify-between">
+                                <span className="text-xs font-medium text-muted-foreground">Impressions</span>
+                                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-purple-500/10">
+                                  <Eye className="h-3.5 w-3.5 text-purple-400" />
                                 </div>
-                                <span className="font-medium">Impressions</span>
                               </div>
-                              <p className="text-2xl font-bold text-purple-600 dark:text-purple-400">
+                              <p className="text-2xl font-bold tabular-nums text-purple-400">
                                 {projectData.impressions.toLocaleString('fr-FR')}
                               </p>
                               {projectDataPrevious && (
-                                <p className="dashboard-body-sm mt-1 flex items-center gap-1">
+                                <div className="mt-2 flex items-center gap-1">
                                   {impressionsChange > 0 ? (
                                     <>
-                                      <TrendingUp className="h-3 w-3 text-green-600" />
-                                      <span className="text-green-600">+{impressionsChange.toFixed(1)}%</span>
+                                      <TrendingUp className="h-3 w-3 text-emerald-400" />
+                                      <span className="text-xs font-medium text-emerald-400">
+                                        +{impressionsChange.toFixed(1)}%
+                                      </span>
                                     </>
                                   ) : impressionsChange < 0 ? (
                                     <>
-                                      <TrendingDown className="h-3 w-3 text-red-600" />
-                                      <span className="text-red-600">{impressionsChange.toFixed(1)}%</span>
+                                      <TrendingDown className="h-3 w-3 text-red-400" />
+                                      <span className="text-xs font-medium text-red-400">
+                                        {impressionsChange.toFixed(1)}%
+                                      </span>
                                     </>
                                   ) : (
-                                    <span className="text-muted-foreground">→</span>
+                                    <span className="text-xs text-muted-foreground">Stable</span>
                                   )}
-                                </p>
+                                </div>
                               )}
                             </div>
 
-                            {/* CTR */}
-                            <div className="group/stat rounded-lg border bg-gradient-to-br from-emerald-50/50 to-emerald-100/30 p-4 transition-all hover:shadow-md dark:from-emerald-950/20 dark:to-emerald-900/10">
-                              <div className="mb-2 flex items-center gap-2">
-                                <div className="rounded-md bg-emerald-500/10 p-1.5">
-                                  <Zap className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                            {/* CTR metric */}
+                            <div className="group/stat relative overflow-hidden rounded-xl border border-white/5 bg-linear-to-br from-emerald-500/10 via-emerald-500/5 to-transparent p-4 transition-all duration-300 hover:border-emerald-500/20 hover:shadow-md">
+                              <div className="mb-2 flex items-center justify-between">
+                                <span className="text-xs font-medium text-muted-foreground">CTR moyen</span>
+                                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-500/10">
+                                  <Zap className="h-3.5 w-3.5 text-emerald-400" />
                                 </div>
-                                <span className="font-medium">CTR moyen</span>
                               </div>
-                              <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
+                              <p className="text-2xl font-bold tabular-nums text-emerald-400">
                                 {(projectData.ctr * 100).toFixed(2)}%
                               </p>
+                              <div className="mt-2">
+                                <span className="text-xs text-muted-foreground">
+                                  {projectData.ctr >= 0.03 ? 'Bon' : 'À optimiser'}
+                                </span>
+                              </div>
                             </div>
 
-                            {/* Position */}
-                            <div className="group/stat rounded-lg border bg-gradient-to-br from-orange-50/50 to-orange-100/30 p-4 transition-all hover:shadow-md dark:from-orange-950/20 dark:to-orange-900/10">
-                              <div className="mb-2 flex items-center gap-2">
-                                <div className="rounded-md bg-orange-500/10 p-1.5">
-                                  <BarChart3 className="h-4 w-4 text-orange-600 dark:text-orange-400" />
+                            {/* Position metric */}
+                            <div className="group/stat relative overflow-hidden rounded-xl border border-white/5 bg-linear-to-br from-orange-500/10 via-orange-500/5 to-transparent p-4 transition-all duration-300 hover:border-orange-500/20 hover:shadow-md">
+                              <div className="mb-2 flex items-center justify-between">
+                                <span className="text-xs font-medium text-muted-foreground">Position moy.</span>
+                                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-orange-500/10">
+                                  <BarChart3 className="h-3.5 w-3.5 text-orange-400" />
                                 </div>
-                                <span className="font-medium">Position</span>
                               </div>
-                              <p className="text-2xl font-bold text-orange-600 dark:text-orange-400">
+                              <p className="text-2xl font-bold tabular-nums text-orange-400">
                                 {projectData.position.toFixed(1)}
                               </p>
+                              <div className="mt-2">
+                                <span className="text-xs text-muted-foreground">
+                                  {projectData.position <= 10 ? 'Top 10' : projectData.position <= 20 ? 'Top 20' : 'À améliorer'}
+                                </span>
+                              </div>
                             </div>
                           </div>
-                        </div>
 
-                        {/* Alertes du projet */}
-                        {alerts.length > 0 && (
-                          <div className="space-y-2">
-                            {alerts.map((alert, index) => (
-                              <Alert
-                                key={index}
-                                variant={alert.type === 'error' ? 'destructive' : 'default'}
-                                className="py-3"
-                              >
-                                {alert.type === 'error' ? (
-                                  <AlertTriangle className="h-4 w-4" />
-                                ) : alert.type === 'warning' ? (
-                                  <TrendingDown className="h-4 w-4" />
-                                ) : (
-                                  <CheckCircle2 className="h-4 w-4" />
-                                )}
-                                <AlertTitle className="text-sm">{alert.title}</AlertTitle>
-                                <AlertDescription className="flex items-center justify-between text-xs">
-                                  <span>{alert.description}</span>
-                                </AlertDescription>
-                              </Alert>
-                            ))}
+                          {/* Alerts section */}
+                          {alerts.length > 0 && (
+                            <div className="space-y-2 pt-2">
+                              {alerts.map((alert, index) => (
+                                <Alert
+                                  key={index}
+                                  variant={alert.type === 'error' ? 'destructive' : 'default'}
+                                  className="border-white/5 bg-white/5 py-3"
+                                >
+                                  {alert.type === 'error' ? (
+                                    <AlertTriangle className="h-4 w-4" />
+                                  ) : alert.type === 'warning' ? (
+                                    <TrendingDown className="h-4 w-4" />
+                                  ) : (
+                                    <Sparkles className="h-4 w-4" />
+                                  )}
+                                  <AlertTitle className="text-sm font-medium">{alert.title}</AlertTitle>
+                                  <AlertDescription className="text-xs text-muted-foreground">
+                                    {alert.description}
+                                  </AlertDescription>
+                                </Alert>
+                              ))}
+                            </div>
+                          )}
+                        </>
+                      ) : (
+                        <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-white/10 bg-white/5 p-8 text-center">
+                          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-muted/50">
+                            <BarChart3 className="h-7 w-7 text-muted-foreground/50" />
                           </div>
-                        )}
-                      </>
-                    ) : (
-                      <div className="rounded-lg border border-dashed p-8 text-center">
-                        <BarChart3 className="text-muted-foreground/50 mx-auto h-12 w-12" />
-                        <p className="dashboard-body-sm mt-4 font-medium">Aucune donnée disponible</p>
-                        <p className="dashboard-body-sm mt-1">
-                          Vérifiez que ce site est connecté à Google Search Console
-                        </p>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              )
-            })}
+                          <p className="font-medium text-foreground">Aucune donnée disponible</p>
+                          <p className="mt-1 max-w-sm text-sm text-muted-foreground">
+                            Vérifiez que ce site est correctement connecté à Google Search Console
+                          </p>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                )
+              })}
+            </div>
           </section>
         ) : (
-          <section className="py-12">
+          <section className="py-16">
             <Empty>
               <EmptyHeader>
                 <EmptyMedia variant="icon">
-                  <div className="bg-primary/10 flex h-16 w-16 items-center justify-center rounded-full">
-                    <Folder className="text-primary h-8 w-8" />
+                  <div className="relative">
+                    <div className="absolute -inset-4 rounded-full bg-primary/20 blur-xl" />
+                    <div className="relative flex h-20 w-20 items-center justify-center rounded-full border border-white/10 bg-linear-to-br from-primary/20 to-primary/5 shadow-2xl">
+                      <Folder className="h-10 w-10 text-primary" />
+                    </div>
                   </div>
                 </EmptyMedia>
-                <EmptyTitle className="text-xl">Aucun projet</EmptyTitle>
-                <EmptyDescription className="max-w-md">
+                <EmptyTitle className="text-2xl font-bold">Bienvenue sur SerpEditor</EmptyTitle>
+                <EmptyDescription className="max-w-md text-base">
                   Commencez par ajouter votre premier site web pour analyser ses performances SEO et suivre son
-                  évolution dans les résultats de recherche.
+                  évolution dans les résultats de recherche Google.
                 </EmptyDescription>
               </EmptyHeader>
               <EmptyContent>
