@@ -23,12 +23,10 @@ import {
   ArrowDown,
   Search,
   Download,
-  Loader2,
   AlertTriangle,
   FileSpreadsheet,
   X,
   Settings2,
-  Check,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -56,9 +54,9 @@ import {
 } from '@/components/ui/dropdown-menu'
 
 // Export CSV utility
-function exportToCSV<TData>(
+function exportToCSV<TData, TValue = unknown>(
   data: TData[],
-  columns: ColumnDef<TData>[],
+  columns: ColumnDef<TData, TValue>[],
   filename: string
 ) {
   const headers = columns
@@ -238,20 +236,26 @@ export function DataTable<TData, TValue>({
                 }}
                 className="border-white/10 bg-white/5 pl-9 focus:border-primary/50"
               />
-              {(searchKey ? table.getColumn(searchKey)?.getFilterValue() : globalFilter) && (
-                <button
-                  onClick={() => {
-                    if (searchKey) {
-                      table.getColumn(searchKey)?.setFilterValue('')
-                    } else {
-                      setGlobalFilter('')
-                    }
-                  }}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
-                >
-                  <X className="h-4 w-4" />
-                </button>
-              )}
+              {(() => {
+                const filterValue = searchKey
+                  ? (table.getColumn(searchKey)?.getFilterValue() as string | undefined)
+                  : globalFilter
+                const hasValue = filterValue && typeof filterValue === 'string' && filterValue.length > 0
+                return hasValue ? (
+                  <button
+                    onClick={() => {
+                      if (searchKey) {
+                        table.getColumn(searchKey)?.setFilterValue('')
+                      } else {
+                        setGlobalFilter('')
+                      }
+                    }}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                ) : null
+              })()}
             </div>
           )}
 
@@ -317,7 +321,7 @@ export function DataTable<TData, TValue>({
             <Button
               variant="outline"
               size="sm"
-              onClick={() => exportToCSV(data, columns, exportFilename)}
+              onClick={() => exportToCSV(data, columns as ColumnDef<TData>[], exportFilename)}
               className="border-white/10 bg-white/5 hover:bg-white/10"
             >
               <Download className="mr-2 h-4 w-4" />
@@ -497,7 +501,7 @@ export function DataTable<TData, TValue>({
 export const columnHelper = {
   // Sortable header
   sortableHeader: (label: string) => {
-    return ({ column }: { column: { getToggleSortingHandler: () => void } }) => (
+    return () => (
       <span className="flex items-center gap-1">{label}</span>
     )
   },
