@@ -278,14 +278,6 @@ export const auth = betterAuth({
       scope: ['https://www.googleapis.com/auth/webmasters.readonly'],
     },
   },
-  account: {
-    accountLinking: {
-      enabled: true,
-      trustedProviders: ['google'],
-      updateUserInfoOnLink: true,
-      allowDifferentEmails: true,
-    },
-  },
   // Security configuration
   advanced: {
     // Force HTTPS cookies in production
