@@ -11,7 +11,7 @@ import { SpinnerCustom } from '@/components/ui/spinner'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Textarea } from '@/components/ui/textarea'
-import { TooltipProvider } from '@/components/ui/tooltip'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { AlertTriangle, BarChart3, DollarSign, Loader2, Search, Target } from 'lucide-react'
 import { useActionState, useTransition } from 'react'
@@ -271,8 +271,54 @@ export function KeywordOverviewContent() {
                           <TableHead>Mot-clé</TableHead>
                           <TableHead className="text-right">Volume</TableHead>
                           <TableHead className="text-right">CPC</TableHead>
-                          <TableHead>Concurrence</TableHead>
-                          <TableHead className="text-right">Difficulté</TableHead>
+                          <TableHead>
+                            <div className="flex items-center gap-1.5">
+                              Concurrence
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <button
+                                    type="button"
+                                    className="text-muted-foreground hover:text-foreground inline-flex h-4 w-4 items-center justify-center rounded-full border border-current"
+                                    aria-label="Info concurrence"
+                                  >
+                                    <span className="text-[10px] font-bold">?</span>
+                                  </button>
+                                </TooltipTrigger>
+                                <TooltipContent className="max-w-xs bg-mist-800 border border-mist-700 p-3 text-sm shadow-xl">
+                                  <p className="font-semibold mb-1">Concurrence (Google Ads)</p>
+                                  <p className="text-muted-foreground">
+                                    Cette métrique vient de Google Ads et mesure la concurrence entre annonceurs pour un
+                                    mot-clé dans Google Ads. Ce n&apos;est <strong>PAS</strong> une mesure directe de la
+                                    difficulté SEO organique.
+                                  </p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </div>
+                          </TableHead>
+                          <TableHead className="text-right">
+                            <div className="flex items-center justify-end gap-1.5">
+                              Difficulté
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <button
+                                    type="button"
+                                    className="text-muted-foreground hover:text-foreground inline-flex h-4 w-4 items-center justify-center rounded-full border border-current"
+                                    aria-label="Info difficulté"
+                                  >
+                                    <span className="text-[10px] font-bold">?</span>
+                                  </button>
+                                </TooltipTrigger>
+                                <TooltipContent className="max-w-xs bg-mist-800 border border-mist-700 p-3 text-sm shadow-xl">
+                                  <p className="font-semibold mb-1">Difficulté SEO</p>
+                                  <p className="text-muted-foreground">
+                                    Métrique basée sur l&apos;analyse de SERP, backlinks, etc. Mesure la difficulté
+                                    organique de se classer. Une <strong>competition faible + difficulty élevée</strong>{' '}
+                                    est possible (peu d&apos;annonceurs mais pages organiques très puissantes).
+                                  </p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </div>
+                          </TableHead>
                           <TableHead className="text-right">Résultats SERP</TableHead>
                         </TableRow>
                       </TableHeader>
@@ -293,25 +339,51 @@ export function KeywordOverviewContent() {
                                 ${result.keyword_info?.cpc?.toFixed(2) || '0.00'}
                               </TableCell>
                               <TableCell>
-                                <div className="space-y-1">
-                                  <Badge
-                                    color={
-                                      competitionLevel === 'HIGH'
-                                        ? 'red'
-                                        : competitionLevel === 'MEDIUM'
-                                          ? 'yellow'
-                                          : 'zinc'
-                                    }
-                                  >
-                                    {competitionLevel || 'N/A'}
-                                  </Badge>
-                                  <Progress value={competitionIndex} className="h-1" />
-                                </div>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <div className="space-y-1 cursor-help">
+                                      <Badge
+                                        color={
+                                          competitionLevel === 'HIGH'
+                                            ? 'red'
+                                            : competitionLevel === 'MEDIUM'
+                                              ? 'yellow'
+                                              : 'zinc'
+                                        }
+                                      >
+                                        {competitionLevel || 'N/A'}
+                                      </Badge>
+                                      <Progress value={competitionIndex} className="h-1" />
+                                    </div>
+                                  </TooltipTrigger>
+                                  <TooltipContent className="max-w-xs bg-mist-800 border border-mist-700 p-3 text-sm shadow-xl">
+                                    <p className="font-semibold mb-1">Concurrence (Google Ads)</p>
+                                    <p className="text-muted-foreground">
+                                      Cette métrique vient de Google Ads et mesure la concurrence entre annonceurs pour
+                                      un mot-clé dans Google Ads. Ce n&apos;est <strong>PAS</strong> une mesure directe
+                                      de la difficulté SEO organique.
+                                    </p>
+                                  </TooltipContent>
+                                </Tooltip>
                               </TableCell>
                               <TableCell className="text-right">
-                                <Badge color={difficulty > 70 ? 'red' : difficulty > 40 ? 'yellow' : 'zinc'}>
-                                  {difficulty}
-                                </Badge>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <div className="inline-block cursor-help">
+                                      <Badge color={difficulty > 70 ? 'red' : difficulty > 40 ? 'yellow' : 'zinc'}>
+                                        {difficulty}
+                                      </Badge>
+                                    </div>
+                                  </TooltipTrigger>
+                                  <TooltipContent className="max-w-xs bg-mist-800 border border-mist-700 p-3 text-sm shadow-xl">
+                                    <p className="font-semibold mb-1">Difficulté SEO</p>
+                                    <p className="text-muted-foreground">
+                                      Métrique basée sur l&apos;analyse de SERP, backlinks, etc. Mesure la difficulté
+                                      organique de se classer. Une <strong>competition faible + difficulty élevée</strong>{' '}
+                                      est possible (peu d&apos;annonceurs mais pages organiques très puissantes).
+                                    </p>
+                                  </TooltipContent>
+                                </Tooltip>
                               </TableCell>
                               <TableCell className="text-right">
                                 {result.serp_info?.se_results_count || 'N/A'}

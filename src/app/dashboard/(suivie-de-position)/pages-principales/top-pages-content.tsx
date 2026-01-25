@@ -232,57 +232,73 @@ export function TopPagesContent({ projectId }: Props) {
     <TooltipProvider>
       <div className="space-y-6">
         {/* Statistiques */}
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <Card className="transition-shadow hover:shadow-md">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total pages</CardTitle>
-              <FileText className="text-muted-foreground h-4 w-4" />
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+          <Card className="group relative overflow-hidden border-2 border-blue-500/20 bg-linear-to-br from-blue-500/10 via-mist-800/90 to-mist-900/90 shadow-xl transition-all hover:border-blue-500/30 hover:shadow-2xl hover:shadow-blue-500/10">
+            <div className="absolute -right-6 -top-6 h-32 w-32 rounded-full bg-blue-500/20 blur-3xl transition-all duration-500 group-hover:bg-blue-500/30" />
+            <CardHeader className="relative flex flex-row items-center justify-between space-y-0 border-b border-blue-500/10 pb-3">
+              <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Total pages</CardTitle>
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-500/20 ring-2 ring-blue-500/10">
+                <FileText className="h-5 w-5 text-blue-400" />
+              </div>
             </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold">{stats.totalPages.toLocaleString('fr-FR')}</div>
-              <div className="mt-2 flex items-center gap-4 text-xs">
-                <div>
+            <CardContent className="relative pt-4">
+              <div className="text-4xl font-bold">{stats.totalPages.toLocaleString('fr-FR')}</div>
+              <div className="mt-4 flex items-center gap-4 text-xs">
+                <div className="rounded-lg bg-emerald-500/10 px-2 py-1 border border-emerald-500/20">
                   <span className="text-muted-foreground">Top 3: </span>
-                  <span className="font-semibold text-green-600">{stats.topPages}</span>
+                  <span className="font-bold text-emerald-400">{stats.topPages}</span>
                 </div>
-                <div>
+                <div className="rounded-lg bg-blue-500/10 px-2 py-1 border border-blue-500/20">
                   <span className="text-muted-foreground">Nouvelles: </span>
-                  <span className="font-semibold text-blue-600">{stats.newPages}</span>
+                  <span className="font-bold text-blue-400">{stats.newPages}</span>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="transition-shadow hover:shadow-md">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Clics totaux</CardTitle>
-              <MousePointerClick className="text-muted-foreground h-4 w-4" />
+          <Card className="group relative overflow-hidden border-2 border-emerald-500/20 bg-linear-to-br from-emerald-500/10 via-mist-800/90 to-mist-900/90 shadow-xl transition-all hover:border-emerald-500/30 hover:shadow-2xl hover:shadow-emerald-500/10">
+            <div className="absolute -right-6 -top-6 h-32 w-32 rounded-full bg-emerald-500/20 blur-3xl transition-all duration-500 group-hover:bg-emerald-500/30" />
+            <CardHeader className="relative flex flex-row items-center justify-between space-y-0 border-b border-emerald-500/10 pb-3">
+              <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Clics totaux</CardTitle>
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/20 ring-2 ring-emerald-500/10">
+                <MousePointerClick className="h-5 w-5 text-emerald-400" />
+              </div>
             </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold">{stats.totalClicks.toLocaleString('fr-FR')}</div>
-              <p className="text-muted-foreground mt-2 text-xs">CTR moyen: {(stats.avgCTR * 100).toFixed(2)}%</p>
+            <CardContent className="relative pt-4">
+              <div className="text-4xl font-bold">{stats.totalClicks.toLocaleString('fr-FR')}</div>
+              <p className="text-muted-foreground mt-3 text-sm font-medium">
+                CTR moyen: <span className="font-bold text-emerald-400">{(stats.avgCTR * 100).toFixed(2)}%</span>
+              </p>
             </CardContent>
           </Card>
 
-          <Card className="transition-shadow hover:shadow-md">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Impressions totales</CardTitle>
-              <Eye className="text-muted-foreground h-4 w-4" />
+          <Card className="group relative overflow-hidden border-2 border-purple-500/20 bg-linear-to-br from-purple-500/10 via-mist-800/90 to-mist-900/90 shadow-xl transition-all hover:border-purple-500/30 hover:shadow-2xl hover:shadow-purple-500/10">
+            <div className="absolute -right-6 -top-6 h-32 w-32 rounded-full bg-purple-500/20 blur-3xl transition-all duration-500 group-hover:bg-purple-500/30" />
+            <CardHeader className="relative flex flex-row items-center justify-between space-y-0 border-b border-purple-500/10 pb-3">
+              <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Impressions totales</CardTitle>
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-500/20 ring-2 ring-purple-500/10">
+                <Eye className="h-5 w-5 text-purple-400" />
+              </div>
             </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold">{stats.totalImpressions.toLocaleString('fr-FR')}</div>
-              <p className="text-muted-foreground mt-2 text-xs">{stats.improvingPages} pages en progression</p>
+            <CardContent className="relative pt-4">
+              <div className="text-4xl font-bold">{stats.totalImpressions.toLocaleString('fr-FR')}</div>
+              <p className="text-muted-foreground mt-3 text-sm font-medium">
+                <span className="font-bold text-orange-400">{stats.improvingPages}</span> pages en progression
+              </p>
             </CardContent>
           </Card>
 
-          <Card className="transition-shadow hover:shadow-md">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Position moyenne</CardTitle>
-              <Target className="text-muted-foreground h-4 w-4" />
+          <Card className="group relative overflow-hidden border-2 border-orange-500/20 bg-linear-to-br from-orange-500/10 via-mist-800/90 to-mist-900/90 shadow-xl transition-all hover:border-orange-500/30 hover:shadow-2xl hover:shadow-orange-500/10">
+            <div className="absolute -right-6 -top-6 h-32 w-32 rounded-full bg-orange-500/20 blur-3xl transition-all duration-500 group-hover:bg-orange-500/30" />
+            <CardHeader className="relative flex flex-row items-center justify-between space-y-0 border-b border-orange-500/10 pb-3">
+              <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Position moyenne</CardTitle>
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-orange-500/20 ring-2 ring-orange-500/10">
+                <Target className="h-5 w-5 text-orange-400" />
+              </div>
             </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold">{stats.avgPosition.toFixed(1)}</div>
-              <p className="text-muted-foreground mt-2 text-xs">Sur toutes les pages</p>
+            <CardContent className="relative pt-4">
+              <div className="text-4xl font-bold">{stats.avgPosition.toFixed(1)}</div>
+              <p className="text-muted-foreground mt-3 text-sm font-medium">Sur toutes les pages</p>
             </CardContent>
           </Card>
         </div>
@@ -612,7 +628,7 @@ function PagesTable({ pages }: { pages: PageData[] }) {
                                 {Math.abs(page.clicksChange).toFixed(0)}%
                               </div>
                             </TooltipTrigger>
-                            <TooltipContent>
+                            <TooltipContent className="bg-mist-800 border border-mist-700 p-3 text-sm shadow-xl">
                               <p>Évolution des clics</p>
                             </TooltipContent>
                           </Tooltip>
@@ -636,7 +652,7 @@ function PagesTable({ pages }: { pages: PageData[] }) {
                                 {Math.abs(page.positionChange).toFixed(1)}
                               </div>
                             </TooltipTrigger>
-                            <TooltipContent>
+                            <TooltipContent className="bg-mist-800 border border-mist-700 p-3 text-sm shadow-xl">
                               <p>Évolution de position</p>
                             </TooltipContent>
                           </Tooltip>

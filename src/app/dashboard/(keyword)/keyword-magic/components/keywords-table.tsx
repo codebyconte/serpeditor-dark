@@ -31,8 +31,53 @@ export function KeywordsTable({ data, onToggleKeyword, onToggleAll, maxRows = 10
             <TableHead className="min-w-[200px]">Mot-clé</TableHead>
             <TableHead className="text-right">Volume</TableHead>
             <TableHead className="text-right">CPC</TableHead>
-            <TableHead>Concurrence</TableHead>
-            <TableHead className="text-right">Difficulté</TableHead>
+            <TableHead>
+              <div className="flex items-center gap-1.5">
+                Concurrence
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      type="button"
+                      className="text-muted-foreground hover:text-foreground inline-flex h-4 w-4 items-center justify-center rounded-full border border-current"
+                      aria-label="Info concurrence"
+                    >
+                      <span className="text-[10px] font-bold">?</span>
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent className="max-w-xs bg-mist-800 border border-mist-700 p-3 text-sm shadow-xl">
+                    <p className="font-semibold mb-1">Concurrence (Google Ads)</p>
+                    <p className="text-muted-foreground">
+                      Cette métrique vient de Google Ads et mesure la concurrence entre annonceurs pour un mot-clé dans
+                      Google Ads. Ce n&apos;est <strong>PAS</strong> une mesure directe de la difficulté SEO organique.
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
+              </div>
+            </TableHead>
+            <TableHead className="text-right">
+              <div className="flex items-center justify-end gap-1.5">
+                Difficulté
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      type="button"
+                      className="text-muted-foreground hover:text-foreground inline-flex h-4 w-4 items-center justify-center rounded-full border border-current"
+                      aria-label="Info difficulté"
+                    >
+                      <span className="text-[10px] font-bold">?</span>
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent className="max-w-xs bg-mist-800 border border-mist-700 p-3 text-sm shadow-xl">
+                    <p className="font-semibold mb-1">Difficulté SEO</p>
+                    <p className="text-muted-foreground">
+                      Métrique basée sur l&apos;analyse de SERP, backlinks, etc. Mesure la difficulté organique de se
+                      classer. Une <strong>competition faible + difficulty élevée</strong> est possible (peu
+                      d&apos;annonceurs mais pages organiques très puissantes).
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
+              </div>
+            </TableHead>
             <TableHead>SERP Features</TableHead>
           </TableRow>
         </TableHeader>
@@ -58,25 +103,58 @@ export function KeywordsTable({ data, onToggleKeyword, onToggleAll, maxRows = 10
                 </TableCell>
                 <TableCell className="text-right">${(item.keyword_info?.cpc || 0).toFixed(2)}</TableCell>
                 <TableCell>
-                  <Badge
-                    color={
-                      item.keyword_info?.competition_level === 'HIGH'
-                        ? 'red'
-                        : item.keyword_info?.competition_level === 'MEDIUM'
-                          ? 'yellow'
-                          : 'zinc'
-                    }
-                  >
-                    {item.keyword_info?.competition_level || 'N/A'}
-                  </Badge>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div>
+                        <Badge
+                          color={
+                            item.keyword_info?.competition_level === 'HIGH'
+                              ? 'red'
+                              : item.keyword_info?.competition_level === 'MEDIUM'
+                                ? 'yellow'
+                                : 'zinc'
+                          }
+                          className="cursor-help"
+                        >
+                          {item.keyword_info?.competition_level || 'N/A'}
+                        </Badge>
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent className="max-w-xs bg-mist-800 border border-mist-700 p-3 text-sm shadow-xl">
+                      <p className="font-semibold mb-1">Concurrence (Google Ads)</p>
+                      <p className="text-muted-foreground">
+                        Cette métrique vient de Google Ads et mesure la concurrence entre annonceurs pour un mot-clé
+                        dans Google Ads. Ce n&apos;est <strong>PAS</strong> une mesure directe de la difficulté SEO
+                        organique.
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
                 </TableCell>
                 <TableCell className="text-right">
                   <Tooltip>
-                    <TooltipTrigger>
-                      <Badge color="zinc">{item.keyword_properties?.keyword_difficulty || 'N/A'}</Badge>
+                    <TooltipTrigger asChild>
+                      <div className="inline-block">
+                        <Badge
+                          color={
+                            (item.keyword_properties?.keyword_difficulty || 0) > 70
+                              ? 'red'
+                              : (item.keyword_properties?.keyword_difficulty || 0) > 40
+                                ? 'yellow'
+                                : 'zinc'
+                          }
+                          className="cursor-help"
+                        >
+                          {item.keyword_properties?.keyword_difficulty || 'N/A'}
+                        </Badge>
+                      </div>
                     </TooltipTrigger>
-                    <TooltipContent className="bg-mist-600">
-                      <p>Difficulté SEO: Plus le score est élevé, plus le mot-clé est difficile à ranker</p>
+                    <TooltipContent className="max-w-xs bg-mist-800 border border-mist-700 p-3 text-sm shadow-xl">
+                      <p className="font-semibold mb-1">Difficulté SEO</p>
+                      <p className="text-muted-foreground">
+                        Métrique basée sur l&apos;analyse de SERP, backlinks, etc. Mesure la difficulté organique de se
+                        classer. Une <strong>competition faible + difficulty élevée</strong> est possible (peu
+                        d&apos;annonceurs mais pages organiques très puissantes).
+                      </p>
                     </TooltipContent>
                   </Tooltip>
                 </TableCell>
@@ -94,7 +172,7 @@ export function KeywordsTable({ data, onToggleKeyword, onToggleAll, maxRows = 10
                             +{(item.serp_info?.serp_item_types?.length || 0) - 3}
                           </Badge>
                         </TooltipTrigger>
-                        <TooltipContent className="bg-mist-600">
+                        <TooltipContent className="bg-mist-800 border border-mist-700 p-3 text-sm shadow-xl">
                           <div className="max-w-xs">{item.serp_info?.serp_item_types?.slice(3).join(', ')}</div>
                         </TooltipContent>
                       </Tooltip>

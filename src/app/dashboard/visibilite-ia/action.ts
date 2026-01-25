@@ -295,10 +295,10 @@ export async function fetchAIKeywordData(
 
     // Vérification de la réponse
     if (data.status_code !== 20000) {
-      console.error('❌ Erreur DataForSEO:', data.status_message)
+      console.error('❌ Erreur API:', data.status_message)
       return {
         success: false,
-        error: `Erreur DataForSEO: ${data.status_message}`,
+        error: `Erreur API: ${data.status_message}`,
       }
     }
 
@@ -481,10 +481,10 @@ export async function fetchLLMMentions(
 
     // Vérification de la réponse
     if (data.status_code !== 20000) {
-      console.error('❌ Erreur DataForSEO:', data.status_message)
+      console.error('❌ Erreur API:', data.status_message)
       return {
         success: false,
-        error: `Erreur DataForSEO: ${data.status_message}`,
+        error: `Erreur API: ${data.status_message}`,
       }
     }
 

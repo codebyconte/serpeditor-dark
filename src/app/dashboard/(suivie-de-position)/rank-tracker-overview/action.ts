@@ -220,7 +220,7 @@ export async function getHistoricalRankOverview(
     const credentials = process.env.DATAFORSEO_PASSWORD
 
     if (!credentials) {
-      return { success: false, error: 'Credentials DataForSEO manquants' }
+      return { success: false, error: 'Identifiants API manquants' }
     }
 
     const requestBody: {

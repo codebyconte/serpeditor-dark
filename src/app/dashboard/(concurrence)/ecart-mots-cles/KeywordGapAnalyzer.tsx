@@ -2,6 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import {
   ArrowUpDown,
   Award,
@@ -132,14 +133,18 @@ export default function KeywordGapAnalyzer({ data, isGapMode }: KeywordGapAnalyz
 
       {/* Alert mode */}
       {isGapMode && (
-        <Card className="border-mist-100 bg-mist-700">
+        <Card className="relative overflow-hidden border-emerald-500/20 bg-emerald-500/5">
+          <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-emerald-500/50 to-transparent" />
           <CardContent className="p-6">
-            <div className="flex items-start gap-3">
+            <div className="flex items-start gap-4">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-emerald-500/10">
+                <Target className="h-5 w-5 text-emerald-400" />
+              </div>
               <div>
-                <h3 className="dashboard-heading-4 text-foreground">Mode Écart de Mots-clés (Keyword Gap)</h3>
-                <p className="dashboard-body-sm mt-1">
-                  Ces mots-clés sont positionnés par <strong>{Object.values(data.targets)[0] as string}</strong> mais
-                  PAS par <strong>{Object.values(data.targets)[1] as string}</strong>. Ce sont vos opportunités SEO !
+                <h3 className="font-semibold text-emerald-400">Mode Écart de Mots-clés (Keyword Gap)</h3>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Ces mots-clés sont positionnés par <strong className="text-emerald-400">{Object.values(data.targets)[0] as string}</strong> mais
+                  PAS par <strong className="text-red-400">{Object.values(data.targets)[1] as string}</strong>. Ce sont vos opportunités SEO !
                 </p>
               </div>
             </div>
@@ -147,14 +152,16 @@ export default function KeywordGapAnalyzer({ data, isGapMode }: KeywordGapAnalyz
         </Card>
       )}
 
-      {/* Navigation */}
-      <div className="flex flex-wrap gap-2 rounded-xl border border-mist-400 p-4 shadow-sm">
+      {/* Navigation premium */}
+      <div className="flex flex-wrap gap-2 rounded-xl border border-white/5 bg-white/5 p-2 backdrop-blur-sm">
         <button
           type="button"
           onClick={() => setViewMode('overview')}
-          className={`flex items-center gap-2 rounded-lg border px-4 py-2 font-medium transition-all focus:outline-none ${
-            viewMode === 'overview' ? 'border-mist-600 bg-mist-600 text-white shadow' : ''
-          } `}
+          className={`flex items-center gap-2 rounded-lg px-4 py-2.5 font-medium transition-all ${
+            viewMode === 'overview'
+              ? 'bg-primary text-primary-foreground shadow-lg'
+              : 'text-muted-foreground hover:bg-white/5 hover:text-foreground'
+          }`}
         >
           <BarChart3 className="h-4 w-4" />
           <span>Vue d&apos;ensemble</span>
@@ -162,9 +169,11 @@ export default function KeywordGapAnalyzer({ data, isGapMode }: KeywordGapAnalyz
         <button
           type="button"
           onClick={() => setViewMode('keywords')}
-          className={`flex items-center gap-2 rounded-lg border px-4 py-2 font-medium transition-all focus:outline-none ${
-            viewMode === 'keywords' ? 'border-mist-600 bg-mist-600 text-white shadow' : ''
-          } `}
+          className={`flex items-center gap-2 rounded-lg px-4 py-2.5 font-medium transition-all ${
+            viewMode === 'keywords'
+              ? 'bg-primary text-primary-foreground shadow-lg'
+              : 'text-muted-foreground hover:bg-white/5 hover:text-foreground'
+          }`}
         >
           <Search className="h-4 w-4" />
           <span>Tous les mots-clés</span>
@@ -173,9 +182,11 @@ export default function KeywordGapAnalyzer({ data, isGapMode }: KeywordGapAnalyz
           <button
             type="button"
             onClick={() => setViewMode('easy-wins')}
-            className={`flex items-center gap-2 rounded-lg border px-4 py-2 font-medium transition-all focus:outline-none ${
-              viewMode === 'easy-wins' ? 'border-mist-600 bg-mist-600 text-white shadow' : ''
-            } `}
+            className={`flex items-center gap-2 rounded-lg px-4 py-2.5 font-medium transition-all ${
+              viewMode === 'easy-wins'
+                ? 'bg-emerald-500 text-white shadow-lg'
+                : 'text-muted-foreground hover:bg-white/5 hover:text-foreground'
+            }`}
           >
             <Zap className="h-4 w-4" />
             <span>{`Easy Wins (${stats.easyWins.length})`}</span>
@@ -224,23 +235,44 @@ function MetricCard({
   color: 'blue' | 'green' | 'orange' | 'purple'
   subtitle?: string
 }) {
-  const colorClasses = {
-    blue: 'bg-blue-500/10 text-blue-500 border-blue-500/20',
-    green: 'bg-green-500/10 text-green-500 border-green-500/20',
-    orange: 'bg-orange-500/10 text-orange-500 border-orange-500/20',
-    purple: 'bg-purple-500/10 text-purple-500 border-purple-500/20',
+  const colorConfig = {
+    blue: {
+      bg: 'bg-blue-500/10',
+      text: 'text-blue-400',
+      glow: 'bg-blue-500/10 group-hover:bg-blue-500/20',
+    },
+    green: {
+      bg: 'bg-emerald-500/10',
+      text: 'text-emerald-400',
+      glow: 'bg-emerald-500/10 group-hover:bg-emerald-500/20',
+    },
+    orange: {
+      bg: 'bg-amber-500/10',
+      text: 'text-amber-400',
+      glow: 'bg-amber-500/10 group-hover:bg-amber-500/20',
+    },
+    purple: {
+      bg: 'bg-purple-500/10',
+      text: 'text-purple-400',
+      glow: 'bg-purple-500/10 group-hover:bg-purple-500/20',
+    },
   }
 
+  const config = colorConfig[color]
+
   return (
-    <Card>
-      <CardContent className="p-6">
+    <Card className="group relative overflow-hidden border-white/5 bg-linear-to-br from-mist-800/60 to-mist-900/60 backdrop-blur-sm transition-all hover:border-white/10">
+      <div className={`absolute -right-8 -top-8 h-24 w-24 rounded-full blur-2xl transition-all ${config.glow}`} />
+      <CardContent className="relative p-6">
         <div className="flex items-start justify-between">
           <div className="flex-1">
-            <p className="dashboard-body-sm text-muted-foreground">{label}</p>
-            <p className="dashboard-heading-1 mt-2">{value}</p>
-            {subtitle && <p className="dashboard-text-xs text-muted-foreground mt-1">{subtitle}</p>}
+            <p className="text-sm font-medium text-muted-foreground">{label}</p>
+            <p className="mt-2 text-3xl font-bold">{value}</p>
+            {subtitle && <p className="mt-1 text-xs text-muted-foreground">{subtitle}</p>}
           </div>
-          <div className={`rounded-lg border p-3 ${colorClasses[color]}`}>{icon}</div>
+          <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${config.bg}`}>
+            <div className={config.text}>{icon}</div>
+          </div>
         </div>
       </CardContent>
     </Card>
@@ -259,58 +291,63 @@ function OverviewView({
   return (
     <div className="space-y-6">
       {/* Targets */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center gap-2">
-            <Target className="text-primary h-5 w-5" />
-            <CardTitle className="dashboard-heading-3">Domaines Analysés</CardTitle>
+      <Card className="relative overflow-hidden border-white/5 bg-linear-to-br from-mist-800/60 to-mist-900/60 backdrop-blur-sm">
+        <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-primary/30 to-transparent" />
+        <CardHeader className="border-b border-white/5 pb-4">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+              <Target className="h-5 w-5 text-primary" />
+            </div>
+            <CardTitle className="text-lg font-semibold">Domaines Analysés</CardTitle>
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pt-6">
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <Card className="border-green-500/20 bg-green-500/5">
-              <CardContent className="p-4">
-                <div className="mb-2 flex items-center gap-2">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-green-500 text-sm font-bold text-white">
+            <div className="group relative overflow-hidden rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-5 transition-all hover:border-emerald-500/30">
+              <div className="absolute -right-8 -top-8 h-20 w-20 rounded-full bg-emerald-500/10 blur-2xl transition-all group-hover:bg-emerald-500/20" />
+              <div className="relative">
+                <div className="mb-3 flex items-center gap-3">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-500 text-sm font-bold text-white">
                     1
                   </div>
-                  <div className="dashboard-body-sm font-semibold text-green-500">
+                  <span className="text-sm font-semibold text-emerald-400">
                     {isGapMode ? 'Concurrent (positionné)' : 'Domaine 1'}
-                  </div>
+                  </span>
                 </div>
                 <a
                   href={`https://${Object.values(targets)[0]}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-1 text-lg font-bold text-green-500 hover:text-green-400 hover:underline"
+                  className="flex items-center gap-2 text-lg font-bold text-emerald-400 transition-colors hover:text-emerald-300"
                 >
                   {Object.values(targets)[0]}
                   <ExternalLink className="h-4 w-4" />
                 </a>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
 
-            <Card className="border-red-500/20 bg-red-500/5">
-              <CardContent className="p-4">
-                <div className="mb-2 flex items-center gap-2">
+            <div className="group relative overflow-hidden rounded-xl border border-red-500/20 bg-red-500/5 p-5 transition-all hover:border-red-500/30">
+              <div className="absolute -right-8 -top-8 h-20 w-20 rounded-full bg-red-500/10 blur-2xl transition-all group-hover:bg-red-500/20" />
+              <div className="relative">
+                <div className="mb-3 flex items-center gap-3">
                   <div className="flex h-8 w-8 items-center justify-center rounded-full bg-red-500 text-sm font-bold text-white">
                     2
                   </div>
-                  <div className="dashboard-body-sm font-semibold text-red-500">
+                  <span className="text-sm font-semibold text-red-400">
                     {isGapMode ? 'Votre site (non positionné)' : 'Domaine 2'}
-                  </div>
+                  </span>
                 </div>
                 <a
                   href={`https://${Object.values(targets)[1]}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-1 text-lg font-bold text-red-500 hover:text-red-400 hover:underline"
+                  className="flex items-center gap-2 text-lg font-bold text-red-400 transition-colors hover:text-red-300"
                 >
                   {Object.values(targets)[1]}
                   <ExternalLink className="h-4 w-4" />
                 </a>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -396,6 +433,24 @@ function OverviewView({
           <div className="flex items-center gap-2">
             <Zap className="text-primary h-5 w-5" />
             <CardTitle className="dashboard-heading-3">Niveau de Compétition</CardTitle>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  type="button"
+                  className="text-muted-foreground hover:text-foreground inline-flex h-5 w-5 items-center justify-center rounded-full border border-current"
+                  aria-label="Info compétition"
+                >
+                  <span className="text-xs font-bold">?</span>
+                </button>
+              </TooltipTrigger>
+              <TooltipContent className="max-w-xs bg-mist-800 border border-mist-700 p-3 text-sm shadow-xl">
+                <p className="font-semibold mb-1">Concurrence (Google Ads)</p>
+                <p className="text-muted-foreground">
+                  Cette métrique vient de Google Ads et mesure la concurrence entre annonceurs pour un mot-clé dans
+                  Google Ads. Ce n&apos;est <strong>PAS</strong> une mesure directe de la difficulté SEO organique.
+                </p>
+              </TooltipContent>
+            </Tooltip>
           </div>
         </CardHeader>
         <CardContent>
@@ -612,7 +667,27 @@ function KeywordsView({
 
             {/* Compétition */}
             <div>
-              <label className="dashboard-body-sm mb-2 block font-semibold">Compétition</label>
+              <label className="dashboard-body-sm mb-2 flex items-center gap-1.5 font-semibold">
+                Compétition
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      type="button"
+                      className="text-muted-foreground hover:text-foreground inline-flex h-4 w-4 items-center justify-center rounded-full border border-current"
+                      aria-label="Info compétition"
+                    >
+                      <span className="text-[10px] font-bold">?</span>
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent className="max-w-xs bg-mist-800 border border-mist-700 p-3 text-sm shadow-xl">
+                    <p className="font-semibold mb-1">Concurrence (Google Ads)</p>
+                    <p className="text-muted-foreground">
+                      Cette métrique vient de Google Ads et mesure la concurrence entre annonceurs pour un mot-clé dans
+                      Google Ads. Ce n&apos;est <strong>PAS</strong> une mesure directe de la difficulté SEO organique.
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
+              </label>
               <select
                 value={competitionFilter}
                 onChange={(e) => setCompetitionFilter(e.target.value as 'all' | 'LOW' | 'MEDIUM' | 'HIGH')}
@@ -749,15 +824,27 @@ function EasyWinsView({
                   <div>
                     <div className="dashboard-heading-4">{item.keyword}</div>
                     <div className="dashboard-body-sm text-muted-foreground mt-1 flex items-center gap-3">
-                      <span
-                        className={`rounded px-2 py-0.5 text-xs font-semibold ${
-                          item.competition === 'LOW'
-                            ? 'bg-green-500/10 text-green-500'
-                            : 'bg-orange-500/10 text-orange-500'
-                        }`}
-                      >
-                        {item.competition}
-                      </span>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <span
+                            className={`cursor-help rounded px-2 py-0.5 text-xs font-semibold ${
+                              item.competition === 'LOW'
+                                ? 'bg-green-500/10 text-green-500'
+                                : 'bg-orange-500/10 text-orange-500'
+                            }`}
+                          >
+                            {item.competition}
+                          </span>
+                        </TooltipTrigger>
+                        <TooltipContent className="max-w-xs bg-mist-800 border border-mist-700 p-3 text-sm shadow-xl">
+                          <p className="font-semibold mb-1">Concurrence (Google Ads)</p>
+                          <p className="text-muted-foreground">
+                            Cette métrique vient de Google Ads et mesure la concurrence entre annonceurs pour un mot-clé
+                            dans Google Ads. Ce n&apos;est <strong>PAS</strong> une mesure directe de la difficulté SEO
+                            organique.
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
                       <span>Position: #{item.position}</span>
                     </div>
                   </div>
@@ -809,11 +896,22 @@ function KeywordCard({ item, targets }: { item: KeywordGapItem; targets: Record<
         <div className="flex-1">
           <div className="mb-2 flex items-center gap-3">
             <h4 className="dashboard-heading-4">{item.keyword_data?.keyword || ''}</h4>
-            <span
-              className={`rounded-full px-3 py-1 text-xs font-semibold ${competitionColors[competition as keyof typeof competitionColors]}`}
-            >
-              {competition}
-            </span>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span
+                  className={`cursor-help rounded-full px-3 py-1 text-xs font-semibold ${competitionColors[competition as keyof typeof competitionColors]}`}
+                >
+                  {competition}
+                </span>
+              </TooltipTrigger>
+              <TooltipContent className="max-w-xs bg-mist-800 border border-mist-700 p-3 text-sm shadow-xl">
+                <p className="font-semibold mb-1">Concurrence (Google Ads)</p>
+                <p className="text-muted-foreground">
+                  Cette métrique vient de Google Ads et mesure la concurrence entre annonceurs pour un mot-clé dans
+                  Google Ads. Ce n&apos;est <strong>PAS</strong> une mesure directe de la difficulté SEO organique.
+                </p>
+              </TooltipContent>
+            </Tooltip>
           </div>
           {serpElement && (
             <a

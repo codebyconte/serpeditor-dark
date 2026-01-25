@@ -2,6 +2,7 @@
 'use client'
 
 import { Button } from '@/components/elements/button'
+import { EmptyState } from '@/components/dashboard/empty-state'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
@@ -154,242 +155,319 @@ export function BacklinksContent() {
 
   return (
     <TooltipProvider>
-      <div className="">
-        {/* Header amélioré */}
-        <div className="mb-6">
-          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <div className="flex-1">
-              {/* Champ URL personnalisée */}
-              <div className="mt-4 rounded-xl border-2 border-mist-200 p-4 py-8">
-                <Form {...form}>
-                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                    <FormField
-                      control={form.control}
-                      name="customUrl"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="dashboard-body-sm">URL à analyser</FormLabel>
-                          <div className="flex gap-2">
-                            <FormControl>
-                              <Input
-                                type="text"
-                                placeholder="Entrez une URL (ex: example.com)"
-                                disabled={isBacklinksPending}
-                                className="flex-1"
-                                {...field}
-                              />
-                            </FormControl>
-                            <Button
-                              type="submit"
-                              disabled={!form.watch('customUrl')?.trim() || isBacklinksPending}
-                              className="hover:cursor-pointer"
-                            >
-                              {isBacklinksPending ? (
-                                <>
-                                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                  Analyse...
-                                </>
-                              ) : (
-                                <>
-                                  <Search className="mr-2 h-4 w-4" />
-                                  Analyser
-                                </>
-                              )}
-                            </Button>
-                          </div>
-                          <FormDescription className="dashboard-text-xs">
-                            Entrez l&apos;URL du site que vous souhaitez analyser pour les backlinks
-                          </FormDescription>
-                          <FormMessage className="text-red-500" />
-                        </FormItem>
-                      )}
-                    />
-                  </form>
-                </Form>
-              </div>
-
-              {backlinksData && (
-                <div className="text-muted-foreground mt-3 flex flex-wrap items-center gap-3 text-sm">
-                  <div className="flex items-center gap-1.5">
-                    <Globe className="h-4 w-4" />
-                    <span className="font-medium">{backlinksData.target}</span>
-                  </div>
-                  {backlinksData.first_seen && (
-                    <div className="flex items-center gap-1.5">
-                      <Calendar className="h-4 w-4" />
-                      <span>
-                        Première détection :{' '}
-                        {format(new Date(backlinksData.first_seen), 'dd MMM yyyy', {
-                          locale: fr,
-                        })}
-                      </span>
-                    </div>
-                  )}
-                  {backlinksData.crawled_pages && (
-                    <Badge color="zinc">{backlinksData.crawled_pages.toLocaleString('fr-FR')} pages analysées</Badge>
-                  )}
+      <div className="space-y-8">
+        {/* Header avec formulaire premium */}
+        <Card className="relative overflow-hidden border-2 border-primary/20 bg-linear-to-br from-primary/5 via-mist-800/90 to-mist-900/90 shadow-xl backdrop-blur-sm">
+          <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-primary/30 to-transparent" />
+          <div className="absolute -right-20 -top-20 h-40 w-40 rounded-full bg-primary/10 blur-3xl" />
+          <CardContent className="relative p-6 sm:p-8">
+            <div className="mb-6 flex items-center gap-4">
+              <div className="relative">
+                <div className="absolute -inset-1 rounded-xl bg-primary/20 opacity-50 blur-md" />
+                <div className="relative flex h-12 w-12 items-center justify-center rounded-xl border border-white/10 bg-linear-to-br from-primary/20 to-primary/5">
+                  <Link2 className="h-6 w-6 text-primary" />
                 </div>
-              )}
+              </div>
+              <div>
+                <h2 className="text-lg font-semibold">Analyse de backlinks</h2>
+                <p className="text-sm text-muted-foreground">Analysez le profil de liens de n&apos;importe quel domaine</p>
+              </div>
             </div>
-          </div>
-        </div>
 
-        {/* Message d'erreur amélioré */}
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="customUrl"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-sm font-medium">URL à analyser</FormLabel>
+                      <div className="flex gap-3">
+                        <FormControl>
+                          <Input
+                            type="text"
+                            placeholder="exemple.com"
+                            disabled={isBacklinksPending}
+                            className="flex-1 border-white/10 bg-white/5 placeholder:text-muted-foreground/50 focus:border-primary/50"
+                            {...field}
+                          />
+                        </FormControl>
+                        <Button
+                          type="submit"
+                          disabled={!form.watch('customUrl')?.trim() || isBacklinksPending}
+                          className="bg-primary px-6 text-primary-foreground hover:cursor-pointer hover:bg-primary/90"
+                        >
+                          {isBacklinksPending ? (
+                            <>
+                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                              Analyse...
+                            </>
+                          ) : (
+                            <>
+                              <Search className="mr-2 h-4 w-4" />
+                              Analyser
+                            </>
+                          )}
+                        </Button>
+                      </div>
+                      <FormDescription className="text-xs text-muted-foreground">
+                        Entrez le domaine que vous souhaitez analyser (sans https://)
+                      </FormDescription>
+                      <FormMessage className="text-red-400" />
+                    </FormItem>
+                  )}
+                />
+              </form>
+            </Form>
+
+            {backlinksData && (
+              <div className="mt-6 flex flex-wrap items-center gap-3 rounded-lg border border-white/5 bg-white/5 p-3">
+                <div className="flex items-center gap-2">
+                  <Globe className="h-4 w-4 text-primary" />
+                  <span className="font-medium">{backlinksData.target}</span>
+                </div>
+                {backlinksData.first_seen && (
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Calendar className="h-4 w-4" />
+                    <span>
+                      Première détection :{' '}
+                      {format(new Date(backlinksData.first_seen), 'dd MMM yyyy', { locale: fr })}
+                    </span>
+                  </div>
+                )}
+                {backlinksData.crawled_pages && (
+                  <Badge color="zinc">{backlinksData.crawled_pages.toLocaleString('fr-FR')} pages analysées</Badge>
+                )}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Message d'erreur premium */}
         {backlinksState?.error && (
-          <Card className="border-destructive/50 bg-destructive/5 mb-6">
-            <CardContent className="pt-6">
-              <div className="flex items-start gap-3">
-                <AlertTriangle className="text-destructive mt-0.5 h-5 w-5" />
+          <Card className="border-red-500/20 bg-red-500/5">
+            <CardContent className="p-6">
+              <div className="flex items-start gap-4">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-red-500/10">
+                  <AlertTriangle className="h-5 w-5 text-red-400" />
+                </div>
                 <div>
-                  <p className="text-destructive font-semibold">Erreur lors du chargement</p>
-                  <p className="text-muted-foreground mt-1 text-sm">{backlinksState.error}</p>
+                  <p className="font-semibold text-red-400">Erreur lors de l&apos;analyse</p>
+                  <p className="mt-1 text-sm text-muted-foreground">{backlinksState.error}</p>
                 </div>
               </div>
             </CardContent>
           </Card>
         )}
 
-        {/* État de chargement amélioré */}
+        {/* État de chargement premium */}
         {isBacklinksPending && !backlinksData && (
-          <Card className="mb-6">
-            <CardContent className="py-16 text-center">
-              <Loader2 className="text-primary mx-auto h-12 w-12 animate-spin" />
-              <p className="mt-4 font-medium">Analyse des backlinks en cours...</p>
-              <p className="text-muted-foreground mt-2 text-sm">Cette opération peut prendre quelques secondes</p>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* État vide amélioré */}
-        {!isBacklinksPending && !backlinksData && !backlinksState?.error && (
-          <Card className="mb-6">
-            <CardContent className="py-16 text-center">
-              <div className="bg-muted mx-auto flex h-16 w-16 items-center justify-center rounded-full">
-                <Link2 className="text-muted-foreground h-8 w-8" />
+          <Card className="border-2 border-primary/20 bg-linear-to-br from-primary/5 via-mist-800/90 to-mist-900/90 shadow-xl backdrop-blur-sm">
+            <CardContent className="flex flex-col items-center justify-center py-20">
+              <div className="relative">
+                <div className="absolute inset-0 rounded-full bg-primary/20 blur-xl" />
+                <div className="relative flex h-16 w-16 items-center justify-center">
+                  <div className="absolute h-16 w-16 animate-spin rounded-full border-2 border-transparent border-t-primary" />
+                  <div className="absolute h-12 w-12 animate-spin rounded-full border-2 border-transparent border-t-primary/50 [animation-direction:reverse] [animation-duration:1.5s]" />
+                  <Link2 className="h-6 w-6 text-primary" />
+                </div>
               </div>
-              <p className="mt-4 font-medium">Aucune donnée disponible</p>
-              <p className="text-muted-foreground mt-2 text-sm">Entrez une URL ci-dessus pour analyser les backlinks</p>
+              <p className="mt-6 text-lg font-medium">Analyse des backlinks en cours...</p>
+              <p className="mt-2 text-sm text-muted-foreground">Cette opération peut prendre quelques secondes</p>
             </CardContent>
           </Card>
         )}
 
-        {/* Métriques principales améliorées */}
+        {/* État vide premium */}
+        {!isBacklinksPending && !backlinksData && !backlinksState?.error && (
+          <EmptyState
+            icon={Link2}
+            title="Analysez votre profil de backlinks"
+            description="Entrez un domaine ci-dessus pour découvrir son profil de liens, ses domaines référents et sa santé SEO."
+          />
+        )}
+
+        {/* Métriques principales premium */}
         {backlinksData && (
           <>
-            <div className="mb-6 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
               {/* Total backlinks */}
-              <Card className="transition-shadow hover:shadow-md">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Total backlinks</CardTitle>
+              <Card className="group relative overflow-hidden border-2 border-blue-500/20 bg-linear-to-br from-blue-500/10 via-mist-800/90 to-mist-900/90 shadow-xl backdrop-blur-sm transition-all hover:border-blue-500/30 hover:shadow-2xl hover:shadow-blue-500/10">
+                <div className="absolute -right-6 -top-6 h-32 w-32 rounded-full bg-blue-500/20 blur-3xl transition-all duration-500 group-hover:bg-blue-500/30" />
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 border-b border-blue-500/10 pb-3">
+                  <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                    Total backlinks
+                  </CardTitle>
                   <Tooltip>
                     <TooltipTrigger>
-                      <HelpCircle className="text-muted-foreground h-4 w-4" />
+                      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-500/20 ring-2 ring-blue-500/10">
+                        <Link2 className="h-5 w-5 text-blue-400" />
+                      </div>
                     </TooltipTrigger>
-                    <TooltipContent>
-                      <p className="max-w-xs">Nombre total de liens pointant vers votre site</p>
+                    <TooltipContent className="bg-mist-800 border border-mist-700 p-3 text-sm shadow-xl">
+                      <p className="max-w-xs">Nombre total de liens pointant vers ce site</p>
                     </TooltipContent>
                   </Tooltip>
                 </CardHeader>
-                <CardContent>
-                  <div className="text-3xl font-bold">{backlinksData.backlinks.toLocaleString('fr-FR')}</div>
-                  <div className="mt-2 flex items-center gap-2">
-                    <Progress value={dofollowPercentage} className="h-2 flex-1" />
-                    <span className="text-muted-foreground text-xs">{dofollowPercentage.toFixed(0)}%</span>
+                <CardContent className="pt-4">
+                  <div className="text-4xl font-bold">{backlinksData.backlinks.toLocaleString('fr-FR')}</div>
+                  <div className="mt-4 flex items-center gap-3">
+                    <div className="h-3 flex-1 overflow-hidden rounded-full bg-white/10">
+                      <div
+                        className="h-full bg-emerald-500 transition-all"
+                        style={{ width: `${dofollowPercentage}%` }}
+                      />
+                    </div>
+                    <span className="text-sm font-bold text-emerald-400">{dofollowPercentage.toFixed(0)}%</span>
                   </div>
-                  <p className="text-muted-foreground mt-2 text-xs">
-                    {dofollowBacklinks.toLocaleString('fr-FR')} dofollow •{' '}
-                    {backlinksData.referring_pages_nofollow.toLocaleString('fr-FR')} nofollow
+                  <p className="mt-3 text-sm font-medium text-muted-foreground">
+                    {dofollowBacklinks.toLocaleString('fr-FR')} dofollow
                   </p>
                 </CardContent>
               </Card>
 
               {/* Domaines référents */}
-              <Card className="transition-shadow hover:shadow-md">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Domaines référents</CardTitle>
-                  <Tooltip>
-                    <TooltipTrigger>
-                      <HelpCircle className="text-muted-foreground h-4 w-4" />
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p className="max-w-xs">Nombre de domaines uniques avec au moins un lien vers votre site</p>
-                    </TooltipContent>
-                  </Tooltip>
+              <Card className="group relative overflow-hidden border-2 border-purple-500/20 bg-linear-to-br from-purple-500/10 via-mist-800/90 to-mist-900/90 shadow-xl backdrop-blur-sm transition-all hover:border-purple-500/30 hover:shadow-2xl hover:shadow-purple-500/10">
+                <div className="absolute -right-6 -top-6 h-32 w-32 rounded-full bg-purple-500/20 blur-3xl transition-all duration-500 group-hover:bg-purple-500/30" />
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 border-b border-purple-500/10 pb-3">
+                  <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                    Domaines référents
+                  </CardTitle>
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-500/20 ring-2 ring-purple-500/10">
+                    <Globe className="h-5 w-5 text-purple-400" />
+                  </div>
                 </CardHeader>
-                <CardContent>
-                  <div className="text-3xl font-bold">{backlinksData.referring_domains.toLocaleString('fr-FR')}</div>
-                  <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
-                    <div>
-                      <p className="text-muted-foreground">Domaines principaux</p>
-                      <p className="font-semibold">{backlinksData.referring_main_domains.toLocaleString('fr-FR')}</p>
+                <CardContent className="pt-4">
+                  <div className="text-4xl font-bold">{backlinksData.referring_domains.toLocaleString('fr-FR')}</div>
+                  <div className="mt-4 grid grid-cols-2 gap-3">
+                    <div className="rounded-xl bg-purple-500/10 border border-purple-500/20 p-3">
+                      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Principaux</p>
+                      <p className="mt-1 text-lg font-bold text-purple-400">
+                        {backlinksData.referring_main_domains.toLocaleString('fr-FR')}
+                      </p>
                     </div>
-                    <div>
-                      <p className="text-muted-foreground">IPs uniques</p>
-                      <p className="font-semibold">{backlinksData.referring_ips.toLocaleString('fr-FR')}</p>
+                    <div className="rounded-xl bg-purple-500/10 border border-purple-500/20 p-3">
+                      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">IPs</p>
+                      <p className="mt-1 text-lg font-bold text-purple-400">
+                        {backlinksData.referring_ips.toLocaleString('fr-FR')}
+                      </p>
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
               {/* Domain Rank */}
-              <Card className="transition-shadow hover:shadow-md">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Domain Rank</CardTitle>
-                  <Tooltip>
-                    <TooltipTrigger>
-                      <HelpCircle className="text-muted-foreground h-4 w-4" />
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p className="max-w-xs">Score d&apos;autorité du domaine sur une échelle de 0 à 100</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-3xl font-bold">{backlinksData.rank}</span>
-                    <span className="text-muted-foreground text-lg">/100</span>
+              <Card className="group relative overflow-hidden border-2 border-emerald-500/20 bg-linear-to-br from-emerald-500/10 via-mist-800/90 to-mist-900/90 shadow-xl backdrop-blur-sm transition-all hover:border-emerald-500/30 hover:shadow-2xl hover:shadow-emerald-500/10">
+                <div className="absolute -right-6 -top-6 h-32 w-32 rounded-full bg-emerald-500/20 blur-3xl transition-all duration-500 group-hover:bg-emerald-500/30" />
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 border-b border-emerald-500/10 pb-3">
+                  <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                    Domain Rank
+                  </CardTitle>
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/20 ring-2 ring-emerald-500/10">
+                    <TrendingUp className="h-5 w-5 text-emerald-400" />
                   </div>
-                  <Progress value={backlinksData.rank} className="mt-3 h-2" />
-                  <p className="text-muted-foreground mt-2 text-xs">
-                    {backlinksData.rank >= 70 ? '🚀 Excellent' : backlinksData.rank >= 40 ? '✅ Bon' : '⚡ À améliorer'}
+                </CardHeader>
+                <CardContent className="pt-4">
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-4xl font-bold">{backlinksData.rank}</span>
+                    <span className="text-xl text-muted-foreground">/100</span>
+                  </div>
+                  <div className="mt-4 h-3 overflow-hidden rounded-full bg-white/10">
+                    <div
+                      className={`h-full transition-all ${
+                        backlinksData.rank >= 70 ? 'bg-emerald-500' : backlinksData.rank >= 40 ? 'bg-amber-500' : 'bg-red-500'
+                      }`}
+                      style={{ width: `${backlinksData.rank}%` }}
+                    />
+                  </div>
+                  <p className="mt-3 text-sm font-semibold">
+                    {backlinksData.rank >= 70 ? (
+                      <span className="text-emerald-400">✓ Excellent</span>
+                    ) : backlinksData.rank >= 40 ? (
+                      <span className="text-amber-400">✓ Bon</span>
+                    ) : (
+                      <span className="text-red-400">⚠ À améliorer</span>
+                    )}
                   </p>
                 </CardContent>
               </Card>
 
               {/* Spam Score */}
-              <Card className="transition-shadow hover:shadow-md">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Spam Score</CardTitle>
-                  <Shield
-                    className={`h-4 w-4 ${
-                      backlinksData.info.target_spam_score < 30
-                        ? 'text-green-600'
-                        : backlinksData.info.target_spam_score < 60
-                          ? 'text-orange-600'
-                          : 'text-red-600'
-                    }`}
-                  />
-                </CardHeader>
-                <CardContent>
+              <Card
+                className={`group relative overflow-hidden border-2 shadow-xl backdrop-blur-sm transition-all hover:shadow-2xl ${
+                  backlinksData.info.target_spam_score < 30
+                    ? 'border-emerald-500/20 bg-linear-to-br from-emerald-500/10 via-mist-800/90 to-mist-900/90 hover:border-emerald-500/30 hover:shadow-emerald-500/10'
+                    : backlinksData.info.target_spam_score < 60
+                      ? 'border-amber-500/20 bg-linear-to-br from-amber-500/10 via-mist-800/90 to-mist-900/90 hover:border-amber-500/30 hover:shadow-amber-500/10'
+                      : 'border-red-500/20 bg-linear-to-br from-red-500/10 via-mist-800/90 to-mist-900/90 hover:border-red-500/30 hover:shadow-red-500/10'
+                }`}
+              >
+                <div
+                  className={`absolute -right-6 -top-6 h-32 w-32 rounded-full blur-3xl transition-all duration-500 ${
+                    backlinksData.info.target_spam_score < 30
+                      ? 'bg-emerald-500/20 group-hover:bg-emerald-500/30'
+                      : backlinksData.info.target_spam_score < 60
+                        ? 'bg-amber-500/20 group-hover:bg-amber-500/30'
+                        : 'bg-red-500/20 group-hover:bg-red-500/30'
+                  }`}
+                />
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 border-b pb-3">
+                  <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                    Spam Score
+                  </CardTitle>
                   <div
-                    className={`text-3xl font-bold ${
+                    className={`flex h-10 w-10 items-center justify-center rounded-xl ring-2 ${
                       backlinksData.info.target_spam_score < 30
-                        ? 'text-green-600'
+                        ? 'bg-emerald-500/20 ring-emerald-500/10'
                         : backlinksData.info.target_spam_score < 60
-                          ? 'text-orange-600'
-                          : 'text-red-600'
+                          ? 'bg-amber-500/20 ring-amber-500/10'
+                          : 'bg-red-500/20 ring-red-500/10'
                     }`}
                   >
-                    {backlinksData.info.target_spam_score}
-                    <span className="text-lg">/100</span>
+                    <Shield
+                      className={`h-5 w-5 ${
+                        backlinksData.info.target_spam_score < 30
+                          ? 'text-emerald-400'
+                          : backlinksData.info.target_spam_score < 60
+                            ? 'text-amber-400'
+                            : 'text-red-400'
+                      }`}
+                    />
                   </div>
-                  <Progress value={backlinksData.info.target_spam_score} className="mt-3 h-2" />
-                  <p className="text-muted-foreground mt-2 text-xs">
-                    {backlinksData.info.target_spam_score < 30
-                      ? '✅ Faible risque'
-                      : backlinksData.info.target_spam_score < 60
-                        ? '⚠️ Risque modéré'
-                        : '❌ Risque élevé'}
+                </CardHeader>
+                <CardContent className="pt-4">
+                  <div
+                    className={`flex items-baseline gap-1 ${
+                      backlinksData.info.target_spam_score < 30
+                        ? 'text-emerald-400'
+                        : backlinksData.info.target_spam_score < 60
+                          ? 'text-amber-400'
+                          : 'text-red-400'
+                    }`}
+                  >
+                    <span className="text-4xl font-bold">{backlinksData.info.target_spam_score}</span>
+                    <span className="text-xl opacity-60">/100</span>
+                  </div>
+                  <div className="mt-4 h-3 overflow-hidden rounded-full bg-white/10">
+                    <div
+                      className={`h-full transition-all ${
+                        backlinksData.info.target_spam_score < 30
+                          ? 'bg-emerald-500'
+                          : backlinksData.info.target_spam_score < 60
+                            ? 'bg-amber-500'
+                            : 'bg-red-500'
+                      }`}
+                      style={{ width: `${backlinksData.info.target_spam_score}%` }}
+                    />
+                  </div>
+                  <p className="mt-3 text-sm font-semibold">
+                    {backlinksData.info.target_spam_score < 30 ? (
+                      <span className="text-emerald-400">✓ Faible risque</span>
+                    ) : backlinksData.info.target_spam_score < 60 ? (
+                      <span className="text-amber-400">⚠ Risque modéré</span>
+                    ) : (
+                      <span className="text-red-400">⚠ Risque élevé</span>
+                    )}
                   </p>
                 </CardContent>
               </Card>

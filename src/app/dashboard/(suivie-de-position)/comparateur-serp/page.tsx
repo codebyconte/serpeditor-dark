@@ -67,11 +67,11 @@ export default function SERPAnalyzerPage() {
         const errorMessage = result.error || 'Erreur lors de la récupération des données'
 
         if (errorMessage.includes('401') || errorMessage.includes('403')) {
-          setError("Erreur d'authentification API. Vérifiez vos identifiants DataForSEO.")
+          setError("Erreur d'authentification API. Vérifiez vos identifiants.")
         } else if (errorMessage.includes('429')) {
           setError('Limite de requêtes API atteinte. Veuillez patienter quelques minutes.')
         } else if (errorMessage.includes('500')) {
-          setError('Erreur serveur DataForSEO. Réessayez dans quelques instants.')
+          setError('Erreur serveur. Réessayez dans quelques instants.')
         } else {
           setError(errorMessage)
         }

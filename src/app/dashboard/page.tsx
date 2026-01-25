@@ -241,7 +241,7 @@ export default async function DashboardPage() {
           <section className="mt-8 space-y-6 pb-8">
             {/* Quick stats summary */}
             {projectsData.size > 0 && (
-              <div className="mb-8 grid grid-cols-2 gap-4 lg:grid-cols-4">
+              <div className="mb-10 grid grid-cols-2 gap-6 lg:grid-cols-4">
                 {(() => {
                   let totalClicks = 0
                   let totalImpressions = 0
@@ -253,71 +253,71 @@ export default async function DashboardPage() {
 
                   return (
                     <>
-                      <div className="group relative overflow-hidden rounded-2xl border border-white/5 bg-linear-to-br from-mist-800/80 to-mist-900/80 p-5 backdrop-blur-sm transition-all duration-300 hover:border-white/10 hover:shadow-lg hover:shadow-primary/5">
-                        <div className="absolute -right-4 -top-4 h-24 w-24 rounded-full bg-blue-500/10 blur-2xl transition-all duration-500 group-hover:bg-blue-500/20" />
+                      <div className="group relative overflow-hidden rounded-2xl border-2 border-blue-500/20 bg-linear-to-br from-blue-500/10 via-mist-800/90 to-mist-900/90 p-6 shadow-xl backdrop-blur-sm transition-all duration-300 hover:border-blue-500/30 hover:shadow-2xl hover:shadow-blue-500/10">
+                        <div className="absolute -right-6 -top-6 h-32 w-32 rounded-full bg-blue-500/20 blur-3xl transition-all duration-500 group-hover:bg-blue-500/30" />
                         <div className="relative">
-                          <div className="mb-3 flex items-center justify-between">
-                            <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                          <div className="mb-4 flex items-center justify-between border-b border-blue-500/10 pb-3">
+                            <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
                               Total clics
                             </span>
-                            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-500/10">
-                              <MousePointerClick className="h-4 w-4 text-blue-400" />
+                            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-500/20 ring-2 ring-blue-500/10">
+                              <MousePointerClick className="h-5 w-5 text-blue-400" />
                             </div>
                           </div>
-                          <p className="text-3xl font-bold tracking-tight text-blue-400">
+                          <p className="text-4xl font-bold tracking-tight text-blue-400">
                             {totalClicks.toLocaleString('fr-FR')}
                           </p>
-                          <p className="mt-1 text-xs text-muted-foreground">30 derniers jours</p>
+                          <p className="mt-2 text-sm font-medium text-muted-foreground">30 derniers jours</p>
                         </div>
                       </div>
 
-                      <div className="group relative overflow-hidden rounded-2xl border border-white/5 bg-linear-to-br from-mist-800/80 to-mist-900/80 p-5 backdrop-blur-sm transition-all duration-300 hover:border-white/10 hover:shadow-lg hover:shadow-primary/5">
-                        <div className="absolute -right-4 -top-4 h-24 w-24 rounded-full bg-purple-500/10 blur-2xl transition-all duration-500 group-hover:bg-purple-500/20" />
+                      <div className="group relative overflow-hidden rounded-2xl border-2 border-purple-500/20 bg-linear-to-br from-purple-500/10 via-mist-800/90 to-mist-900/90 p-6 shadow-xl backdrop-blur-sm transition-all duration-300 hover:border-purple-500/30 hover:shadow-2xl hover:shadow-purple-500/10">
+                        <div className="absolute -right-6 -top-6 h-32 w-32 rounded-full bg-purple-500/20 blur-3xl transition-all duration-500 group-hover:bg-purple-500/30" />
                         <div className="relative">
-                          <div className="mb-3 flex items-center justify-between">
-                            <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                          <div className="mb-4 flex items-center justify-between border-b border-purple-500/10 pb-3">
+                            <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
                               Impressions
                             </span>
-                            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-purple-500/10">
-                              <Eye className="h-4 w-4 text-purple-400" />
+                            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-500/20 ring-2 ring-purple-500/10">
+                              <Eye className="h-5 w-5 text-purple-400" />
                             </div>
                           </div>
-                          <p className="text-3xl font-bold tracking-tight text-purple-400">
+                          <p className="text-4xl font-bold tracking-tight text-purple-400">
                             {totalImpressions.toLocaleString('fr-FR')}
                           </p>
-                          <p className="mt-1 text-xs text-muted-foreground">30 derniers jours</p>
+                          <p className="mt-2 text-sm font-medium text-muted-foreground">30 derniers jours</p>
                         </div>
                       </div>
 
-                      <div className="group relative overflow-hidden rounded-2xl border border-white/5 bg-linear-to-br from-mist-800/80 to-mist-900/80 p-5 backdrop-blur-sm transition-all duration-300 hover:border-white/10 hover:shadow-lg hover:shadow-primary/5">
-                        <div className="absolute -right-4 -top-4 h-24 w-24 rounded-full bg-emerald-500/10 blur-2xl transition-all duration-500 group-hover:bg-emerald-500/20" />
+                      <div className="group relative overflow-hidden rounded-2xl border-2 border-emerald-500/20 bg-linear-to-br from-emerald-500/10 via-mist-800/90 to-mist-900/90 p-6 shadow-xl backdrop-blur-sm transition-all duration-300 hover:border-emerald-500/30 hover:shadow-2xl hover:shadow-emerald-500/10">
+                        <div className="absolute -right-6 -top-6 h-32 w-32 rounded-full bg-emerald-500/20 blur-3xl transition-all duration-500 group-hover:bg-emerald-500/30" />
                         <div className="relative">
-                          <div className="mb-3 flex items-center justify-between">
-                            <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                          <div className="mb-4 flex items-center justify-between border-b border-emerald-500/10 pb-3">
+                            <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
                               CTR moyen
                             </span>
-                            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500/10">
-                              <Zap className="h-4 w-4 text-emerald-400" />
+                            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/20 ring-2 ring-emerald-500/10">
+                              <Zap className="h-5 w-5 text-emerald-400" />
                             </div>
                           </div>
-                          <p className="text-3xl font-bold tracking-tight text-emerald-400">{avgCtr.toFixed(2)}%</p>
-                          <p className="mt-1 text-xs text-muted-foreground">Tous projets</p>
+                          <p className="text-4xl font-bold tracking-tight text-emerald-400">{avgCtr.toFixed(2)}%</p>
+                          <p className="mt-2 text-sm font-medium text-muted-foreground">Tous projets</p>
                         </div>
                       </div>
 
-                      <div className="group relative overflow-hidden rounded-2xl border border-white/5 bg-linear-to-br from-mist-800/80 to-mist-900/80 p-5 backdrop-blur-sm transition-all duration-300 hover:border-white/10 hover:shadow-lg hover:shadow-primary/5">
-                        <div className="absolute -right-4 -top-4 h-24 w-24 rounded-full bg-orange-500/10 blur-2xl transition-all duration-500 group-hover:bg-orange-500/20" />
+                      <div className="group relative overflow-hidden rounded-2xl border-2 border-orange-500/20 bg-linear-to-br from-orange-500/10 via-mist-800/90 to-mist-900/90 p-6 shadow-xl backdrop-blur-sm transition-all duration-300 hover:border-orange-500/30 hover:shadow-2xl hover:shadow-orange-500/10">
+                        <div className="absolute -right-6 -top-6 h-32 w-32 rounded-full bg-orange-500/20 blur-3xl transition-all duration-500 group-hover:bg-orange-500/30" />
                         <div className="relative">
-                          <div className="mb-3 flex items-center justify-between">
-                            <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                          <div className="mb-4 flex items-center justify-between border-b border-orange-500/10 pb-3">
+                            <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
                               Projets actifs
                             </span>
-                            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-orange-500/10">
-                              <Globe className="h-4 w-4 text-orange-400" />
+                            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-orange-500/20 ring-2 ring-orange-500/10">
+                              <Globe className="h-5 w-5 text-orange-400" />
                             </div>
                           </div>
-                          <p className="text-3xl font-bold tracking-tight text-orange-400">{projects.length}</p>
-                          <p className="mt-1 text-xs text-muted-foreground">Sites suivis</p>
+                          <p className="text-4xl font-bold tracking-tight text-orange-400">{projects.length}</p>
+                          <p className="mt-2 text-sm font-medium text-muted-foreground">Sites suivis</p>
                         </div>
                       </div>
                     </>
@@ -327,10 +327,15 @@ export default async function DashboardPage() {
             )}
 
             {/* Projects list */}
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-foreground">Vos projets</h2>
-                <span className="text-sm text-muted-foreground">{projects.length} site(s)</span>
+            <div className="space-y-6">
+              <div className="flex items-center justify-between border-b border-white/5 pb-4">
+                <div>
+                  <h2 className="text-2xl font-bold text-foreground">Vos projets</h2>
+                  <p className="text-muted-foreground mt-1 text-sm">Gérez et suivez vos sites web</p>
+                </div>
+                <span className="bg-primary/10 text-primary rounded-full px-4 py-2 text-sm font-semibold">
+                  {projects.length} site{projects.length > 1 ? 's' : ''}
+                </span>
               </div>
 
               {projects.map((project) => {
@@ -357,7 +362,7 @@ export default async function DashboardPage() {
                 return (
                   <Card
                     key={project.id}
-                    className="group relative overflow-hidden border-white/5 bg-linear-to-br from-mist-800/60 to-mist-900/60 backdrop-blur-sm transition-all duration-300 hover:border-white/10 hover:shadow-xl hover:shadow-primary/5"
+                    className="group relative overflow-hidden border-2 border-white/10 bg-linear-to-br from-mist-800/80 to-mist-900/80 backdrop-blur-sm transition-all duration-300 hover:border-primary/30 hover:shadow-2xl hover:shadow-primary/10"
                   >
                     {/* Subtle gradient overlay on hover */}
                     <div className="absolute inset-0 bg-linear-to-r from-primary/5 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
@@ -430,16 +435,18 @@ export default async function DashboardPage() {
                           </div>
 
                           {/* Metrics grid */}
-                          <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+                          <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
                             {/* Clicks metric */}
-                            <div className="group/stat relative overflow-hidden rounded-xl border border-white/5 bg-linear-to-br from-blue-500/10 via-blue-500/5 to-transparent p-4 transition-all duration-300 hover:border-blue-500/20 hover:shadow-md">
-                              <div className="mb-2 flex items-center justify-between">
-                                <span className="text-xs font-medium text-muted-foreground">Clics</span>
-                                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-blue-500/10">
-                                  <MousePointerClick className="h-3.5 w-3.5 text-blue-400" />
+                            <div className="group/stat relative overflow-hidden rounded-xl border-2 border-blue-500/20 bg-linear-to-br from-blue-500/10 via-blue-500/5 to-transparent p-5 shadow-lg transition-all duration-300 hover:border-blue-500/30 hover:shadow-xl">
+                              <div className="mb-3 flex items-center justify-between border-b border-blue-500/10 pb-2">
+                                <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                                  Clics
+                                </span>
+                                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-500/20 ring-2 ring-blue-500/10">
+                                  <MousePointerClick className="h-4.5 w-4.5 text-blue-400" />
                                 </div>
                               </div>
-                              <p className="text-2xl font-bold tabular-nums text-blue-400">
+                              <p className="text-3xl font-bold tabular-nums text-blue-400">
                                 {projectData.clicks.toLocaleString('fr-FR')}
                               </p>
                               {projectDataPrevious && (
@@ -466,14 +473,16 @@ export default async function DashboardPage() {
                             </div>
 
                             {/* Impressions metric */}
-                            <div className="group/stat relative overflow-hidden rounded-xl border border-white/5 bg-linear-to-br from-purple-500/10 via-purple-500/5 to-transparent p-4 transition-all duration-300 hover:border-purple-500/20 hover:shadow-md">
-                              <div className="mb-2 flex items-center justify-between">
-                                <span className="text-xs font-medium text-muted-foreground">Impressions</span>
-                                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-purple-500/10">
-                                  <Eye className="h-3.5 w-3.5 text-purple-400" />
+                            <div className="group/stat relative overflow-hidden rounded-xl border-2 border-purple-500/20 bg-linear-to-br from-purple-500/10 via-purple-500/5 to-transparent p-5 shadow-lg transition-all duration-300 hover:border-purple-500/30 hover:shadow-xl">
+                              <div className="mb-3 flex items-center justify-between border-b border-purple-500/10 pb-2">
+                                <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                                  Impressions
+                                </span>
+                                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-purple-500/20 ring-2 ring-purple-500/10">
+                                  <Eye className="h-4.5 w-4.5 text-purple-400" />
                                 </div>
                               </div>
-                              <p className="text-2xl font-bold tabular-nums text-purple-400">
+                              <p className="text-3xl font-bold tabular-nums text-purple-400">
                                 {projectData.impressions.toLocaleString('fr-FR')}
                               </p>
                               {projectDataPrevious && (
@@ -500,37 +509,45 @@ export default async function DashboardPage() {
                             </div>
 
                             {/* CTR metric */}
-                            <div className="group/stat relative overflow-hidden rounded-xl border border-white/5 bg-linear-to-br from-emerald-500/10 via-emerald-500/5 to-transparent p-4 transition-all duration-300 hover:border-emerald-500/20 hover:shadow-md">
-                              <div className="mb-2 flex items-center justify-between">
-                                <span className="text-xs font-medium text-muted-foreground">CTR moyen</span>
-                                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-500/10">
-                                  <Zap className="h-3.5 w-3.5 text-emerald-400" />
+                            <div className="group/stat relative overflow-hidden rounded-xl border-2 border-emerald-500/20 bg-linear-to-br from-emerald-500/10 via-emerald-500/5 to-transparent p-5 shadow-lg transition-all duration-300 hover:border-emerald-500/30 hover:shadow-xl">
+                              <div className="mb-3 flex items-center justify-between border-b border-emerald-500/10 pb-2">
+                                <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                                  CTR moyen
+                                </span>
+                                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-500/20 ring-2 ring-emerald-500/10">
+                                  <Zap className="h-4.5 w-4.5 text-emerald-400" />
                                 </div>
                               </div>
-                              <p className="text-2xl font-bold tabular-nums text-emerald-400">
+                              <p className="text-3xl font-bold tabular-nums text-emerald-400">
                                 {(projectData.ctr * 100).toFixed(2)}%
                               </p>
                               <div className="mt-2">
-                                <span className="text-xs text-muted-foreground">
-                                  {projectData.ctr >= 0.03 ? 'Bon' : 'À optimiser'}
+                                <span className="text-xs font-semibold text-muted-foreground">
+                                  {projectData.ctr >= 0.03 ? '✓ Bon CTR' : '⚠ À optimiser'}
                                 </span>
                               </div>
                             </div>
 
                             {/* Position metric */}
-                            <div className="group/stat relative overflow-hidden rounded-xl border border-white/5 bg-linear-to-br from-orange-500/10 via-orange-500/5 to-transparent p-4 transition-all duration-300 hover:border-orange-500/20 hover:shadow-md">
-                              <div className="mb-2 flex items-center justify-between">
-                                <span className="text-xs font-medium text-muted-foreground">Position moy.</span>
-                                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-orange-500/10">
-                                  <BarChart3 className="h-3.5 w-3.5 text-orange-400" />
+                            <div className="group/stat relative overflow-hidden rounded-xl border-2 border-orange-500/20 bg-linear-to-br from-orange-500/10 via-orange-500/5 to-transparent p-5 shadow-lg transition-all duration-300 hover:border-orange-500/30 hover:shadow-xl">
+                              <div className="mb-3 flex items-center justify-between border-b border-orange-500/10 pb-2">
+                                <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                                  Position moy.
+                                </span>
+                                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-orange-500/20 ring-2 ring-orange-500/10">
+                                  <BarChart3 className="h-4.5 w-4.5 text-orange-400" />
                                 </div>
                               </div>
-                              <p className="text-2xl font-bold tabular-nums text-orange-400">
+                              <p className="text-3xl font-bold tabular-nums text-orange-400">
                                 {projectData.position.toFixed(1)}
                               </p>
                               <div className="mt-2">
-                                <span className="text-xs text-muted-foreground">
-                                  {projectData.position <= 10 ? 'Top 10' : projectData.position <= 20 ? 'Top 20' : 'À améliorer'}
+                                <span className="text-xs font-semibold text-muted-foreground">
+                                  {projectData.position <= 10
+                                    ? '✓ Top 10'
+                                    : projectData.position <= 20
+                                      ? '✓ Top 20'
+                                      : '⚠ À améliorer'}
                                 </span>
                               </div>
                             </div>

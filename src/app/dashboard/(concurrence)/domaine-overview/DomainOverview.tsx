@@ -33,18 +33,20 @@ export default function DomainOverview({ data }: DomainOverviewProps) {
   const organicMetrics = data.items[0].metrics.organic
 
   return (
-    <div className="space-y-6">
-      {/* Header du domaine */}
-      <div className="border-border bg-card rounded-xl border-2 p-6">
-        <div className="flex items-start justify-between">
-          <div>
-            <div className="flex items-center gap-3">
-              <div className="bg-primary flex h-14 w-14 items-center justify-center rounded-xl shadow-lg">
-                <Target className="text-primary-foreground h-8 w-8" />
+    <div className="space-y-8">
+      {/* Header du domaine avec métriques clés */}
+      <div className="border-primary/20 bg-linear-to-br from-primary/5 via-card to-card rounded-2xl border-2 p-8 shadow-xl">
+        <div className="mb-6 flex items-start justify-between">
+          <div className="flex-1">
+            <div className="flex items-center gap-4">
+              <div className="bg-primary flex h-16 w-16 items-center justify-center rounded-2xl shadow-lg ring-4 ring-primary/10">
+                <Target className="text-primary-foreground h-9 w-9" />
               </div>
-              <div>
-                <h2 className="dashboard-heading-1">{data.target}</h2>
-                <p className="text-muted-foreground mt-1">Vue d&apos;ensemble complète du domaine</p>
+              <div className="flex-1">
+                <h2 className="dashboard-heading-1 bg-linear-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+                  {data.target}
+                </h2>
+                <p className="text-muted-foreground mt-2 text-base">Analyse SEO complète du domaine</p>
               </div>
             </div>
           </div>
@@ -52,151 +54,223 @@ export default function DomainOverview({ data }: DomainOverviewProps) {
             href={`https://${data.target}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="bg-primary text-primary-foreground hover:bg-primary/90 flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition-colors"
+            className="bg-primary text-primary-foreground hover:bg-primary/90 flex items-center gap-2 rounded-xl px-5 py-3 text-sm font-semibold transition-all hover:scale-105 shadow-lg"
           >
             Visiter le site
             <ExternalLink className="h-4 w-4" />
           </a>
         </div>
+
+        {/* Métriques clés en résumé */}
+        <div className="grid grid-cols-2 gap-4 border-t border-primary/10 pt-6 md:grid-cols-4">
+          <div className="text-center">
+            <div className="text-muted-foreground text-sm font-medium">Mots-clés organiques</div>
+            <div className="mt-1 text-2xl font-bold text-foreground">
+              {stats.totalOrganicKeywords.toLocaleString()}
+            </div>
+            <div className="text-muted-foreground mt-1 text-xs">
+              {stats.totalPaidKeywords > 0 && (
+                <span className="text-accent-foreground">
+                  +{stats.totalPaidKeywords.toLocaleString()} payants
+                </span>
+              )}
+            </div>
+          </div>
+          <div className="text-center">
+            <div className="text-muted-foreground text-sm font-medium">Top 10</div>
+            <div className="mt-1 text-2xl font-bold text-primary">
+              {stats.topPositions.organic.top10.toLocaleString()}
+            </div>
+            <div className="text-muted-foreground mt-1 text-xs">
+              {((stats.topPositions.organic.top10 / stats.totalOrganicKeywords) * 100).toFixed(1)}% du total
+            </div>
+          </div>
+          <div className="text-center">
+            <div className="text-muted-foreground text-sm font-medium">Valeur mensuelle</div>
+            <div className="mt-1 text-2xl font-bold text-emerald-600">
+              ${Math.round(stats.totalOrganicValue).toLocaleString()}
+            </div>
+            <div className="text-muted-foreground mt-1 text-xs">Équivalent Google Ads</div>
+          </div>
+          <div className="text-center">
+            <div className="text-muted-foreground text-sm font-medium">Trafic estimé</div>
+            <div className="mt-1 text-2xl font-bold text-blue-600">
+              {stats.totalOrganicTraffic.toLocaleString()}
+            </div>
+            <div className="text-muted-foreground mt-1 text-xs">Visites/mois</div>
+          </div>
+        </div>
       </div>
 
       {/* Métriques principales - Organic vs Paid */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
         {/* Organic */}
-        <div className="border-border bg-card rounded-xl border-2 p-6 shadow-sm">
-          <div className="mb-4 flex items-center gap-2">
-            <div className="bg-primary/10 rounded-lg p-2">
-              <Search className="text-primary h-5 w-5" />
+        <div className="border-primary/30 bg-linear-to-br from-primary/5 via-card to-card rounded-2xl border-2 p-8 shadow-xl transition-all hover:border-primary/40 hover:shadow-2xl">
+          <div className="mb-6 flex items-center justify-between border-b border-primary/10 pb-4">
+            <div className="flex items-center gap-3">
+              <div className="bg-primary/20 rounded-xl p-3 ring-2 ring-primary/10">
+                <Search className="text-primary h-6 w-6" />
+              </div>
+              <div>
+                <h3 className="dashboard-heading-2">Trafic Organique</h3>
+                <p className="text-muted-foreground mt-0.5 text-sm">Performance SEO naturelle</p>
+              </div>
             </div>
-            <h3 className="dashboard-heading-3">Trafic Organique</h3>
-            <span className="bg-primary/10 text-primary ml-auto rounded-full px-3 py-1 text-xs font-semibold">SEO</span>
+            <span className="bg-primary/20 text-primary rounded-full px-4 py-1.5 text-xs font-bold uppercase tracking-wide">
+              SEO
+            </span>
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-6">
             <div className="grid grid-cols-2 gap-4">
               <MetricBox
-                label="Mots-clés"
+                label="Mots-clés positionnés"
                 value={stats.totalOrganicKeywords.toLocaleString()}
-                icon={<Search className="h-4 w-4 text-green-600" />}
+                icon={<Search className="h-5 w-5 text-emerald-600" />}
                 color="green"
+                subtitle={`Top 3: ${stats.topPositions.organic.top3.toLocaleString()}`}
               />
               <MetricBox
                 label="Trafic estimé"
                 value={stats.totalOrganicTraffic.toLocaleString()}
                 suffix="/mois"
-                icon={<Activity className="h-4 w-4 text-green-600" />}
+                icon={<Activity className="h-5 w-5 text-blue-600" />}
                 color="green"
+                subtitle="Visites organiques"
               />
             </div>
 
-            <div className="border-primary/20 bg-primary/5 rounded-lg border p-4">
-              <div className="text-primary font-medium">Valeur du trafic</div>
-              <div className="mt-1 flex items-baseline gap-2">
-                <div className="dashboard-heading-1 text-primary">
+            <div className="border-primary/40 bg-linear-to-br from-primary/15 to-primary/5 rounded-xl border-2 p-6 shadow-lg">
+              <div className="mb-2 flex items-center gap-2">
+                <DollarSign className="text-primary h-5 w-5" />
+                <div className="text-primary font-bold">Valeur du trafic organique</div>
+              </div>
+              <div className="mt-2 flex items-baseline gap-2">
+                <div className="text-4xl font-bold text-primary">
                   ${Math.round(stats.totalOrganicValue).toLocaleString()}
                 </div>
-                <div className="text-primary">/mois</div>
+                <div className="text-primary text-lg font-semibold">/mois</div>
               </div>
-              <p className="text-muted-foreground mt-2">Si vous deviez payer pour ce trafic en Google Ads</p>
+              <p className="text-muted-foreground mt-3 text-sm leading-relaxed">
+                Équivalent du coût si ce trafic était généré via Google Ads
+              </p>
             </div>
 
             {/* Tendances organiques */}
-            <div className="grid grid-cols-4 gap-2">
-              <TrendBox
-                label="Nouveaux"
-                value={stats.organicTrend.new}
-                color="blue"
-                icon={<Sparkles className="h-3 w-3" />}
-              />
-              <TrendBox
-                label="En hausse"
-                value={stats.organicTrend.up}
-                color="green"
-                icon={<ArrowUpRight className="h-3 w-3" />}
-              />
-              <TrendBox
-                label="En baisse"
-                value={stats.organicTrend.down}
-                color="orange"
-                icon={<ArrowDownRight className="h-3 w-3" />}
-              />
-              <TrendBox
-                label="Perdus"
-                value={stats.organicTrend.lost}
-                color="red"
-                icon={<TrendingDown className="h-3 w-3" />}
-              />
+            <div>
+              <div className="mb-3 text-sm font-semibold text-muted-foreground">Évolution récente</div>
+              <div className="grid grid-cols-4 gap-3">
+                <TrendBox
+                  label="Nouveaux"
+                  value={stats.organicTrend.new}
+                  color="blue"
+                  icon={<Sparkles className="h-4 w-4" />}
+                />
+                <TrendBox
+                  label="En hausse"
+                  value={stats.organicTrend.up}
+                  color="green"
+                  icon={<ArrowUpRight className="h-4 w-4" />}
+                />
+                <TrendBox
+                  label="En baisse"
+                  value={stats.organicTrend.down}
+                  color="orange"
+                  icon={<ArrowDownRight className="h-4 w-4" />}
+                />
+                <TrendBox
+                  label="Perdus"
+                  value={stats.organicTrend.lost}
+                  color="red"
+                  icon={<TrendingDown className="h-4 w-4" />}
+                />
+              </div>
             </div>
           </div>
         </div>
 
         {/* Paid */}
-        <div className="border-border bg-card rounded-xl border-2 p-6 shadow-sm">
-          <div className="mb-4 flex items-center gap-2">
-            <div className="bg-accent rounded-lg p-2">
-              <DollarSign className="text-accent-foreground h-5 w-5" />
+        <div className="border-accent/30 bg-linear-to-br from-accent/5 via-card to-card rounded-2xl border-2 p-8 shadow-xl transition-all hover:border-accent/40 hover:shadow-2xl">
+          <div className="mb-6 flex items-center justify-between border-b border-accent/10 pb-4">
+            <div className="flex items-center gap-3">
+              <div className="bg-accent/20 rounded-xl p-3 ring-2 ring-accent/10">
+                <DollarSign className="text-accent-foreground h-6 w-6" />
+              </div>
+              <div>
+                <h3 className="dashboard-heading-2">Trafic Payant</h3>
+                <p className="text-muted-foreground mt-0.5 text-sm">Performance Google Ads</p>
+              </div>
             </div>
-            <h3 className="dashboard-heading-3">Trafic Payant</h3>
-            <span className="bg-accent text-accent-foreground ml-auto rounded-full px-3 py-1 text-xs font-semibold">
+            <span className="bg-accent/20 text-accent-foreground rounded-full px-4 py-1.5 text-xs font-bold uppercase tracking-wide">
               ADS
             </span>
           </div>
 
           {stats.totalPaidKeywords > 0 ? (
-            <div className="space-y-4">
+            <div className="space-y-6">
               <div className="grid grid-cols-2 gap-4">
                 <MetricBox
-                  label="Mots-clés"
+                  label="Mots-clés publicitaires"
                   value={stats.totalPaidKeywords.toLocaleString()}
-                  icon={<Search className="h-4 w-4 text-purple-600" />}
+                  icon={<Search className="h-5 w-5 text-purple-600" />}
                   color="purple"
+                  subtitle="Campagnes actives"
                 />
                 <MetricBox
-                  label="Trafic estimé"
+                  label="Trafic payant"
                   value={stats.totalPaidTraffic.toLocaleString()}
                   suffix="/mois"
-                  icon={<Activity className="h-4 w-4 text-purple-600" />}
+                  icon={<Activity className="h-5 w-5 text-purple-600" />}
                   color="purple"
+                  subtitle="Visites payantes"
                 />
               </div>
 
-              <div className="border-accent/20 bg-accent/5 rounded-lg border p-4">
-                <div className="text-accent-foreground font-medium">Budget estimé</div>
-                <div className="mt-1 flex items-baseline gap-2">
-                  <div className="dashboard-heading-1 text-accent-foreground">
+              <div className="border-accent/40 bg-linear-to-br from-accent/15 to-accent/5 rounded-xl border-2 p-6 shadow-lg">
+                <div className="mb-2 flex items-center gap-2">
+                  <DollarSign className="text-accent-foreground h-5 w-5" />
+                  <div className="text-accent-foreground font-bold">Budget publicitaire estimé</div>
+                </div>
+                <div className="mt-2 flex items-baseline gap-2">
+                  <div className="text-4xl font-bold text-accent-foreground">
                     ${Math.round(stats.totalPaidCost).toLocaleString()}
                   </div>
-                  <div className="text-accent-foreground">/mois</div>
+                  <div className="text-accent-foreground text-lg font-semibold">/mois</div>
                 </div>
-                <p className="text-muted-foreground mt-2">Dépenses publicitaires estimées sur Google Ads</p>
+                <p className="text-muted-foreground mt-3 text-sm leading-relaxed">
+                  Dépenses publicitaires estimées sur Google Ads
+                </p>
               </div>
 
               {/* Tendances payantes */}
-              <div className="grid grid-cols-4 gap-2">
-                <TrendBox
-                  label="Nouveaux"
-                  value={stats.paidTrend.new}
-                  color="blue"
-                  icon={<Sparkles className="h-3 w-3" />}
-                />
-                <TrendBox
-                  label="En hausse"
-                  value={stats.paidTrend.up}
-                  color="green"
-                  icon={<ArrowUpRight className="h-3 w-3" />}
-                />
-                <TrendBox
-                  label="En baisse"
-                  value={stats.paidTrend.down}
-                  color="orange"
-                  icon={<ArrowDownRight className="h-3 w-3" />}
-                />
-                <TrendBox
-                  label="Perdus"
-                  value={stats.paidTrend.lost}
-                  color="red"
-                  icon={<TrendingDown className="h-3 w-3" />}
-                />
+              <div>
+                <div className="mb-3 text-sm font-semibold text-muted-foreground">Évolution récente</div>
+                <div className="grid grid-cols-4 gap-3">
+                  <TrendBox
+                    label="Nouveaux"
+                    value={stats.paidTrend.new}
+                    color="blue"
+                    icon={<Sparkles className="h-4 w-4" />}
+                  />
+                  <TrendBox
+                    label="En hausse"
+                    value={stats.paidTrend.up}
+                    color="green"
+                    icon={<ArrowUpRight className="h-4 w-4" />}
+                  />
+                  <TrendBox
+                    label="En baisse"
+                    value={stats.paidTrend.down}
+                    color="orange"
+                    icon={<ArrowDownRight className="h-4 w-4" />}
+                  />
+                  <TrendBox
+                    label="Perdus"
+                    value={stats.paidTrend.lost}
+                    color="red"
+                    icon={<TrendingDown className="h-4 w-4" />}
+                  />
+                </div>
               </div>
             </div>
           ) : (
@@ -212,10 +286,19 @@ export default function DomainOverview({ data }: DomainOverviewProps) {
       </div>
 
       {/* Distribution des positions - ORGANIC */}
-      <div className="border-border bg-card rounded-xl border p-6 shadow-sm">
-        <div className="mb-6 flex items-center gap-2">
-          <Award className="text-primary h-5 w-5" />
-          <h3 className="dashboard-heading-3">Distribution des positions organiques</h3>
+      <div className="border-primary/20 bg-linear-to-br from-primary/5 via-card to-card rounded-2xl border-2 p-8 shadow-xl">
+        <div className="mb-8 flex items-center justify-between border-b border-primary/10 pb-4">
+          <div className="flex items-center gap-3">
+            <div className="bg-primary/20 rounded-xl p-3 ring-2 ring-primary/10">
+              <Award className="text-primary h-6 w-6" />
+            </div>
+            <div>
+              <h3 className="dashboard-heading-2">Distribution des positions organiques</h3>
+              <p className="text-muted-foreground mt-0.5 text-sm">
+                Répartition des {stats.totalOrganicKeywords.toLocaleString()} mots-clés par tranche de position
+              </p>
+            </div>
+          </div>
         </div>
 
         <div className="space-y-3">
@@ -270,87 +353,96 @@ export default function DomainOverview({ data }: DomainOverviewProps) {
         </div>
 
         {/* Résumé des positions clés */}
-        <div className="border-primary/20 bg-primary/5 mt-6 grid grid-cols-4 gap-4 rounded-lg border-2 p-4">
+        <div className="border-primary/40 bg-linear-to-br from-primary/15 to-primary/5 mt-8 grid grid-cols-4 gap-6 rounded-xl border-2 p-6 shadow-lg">
           <div className="text-center">
-            <div className="text-primary font-medium">Top 3</div>
-            <div className="dashboard-heading-2 text-primary mt-1">
+            <div className="text-primary text-sm font-semibold uppercase tracking-wide">Top 3</div>
+            <div className="mt-2 text-3xl font-bold text-primary">
               {stats.topPositions.organic.top3.toLocaleString()}
             </div>
-            <div className="text-muted-foreground mt-1">
-              {((stats.topPositions.organic.top3 / stats.totalOrganicKeywords) * 100).toFixed(1)}%
+            <div className="text-muted-foreground mt-1 text-sm">
+              {((stats.topPositions.organic.top3 / stats.totalOrganicKeywords) * 100).toFixed(1)}% du total
             </div>
           </div>
           <div className="text-center">
-            <div className="text-primary font-medium">Top 10</div>
-            <div className="dashboard-heading-2 text-primary mt-1">
+            <div className="text-primary text-sm font-semibold uppercase tracking-wide">Top 10</div>
+            <div className="mt-2 text-3xl font-bold text-primary">
               {stats.topPositions.organic.top10.toLocaleString()}
             </div>
-            <div className="text-muted-foreground mt-1">
-              {((stats.topPositions.organic.top10 / stats.totalOrganicKeywords) * 100).toFixed(1)}%
+            <div className="text-muted-foreground mt-1 text-sm">
+              {((stats.topPositions.organic.top10 / stats.totalOrganicKeywords) * 100).toFixed(1)}% du total
             </div>
           </div>
           <div className="text-center">
-            <div className="text-primary font-medium">Top 20</div>
-            <div className="dashboard-heading-2 text-primary mt-1">
+            <div className="text-primary text-sm font-semibold uppercase tracking-wide">Top 20</div>
+            <div className="mt-2 text-3xl font-bold text-primary">
               {stats.topPositions.organic.top20.toLocaleString()}
             </div>
-            <div className="text-muted-foreground mt-1">
-              {((stats.topPositions.organic.top20 / stats.totalOrganicKeywords) * 100).toFixed(1)}%
+            <div className="text-muted-foreground mt-1 text-sm">
+              {((stats.topPositions.organic.top20 / stats.totalOrganicKeywords) * 100).toFixed(1)}% du total
             </div>
           </div>
           <div className="text-center">
-            <div className="text-primary font-medium">Top 50</div>
-            <div className="dashboard-heading-2 text-primary mt-1">
+            <div className="text-primary text-sm font-semibold uppercase tracking-wide">Top 50</div>
+            <div className="mt-2 text-3xl font-bold text-primary">
               {stats.topPositions.organic.top50.toLocaleString()}
             </div>
-            <div className="text-muted-foreground mt-1">
-              {((stats.topPositions.organic.top50 / stats.totalOrganicKeywords) * 100).toFixed(1)}%
+            <div className="text-muted-foreground mt-1 text-sm">
+              {((stats.topPositions.organic.top50 / stats.totalOrganicKeywords) * 100).toFixed(1)}% du total
             </div>
           </div>
         </div>
       </div>
 
       {/* Analyse comparative Organic vs Paid */}
-      <div className="border-border bg-card rounded-xl border p-6 shadow-sm">
-        <div className="mb-6 flex items-center gap-2">
-          <PieChart className="text-primary h-5 w-5" />
-          <h3 className="dashboard-heading-3">Comparaison SEO vs SEA</h3>
+      <div className="border-primary/20 bg-linear-to-br from-primary/5 via-card to-card rounded-2xl border-2 p-8 shadow-xl">
+        <div className="mb-8 flex items-center justify-between border-b border-primary/10 pb-4">
+          <div className="flex items-center gap-3">
+            <div className="bg-primary/20 rounded-xl p-3 ring-2 ring-primary/10">
+              <PieChart className="text-primary h-6 w-6" />
+            </div>
+            <div>
+              <h3 className="dashboard-heading-2">Comparaison SEO vs SEA</h3>
+              <p className="text-muted-foreground mt-0.5 text-sm">Analyse de la stratégie de visibilité</p>
+            </div>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
           {/* Stratégie dominante */}
           <div className="col-span-1">
-            <div className="border-primary/20 bg-primary/5 rounded-lg border-2 p-4">
-              <div className="dashboard-body text-foreground font-semibold">Stratégie dominante</div>
-              <div className="mt-3 flex items-center gap-3">
+            <div className="border-primary/30 bg-linear-to-br from-primary/10 to-primary/5 rounded-xl border-2 p-6 shadow-lg">
+              <div className="mb-4 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+                Stratégie dominante
+              </div>
+              <div className="flex items-center gap-4">
                 {stats.totalOrganicKeywords > stats.totalPaidKeywords * 2 ? (
                   <>
-                    <div className="bg-primary flex h-12 w-12 items-center justify-center rounded-full">
-                      <Search className="text-primary-foreground h-6 w-6" />
+                    <div className="bg-primary flex h-16 w-16 items-center justify-center rounded-2xl shadow-lg ring-2 ring-primary/20">
+                      <Search className="text-primary-foreground h-8 w-8" />
                     </div>
                     <div>
-                      <div className="dashboard-heading-4">SEO Focus</div>
-                      <div className="text-muted-foreground">Stratégie organique forte</div>
+                      <div className="text-2xl font-bold text-foreground">SEO Focus</div>
+                      <div className="text-muted-foreground mt-1 text-sm">Stratégie organique dominante</div>
                     </div>
                   </>
                 ) : stats.totalPaidKeywords > stats.totalOrganicKeywords * 2 ? (
                   <>
-                    <div className="bg-accent flex h-12 w-12 items-center justify-center rounded-full">
-                      <DollarSign className="text-accent-foreground h-6 w-6" />
+                    <div className="bg-accent flex h-16 w-16 items-center justify-center rounded-2xl shadow-lg ring-2 ring-accent/20">
+                      <DollarSign className="text-accent-foreground h-8 w-8" />
                     </div>
                     <div>
-                      <div className="dashboard-heading-4">SEA Focus</div>
-                      <div className="text-muted-foreground">Stratégie payante forte</div>
+                      <div className="text-2xl font-bold text-foreground">SEA Focus</div>
+                      <div className="text-muted-foreground mt-1 text-sm">Stratégie payante dominante</div>
                     </div>
                   </>
                 ) : (
                   <>
-                    <div className="bg-primary flex h-12 w-12 items-center justify-center rounded-full">
-                      <Zap className="text-primary-foreground h-6 w-6" />
+                    <div className="bg-primary flex h-16 w-16 items-center justify-center rounded-2xl shadow-lg ring-2 ring-primary/20">
+                      <Zap className="text-primary-foreground h-8 w-8" />
                     </div>
                     <div>
-                      <div className="dashboard-heading-4">Hybride</div>
-                      <div className="text-muted-foreground">Mix SEO + SEA équilibré</div>
+                      <div className="text-2xl font-bold text-foreground">Hybride</div>
+                      <div className="text-muted-foreground mt-1 text-sm">Mix SEO + SEA équilibré</div>
                     </div>
                   </>
                 )}
@@ -360,15 +452,20 @@ export default function DomainOverview({ data }: DomainOverviewProps) {
 
           {/* Graphique de comparaison */}
           <div className="col-span-2">
-            <div className="space-y-3">
-              <div>
-                <div className="mb-2 flex items-center justify-between text-sm">
-                  <span className="text-foreground font-medium">Mots-clés organiques</span>
-                  <span className="text-primary font-bold">{stats.totalOrganicKeywords.toLocaleString()}</span>
+            <div className="space-y-6">
+              <div className="rounded-lg border border-border/50 bg-card p-5">
+                <div className="mb-3 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="h-3 w-3 rounded-full bg-primary"></div>
+                    <span className="font-semibold text-foreground">Mots-clés organiques</span>
+                  </div>
+                  <span className="text-2xl font-bold text-primary">
+                    {stats.totalOrganicKeywords.toLocaleString()}
+                  </span>
                 </div>
-                <div className="bg-muted h-3 w-full overflow-hidden rounded-full">
+                <div className="bg-muted h-4 w-full overflow-hidden rounded-full">
                   <div
-                    className="bg-primary h-full"
+                    className="bg-primary h-full transition-all duration-700"
                     style={{
                       width: `${
                         (stats.totalOrganicKeywords / (stats.totalOrganicKeywords + stats.totalPaidKeywords || 1)) * 100
@@ -378,14 +475,19 @@ export default function DomainOverview({ data }: DomainOverviewProps) {
                 </div>
               </div>
 
-              <div>
-                <div className="mb-2 flex items-center justify-between text-sm">
-                  <span className="text-foreground font-medium">Mots-clés payants</span>
-                  <span className="text-accent-foreground font-bold">{stats.totalPaidKeywords.toLocaleString()}</span>
+              <div className="rounded-lg border border-border/50 bg-card p-5">
+                <div className="mb-3 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="h-3 w-3 rounded-full bg-accent"></div>
+                    <span className="font-semibold text-foreground">Mots-clés payants</span>
+                  </div>
+                  <span className="text-2xl font-bold text-accent-foreground">
+                    {stats.totalPaidKeywords.toLocaleString()}
+                  </span>
                 </div>
-                <div className="bg-muted h-3 w-full overflow-hidden rounded-full">
+                <div className="bg-muted h-4 w-full overflow-hidden rounded-full">
                   <div
-                    className="bg-accent h-full"
+                    className="bg-accent h-full transition-all duration-700"
                     style={{
                       width: `${
                         (stats.totalPaidKeywords / (stats.totalOrganicKeywords + stats.totalPaidKeywords || 1)) * 100
@@ -395,17 +497,26 @@ export default function DomainOverview({ data }: DomainOverviewProps) {
                 </div>
               </div>
 
-              <div className="border-primary/20 bg-primary/5 mt-4 rounded-lg border p-3">
-                <div className="flex items-center gap-2 text-sm">
-                  <BarChart3 className="text-primary h-4 w-4" />
-                  <span className="text-foreground font-semibold">Ratio SEO/SEA :</span>
-                  <span className="text-primary font-bold">
+              <div className="border-primary/30 bg-linear-to-br from-primary/10 to-primary/5 rounded-xl border-2 p-5 shadow-md">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <BarChart3 className="text-primary h-5 w-5" />
+                    <span className="font-semibold text-foreground">Ratio SEO/SEA</span>
+                  </div>
+                  <span className="text-3xl font-bold text-primary">
                     {stats.totalPaidKeywords > 0
                       ? (stats.totalOrganicKeywords / stats.totalPaidKeywords).toFixed(1)
                       : '∞'}{' '}
                     : 1
                   </span>
                 </div>
+                <p className="text-muted-foreground mt-2 text-sm">
+                  {stats.totalPaidKeywords > 0
+                    ? stats.totalOrganicKeywords > stats.totalPaidKeywords
+                      ? 'Stratégie principalement organique'
+                      : 'Stratégie principalement payante'
+                    : 'Stratégie 100% organique'}
+                </p>
               </div>
             </div>
           </div>
@@ -413,83 +524,129 @@ export default function DomainOverview({ data }: DomainOverviewProps) {
       </div>
 
       {/* Insights et recommandations */}
-      <div className="border-border bg-card rounded-xl border-2 p-6">
-        <div className="mb-4 flex items-center gap-2">
-          <Sparkles className="text-primary h-5 w-5" />
-          <h3 className="dashboard-heading-3">Insights & Opportunités</h3>
+      <div className="border-primary/20 bg-linear-to-br from-primary/5 via-card to-card rounded-2xl border-2 p-8 shadow-xl">
+        <div className="mb-8 flex items-center justify-between border-b border-primary/10 pb-4">
+          <div className="flex items-center gap-3">
+            <div className="bg-primary/20 rounded-xl p-3 ring-2 ring-primary/10">
+              <Sparkles className="text-primary h-6 w-6" />
+            </div>
+            <div>
+              <h3 className="dashboard-heading-2">Insights & Opportunités</h3>
+              <p className="text-muted-foreground mt-0.5 text-sm">Analyse stratégique pour consultants SEO</p>
+            </div>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           {/* Forces */}
-          <div className="border-border bg-card rounded-lg border p-4">
-            <div className="mb-3 flex items-center gap-2">
-              <TrendingUp className="text-primary h-4 w-4" />
-              <span className="text-foreground font-semibold">Forces</span>
+          <div className="border-emerald-500/20 bg-linear-to-br from-emerald-500/5 to-emerald-500/0 rounded-xl border-2 p-6 shadow-lg">
+            <div className="mb-4 flex items-center gap-3">
+              <div className="bg-emerald-500/20 rounded-lg p-2">
+                <TrendingUp className="text-emerald-600 h-5 w-5" />
+              </div>
+              <span className="text-lg font-bold text-foreground">Forces</span>
             </div>
-            <ul className="text-foreground space-y-2">
+            <ul className="space-y-3">
               {stats.topPositions.organic.top3 > stats.totalOrganicKeywords * 0.05 && (
-                <li className="flex items-start gap-2">
-                  <span className="text-primary">✓</span>
-                  <span>Fort positionnement Top 3 ({stats.topPositions.organic.top3} mots-clés)</span>
+                <li className="flex items-start gap-3 rounded-lg bg-card/50 p-3">
+                  <span className="mt-0.5 text-xl text-emerald-600">✓</span>
+                  <div>
+                    <div className="font-semibold text-foreground">Fort positionnement Top 3</div>
+                    <div className="text-muted-foreground mt-0.5 text-sm">
+                      {stats.topPositions.organic.top3.toLocaleString()} mots-clés en première page
+                    </div>
+                  </div>
                 </li>
               )}
               {stats.organicTrend.up > stats.organicTrend.down && (
-                <li className="flex items-start gap-2">
-                  <span className="text-primary">✓</span>
-                  <span>Tendance positive : +{stats.organicTrend.up} positions améliorées</span>
+                <li className="flex items-start gap-3 rounded-lg bg-card/50 p-3">
+                  <span className="mt-0.5 text-xl text-emerald-600">✓</span>
+                  <div>
+                    <div className="font-semibold text-foreground">Tendance positive</div>
+                    <div className="text-muted-foreground mt-0.5 text-sm">
+                      +{stats.organicTrend.up.toLocaleString()} positions améliorées récemment
+                    </div>
+                  </div>
                 </li>
               )}
               {stats.totalOrganicValue > 10000 && (
-                <li className="flex items-start gap-2">
-                  <span className="text-primary">✓</span>
-                  <span>
-                    Trafic organique très valorisé ($
-                    {Math.round(stats.totalOrganicValue).toLocaleString()}/mois)
-                  </span>
+                <li className="flex items-start gap-3 rounded-lg bg-card/50 p-3">
+                  <span className="mt-0.5 text-xl text-emerald-600">✓</span>
+                  <div>
+                    <div className="font-semibold text-foreground">Trafic hautement valorisé</div>
+                    <div className="text-muted-foreground mt-0.5 text-sm">
+                      ${Math.round(stats.totalOrganicValue).toLocaleString()}/mois d&apos;équivalent publicitaire
+                    </div>
+                  </div>
                 </li>
               )}
               {stats.organicTrend.new > 0 && (
-                <li className="flex items-start gap-2">
-                  <span className="text-primary">✓</span>
-                  <span>Croissance active : {stats.organicTrend.new} nouveaux mots-clés</span>
+                <li className="flex items-start gap-3 rounded-lg bg-card/50 p-3">
+                  <span className="mt-0.5 text-xl text-emerald-600">✓</span>
+                  <div>
+                    <div className="font-semibold text-foreground">Croissance active</div>
+                    <div className="text-muted-foreground mt-0.5 text-sm">
+                      {stats.organicTrend.new.toLocaleString()} nouveaux mots-clés détectés
+                    </div>
+                  </div>
                 </li>
               )}
             </ul>
           </div>
 
           {/* Faiblesses / Opportunités */}
-          <div className="border-border bg-card rounded-lg border p-4">
-            <div className="mb-3 flex items-center gap-2">
-              <Target className="text-accent-foreground h-4 w-4" />
-              <span className="text-foreground font-semibold">À améliorer</span>
+          <div className="border-orange-500/20 bg-linear-to-br from-orange-500/5 to-orange-500/0 rounded-xl border-2 p-6 shadow-lg">
+            <div className="mb-4 flex items-center gap-3">
+              <div className="bg-orange-500/20 rounded-lg p-2">
+                <Target className="text-orange-600 h-5 w-5" />
+              </div>
+              <span className="text-lg font-bold text-foreground">À améliorer</span>
             </div>
-            <ul className="text-foreground space-y-2">
+            <ul className="space-y-3">
               {stats.organicTrend.down > stats.organicTrend.up && (
-                <li className="flex items-start gap-2">
-                  <span className="text-accent-foreground">!</span>
-                  <span>Tendance négative : -{stats.organicTrend.down} positions perdues</span>
+                <li className="flex items-start gap-3 rounded-lg bg-card/50 p-3">
+                  <span className="mt-0.5 text-xl text-orange-600">!</span>
+                  <div>
+                    <div className="font-semibold text-foreground">Tendance négative</div>
+                    <div className="text-muted-foreground mt-0.5 text-sm">
+                      {stats.organicTrend.down.toLocaleString()} positions en baisse récemment
+                    </div>
+                  </div>
                 </li>
               )}
               {stats.organicTrend.lost > 50 && (
-                <li className="flex items-start gap-2">
-                  <span className="text-accent-foreground">!</span>
-                  <span>Érosion du trafic : {stats.organicTrend.lost} mots-clés perdus</span>
+                <li className="flex items-start gap-3 rounded-lg bg-card/50 p-3">
+                  <span className="mt-0.5 text-xl text-orange-600">!</span>
+                  <div>
+                    <div className="font-semibold text-foreground">Érosion du trafic</div>
+                    <div className="text-muted-foreground mt-0.5 text-sm">
+                      {stats.organicTrend.lost.toLocaleString()} mots-clés perdus - action requise
+                    </div>
+                  </div>
                 </li>
               )}
               {stats.topPositions.organic.top10 / stats.totalOrganicKeywords < 0.2 && (
-                <li className="flex items-start gap-2">
-                  <span className="text-accent-foreground">!</span>
-                  <span>
-                    Peu de positions Top 10 (
-                    {((stats.topPositions.organic.top10 / stats.totalOrganicKeywords) * 100).toFixed(1)}
-                    %)
-                  </span>
+                <li className="flex items-start gap-3 rounded-lg bg-card/50 p-3">
+                  <span className="mt-0.5 text-xl text-orange-600">!</span>
+                  <div>
+                    <div className="font-semibold text-foreground">Faible présence Top 10</div>
+                    <div className="text-muted-foreground mt-0.5 text-sm">
+                      Seulement{' '}
+                      {((stats.topPositions.organic.top10 / stats.totalOrganicKeywords) * 100).toFixed(1)}% en première
+                      page
+                    </div>
+                  </div>
                 </li>
               )}
               {stats.totalPaidKeywords === 0 && (
-                <li className="flex items-start gap-2">
-                  <span className="text-primary">💡</span>
-                  <span>Opportunité SEA inexploitée (pas de publicités détectées)</span>
+                <li className="flex items-start gap-3 rounded-lg bg-card/50 p-3">
+                  <span className="mt-0.5 text-xl text-blue-600">💡</span>
+                  <div>
+                    <div className="font-semibold text-foreground">Opportunité SEA</div>
+                    <div className="text-muted-foreground mt-0.5 text-sm">
+                      Aucune publicité détectée - potentiel inexploité
+                    </div>
+                  </div>
                 </li>
               )}
             </ul>
@@ -507,28 +664,31 @@ function MetricBox({
   suffix,
   icon,
   color,
+  subtitle,
 }: {
   label: string
   value: string
   suffix?: string
   icon: React.ReactNode
   color: 'green' | 'purple'
+  subtitle?: string
 }) {
   const colorClasses = {
-    green: 'bg-primary/10 text-primary border-primary/20',
-    purple: 'bg-accent/10 text-accent-foreground border-accent/20',
+    green: 'bg-primary/10 text-primary border-primary/30',
+    purple: 'bg-accent/10 text-accent-foreground border-accent/30',
   }
 
   return (
-    <div className={`rounded-lg border p-3 ${colorClasses[color]}`}>
-      <div className="mb-1 flex items-center gap-1">
+    <div className={`rounded-xl border-2 p-4 shadow-md transition-all hover:shadow-lg ${colorClasses[color]}`}>
+      <div className="mb-2 flex items-center gap-2">
         {icon}
-        <span className="font-medium">{label}</span>
+        <span className="text-sm font-semibold">{label}</span>
       </div>
       <div className="flex items-baseline gap-1">
-        <span className="dashboard-heading-4 font-bold">{value}</span>
-        {suffix && <span>{suffix}</span>}
+        <span className="text-2xl font-bold">{value}</span>
+        {suffix && <span className="text-sm font-medium">{suffix}</span>}
       </div>
+      {subtitle && <div className="text-muted-foreground mt-1 text-xs">{subtitle}</div>}
     </div>
   )
 }
@@ -545,17 +705,17 @@ function TrendBox({
   icon: React.ReactNode
 }) {
   const colorClasses = {
-    blue: 'bg-primary/10 text-primary border-primary/20',
-    green: 'bg-primary/10 text-primary border-primary/20',
-    orange: 'bg-accent/10 text-accent-foreground border-accent/20',
-    red: 'bg-destructive/10 text-destructive border-destructive/20',
+    blue: 'bg-blue-500/10 text-blue-600 border-blue-500/20',
+    green: 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20',
+    orange: 'bg-orange-500/10 text-orange-600 border-orange-500/20',
+    red: 'bg-red-500/10 text-red-600 border-red-500/20',
   }
 
   return (
-    <div className={`rounded-lg border p-2 text-center ${colorClasses[color]}`}>
-      <div className="mb-1 flex items-center justify-center">{icon}</div>
-      <div className="dashboard-heading-4 font-bold">{value.toLocaleString()}</div>
-      <div>{label}</div>
+    <div className={`rounded-xl border-2 p-3 text-center shadow-sm transition-all hover:shadow-md ${colorClasses[color]}`}>
+      <div className="mb-2 flex items-center justify-center">{icon}</div>
+      <div className="text-xl font-bold">{value.toLocaleString()}</div>
+      <div className="mt-1 text-xs font-medium">{label}</div>
     </div>
   )
 }
@@ -575,27 +735,43 @@ function PositionBar({
 }) {
   const percentage = total > 0 ? (count / total) * 100 : 0
   const colors = {
-    green: 'bg-primary',
-    blue: 'bg-primary',
-    purple: 'bg-accent',
-    orange: 'bg-accent',
-    gray: 'bg-muted-foreground',
+    green: 'bg-emerald-500',
+    blue: 'bg-blue-500',
+    purple: 'bg-purple-500',
+    orange: 'bg-orange-500',
+    gray: 'bg-gray-500',
+  }
+
+  const bgColors = {
+    green: 'bg-emerald-500/10',
+    blue: 'bg-blue-500/10',
+    purple: 'bg-purple-500/10',
+    orange: 'bg-orange-500/10',
+    gray: 'bg-gray-500/10',
   }
 
   return (
-    <div className="flex items-center gap-4">
-      <div className="text-foreground w-24 font-medium">
-        <span className="text-muted-foreground">{rank}</span>
-        <div>{label}</div>
+    <div className="group rounded-lg border border-border/50 bg-card p-4 transition-all hover:border-primary/30 hover:shadow-md">
+      <div className="mb-3 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${bgColors[color]}`}>
+            <span className={`text-sm font-bold ${colors[color].replace('bg-', 'text-')}`}>{rank}</span>
+          </div>
+          <div>
+            <div className="font-semibold text-foreground">{label}</div>
+            <div className="text-muted-foreground text-sm">{count.toLocaleString()} mots-clés</div>
+          </div>
+        </div>
+        <div className="text-right">
+          <div className="text-2xl font-bold text-foreground">{percentage.toFixed(1)}%</div>
+          <div className="text-muted-foreground text-xs">du total</div>
+        </div>
       </div>
-      <div className="flex-1">
-        <div className="text-muted-foreground mb-1 flex items-center justify-between">
-          <span>{count.toLocaleString()} mots-clés</span>
-          <span>{percentage.toFixed(1)}%</span>
-        </div>
-        <div className="bg-muted h-4 w-full overflow-hidden rounded-full">
-          <div className={`h-full transition-all duration-500 ${colors[color]}`} style={{ width: `${percentage}%` }} />
-        </div>
+      <div className="bg-muted h-3 w-full overflow-hidden rounded-full">
+        <div
+          className={`h-full transition-all duration-700 ${colors[color]}`}
+          style={{ width: `${percentage}%` }}
+        />
       </div>
     </div>
   )

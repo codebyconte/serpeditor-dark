@@ -1,21 +1,17 @@
-// 📁 components/keywords/organic-keywords-content.tsx
+// Organic Keywords Content - Professional SEO Dashboard
 'use client'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { DataTable, columnHelper } from '@/components/dashboard/data-table'
+import type { ColumnDef } from '@tanstack/react-table'
 import {
   AlertTriangle,
   ArrowDown,
   ArrowUp,
-  Download,
   Eye,
-  Filter,
   Loader2,
   MousePointerClick,
   RefreshCw,
@@ -24,8 +20,10 @@ import {
   Target,
   TrendingDown,
   TrendingUp,
+  BarChart3,
+  Zap,
 } from 'lucide-react'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { fetchOrganicKeywords, type KeywordData } from './action'
 
 interface Props {
@@ -121,6 +119,106 @@ export function OrganicKeywordsContent({ projectId }: Props) {
         return aValue < bValue ? 1 : -1
       }) || []
 
+  // Columns definition for DataTable - MUST be before any conditional returns
+  const columns: ColumnDef<KeywordData>[] = useMemo(
+    () => [
+      {
+        accessorKey: 'query',
+        header: 'Mot-clé',
+        cell: ({ row }) => {
+          const keyword = row.original
+          return (
+            <div className="flex items-center gap-2">
+              <span className="font-medium">{keyword.query}</span>
+              <div className="flex gap-1">
+                {keyword.isNew && (
+                  <Badge color="zinc" className="text-[10px]">Nouveau</Badge>
+                )}
+                {keyword.isImproving && (
+                  <span className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500/10">
+                    <ArrowUp className="h-3 w-3 text-emerald-400" />
+                  </span>
+                )}
+                {keyword.isDecreasing && (
+                  <span className="flex h-5 w-5 items-center justify-center rounded-full bg-red-500/10">
+                    <ArrowDown className="h-3 w-3 text-red-400" />
+                  </span>
+                )}
+              </div>
+            </div>
+          )
+        },
+      },
+      {
+        accessorKey: 'clicks',
+        header: 'Clics',
+        cell: ({ row }) => (
+          <div className="text-right">
+            <span className="font-semibold tabular-nums">{row.original.clicks.toLocaleString('fr-FR')}</span>
+            {Math.abs(row.original.clicksChange) > 5 && (
+              <div className={`mt-0.5 text-xs ${row.original.clicksChange > 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                {row.original.clicksChange > 0 ? '+' : ''}{row.original.clicksChange.toFixed(0)}%
+              </div>
+            )}
+          </div>
+        ),
+      },
+      {
+        accessorKey: 'impressions',
+        header: 'Impressions',
+        cell: ({ row }) => (
+          <span className="tabular-nums text-muted-foreground">{row.original.impressions.toLocaleString('fr-FR')}</span>
+        ),
+      },
+      {
+        accessorKey: 'ctr',
+        header: 'CTR',
+        cell: ({ row }) => {
+          const ctr = row.original.ctr * 100
+          return (
+            <span className={`tabular-nums ${ctr >= 5 ? 'text-emerald-400' : ctr >= 2 ? 'text-foreground' : 'text-muted-foreground'}`}>
+              {ctr.toFixed(2)}%
+            </span>
+          )
+        },
+      },
+      {
+        accessorKey: 'position',
+        header: 'Position',
+        cell: ({ row }) => {
+          const pos = row.original.position
+          let colorClass = 'text-muted-foreground bg-muted/50'
+          if (pos <= 3) colorClass = 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20'
+          else if (pos <= 10) colorClass = 'text-blue-400 bg-blue-500/10 border-blue-500/20'
+          else if (pos <= 20) colorClass = 'text-amber-400 bg-amber-500/10 border-amber-500/20'
+          else colorClass = 'text-red-400 bg-red-500/10 border-red-500/20'
+
+          return (
+            <span className={`inline-flex items-center rounded-md border px-2 py-0.5 text-xs font-semibold ${colorClass}`}>
+              #{pos.toFixed(1)}
+            </span>
+          )
+        },
+      },
+      {
+        accessorKey: 'positionChange',
+        header: 'Évolution',
+        cell: ({ row }) => {
+          const change = row.original.positionChange
+          if (Math.abs(change) <= 0.5) return <span className="text-muted-foreground">-</span>
+          const isPositive = change > 0
+          return (
+            <div className={`flex items-center gap-1 ${isPositive ? 'text-emerald-400' : 'text-red-400'}`}>
+              {isPositive ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />}
+              <span className="text-xs font-medium">{Math.abs(change).toFixed(1)}</span>
+            </div>
+          )
+        },
+      },
+    ],
+    []
+  )
+
   // Export CSV
   const exportToCSV = () => {
     if (!data?.keywords) return
@@ -152,73 +250,92 @@ export function OrganicKeywordsContent({ projectId }: Props) {
     link.click()
   }
 
+  // Loading state with premium design
   if (isLoading) {
     return (
-      <Card>
-        <CardContent className="py-16 text-center">
-          <Loader2 className="text-primary mx-auto h-12 w-12 animate-spin" />
-          <p className="mt-4 font-medium">Chargement des données...</p>
-          <p className="text-muted-foreground mt-2 text-sm">Récupération depuis Google Search Console</p>
-        </CardContent>
-      </Card>
+      <div className="flex flex-col items-center justify-center rounded-xl border border-white/5 bg-linear-to-b from-mist-800/40 to-mist-900/40 p-16">
+        <div className="relative mb-4">
+          <div className="absolute inset-0 rounded-full bg-primary/20 blur-xl" />
+          <div className="relative flex h-14 w-14 items-center justify-center">
+            <div className="absolute h-14 w-14 animate-spin rounded-full border-2 border-transparent border-t-primary" />
+            <div className="absolute h-10 w-10 animate-spin rounded-full border-2 border-transparent border-t-primary/50 [animation-direction:reverse] [animation-duration:1.5s]" />
+          </div>
+        </div>
+        <p className="text-sm font-medium text-foreground">Chargement des données...</p>
+        <p className="mt-1 text-xs text-muted-foreground">Récupération depuis Google Search Console</p>
+      </div>
     )
   }
 
+  // Error state with premium design
   if (error) {
     return (
-      <Card className="border-destructive/50 bg-destructive/5">
-        <CardContent className="pt-6">
-          <div className="flex items-start gap-3">
-            <AlertTriangle className="text-destructive mt-0.5 h-5 w-5" />
-            <div className="flex-1">
-              <p className="text-destructive font-semibold">Erreur de chargement</p>
-              <p className="text-muted-foreground mt-1 text-sm">{error}</p>
-
-              <div className="border-border bg-card mt-4 rounded-lg border p-4">
-                <p className="text-sm font-medium">Vérifications à effectuer :</p>
-                <ul className="text-muted-foreground mt-2 space-y-1 text-sm">
-                  <li>• Assurez-vous que votre site est vérifié dans Google Search Console</li>
-                  <li>• Vérifiez que vous avez connecté votre compte Google avec les bonnes permissions</li>
-                  <li>• Attendez au moins 48h après l&apos;ajout de votre site dans GSC</li>
-                  <li>• Vérifiez que votre projet contient une URL valide</li>
-                </ul>
-              </div>
-
-              <Button onClick={loadData} size="sm" variant="outline" className="mt-4">
-                <RefreshCw className="mr-2 h-4 w-4" />
-                Réessayer
-              </Button>
+      <div className="rounded-xl border border-red-500/20 bg-linear-to-b from-red-500/5 to-transparent p-8">
+        <div className="flex items-start gap-4">
+          <div className="relative shrink-0">
+            <div className="absolute inset-0 rounded-full bg-red-500/20 blur-lg" />
+            <div className="relative flex h-12 w-12 items-center justify-center rounded-full border border-red-500/20 bg-red-500/10">
+              <AlertTriangle className="h-6 w-6 text-red-400" />
             </div>
           </div>
-        </CardContent>
-      </Card>
+          <div className="flex-1">
+            <p className="font-semibold text-red-400">Erreur de chargement</p>
+            <p className="mt-1 text-sm text-muted-foreground">{error}</p>
+
+            <div className="mt-4 rounded-lg border border-white/5 bg-white/5 p-4">
+              <p className="text-sm font-medium text-foreground">Vérifications à effectuer :</p>
+              <ul className="mt-2 space-y-1.5 text-sm text-muted-foreground">
+                <li className="flex items-start gap-2">
+                  <div className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
+                  Assurez-vous que votre site est vérifié dans Google Search Console
+                </li>
+                <li className="flex items-start gap-2">
+                  <div className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
+                  Vérifiez que vous avez connecté votre compte Google avec les bonnes permissions
+                </li>
+                <li className="flex items-start gap-2">
+                  <div className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
+                  Attendez au moins 48h après l&apos;ajout de votre site dans GSC
+                </li>
+              </ul>
+            </div>
+
+            <Button onClick={loadData} size="sm" variant="outline" className="mt-4 border-white/10 bg-white/5 hover:bg-white/10">
+              <RefreshCw className="mr-2 h-4 w-4" />
+              Réessayer
+            </Button>
+          </div>
+        </div>
+      </div>
     )
   }
 
+  // Empty state
   if (!data?.keywords || data.keywords.length === 0) {
     return (
-      <Card>
-        <CardContent className="py-16 text-center">
-          <Search className="text-muted-foreground/50 mx-auto h-12 w-12" />
-          <p className="mt-4 font-medium">Aucun mot-clé trouvé</p>
-          <p className="text-muted-foreground mt-2 text-sm">
-            Vérifiez que votre site est bien indexé dans Google Search Console
-          </p>
-        </CardContent>
-      </Card>
+      <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-white/10 bg-white/5 p-16">
+        <div className="relative mb-4">
+          <div className="absolute inset-0 rounded-full bg-muted/20 blur-xl" />
+          <div className="relative flex h-14 w-14 items-center justify-center rounded-full border border-white/10 bg-muted/50">
+            <Search className="h-7 w-7 text-muted-foreground" />
+          </div>
+        </div>
+        <p className="text-sm font-medium text-foreground">Aucun mot-clé trouvé</p>
+        <p className="mt-1 max-w-sm text-center text-xs text-muted-foreground">
+          Vérifiez que votre site est bien indexé dans Google Search Console
+        </p>
+      </div>
     )
   }
 
   const stats = data.stats
   if (!stats) {
     return (
-      <Card>
-        <CardContent className="py-16 text-center">
-          <AlertTriangle className="text-destructive mx-auto h-12 w-12" />
-          <p className="mt-4 font-medium">Données incomplètes</p>
-          <p className="text-muted-foreground mt-2 text-sm">Les statistiques ne sont pas disponibles</p>
-        </CardContent>
-      </Card>
+      <div className="flex flex-col items-center justify-center rounded-xl border border-amber-500/20 bg-amber-500/5 p-16">
+        <AlertTriangle className="mb-4 h-12 w-12 text-amber-400" />
+        <p className="font-medium text-foreground">Données incomplètes</p>
+        <p className="mt-1 text-sm text-muted-foreground">Les statistiques ne sont pas disponibles</p>
+      </div>
     )
   }
 
@@ -227,391 +344,212 @@ export function OrganicKeywordsContent({ projectId }: Props) {
   const decreasing = data.keywords?.filter((k: KeywordData) => k.isDecreasing) || []
 
   return (
-    <TooltipProvider>
-      <div className="space-y-6">
-        {/* Statistiques globales */}
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <Card className="transition-shadow hover:shadow-md">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total mots-clés</CardTitle>
-              <Search className="text-muted-foreground h-4 w-4" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold">{stats.totalKeywords.toLocaleString('fr-FR')}</div>
-              <div className="mt-2 flex items-center gap-4 text-xs">
-                <div>
-                  <span className="text-muted-foreground">Top 3: </span>
-                  <span className="font-semibold text-green-600">{stats.topPerformers}</span>
-                </div>
-                <div>
-                  <span className="text-muted-foreground">Page 1: </span>
-                  <span className="font-semibold text-blue-600">{stats.firstPageKeywords}</span>
-                </div>
+    <div className="space-y-6">
+      {/* Premium Stats Grid */}
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        {/* Total Keywords */}
+        <div className="group relative overflow-hidden rounded-2xl border-2 border-blue-500/20 bg-linear-to-br from-blue-500/10 via-mist-800/90 to-mist-900/90 p-6 shadow-xl backdrop-blur-sm transition-all duration-300 hover:border-blue-500/30 hover:shadow-2xl hover:shadow-blue-500/10">
+          <div className="absolute -right-6 -top-6 h-32 w-32 rounded-full bg-blue-500/20 blur-3xl transition-all duration-500 group-hover:bg-blue-500/30" />
+          <div className="relative">
+            <div className="mb-4 flex items-center justify-between border-b border-blue-500/10 pb-3">
+              <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Total mots-clés</span>
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-500/20 ring-2 ring-blue-500/10">
+                <Search className="h-5 w-5 text-blue-400" />
               </div>
-            </CardContent>
-          </Card>
-
-          <Card className="transition-shadow hover:shadow-md">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Clics totaux</CardTitle>
-              <MousePointerClick className="text-muted-foreground h-4 w-4" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold">{stats.totalClicks.toLocaleString('fr-FR')}</div>
-              <p className="text-muted-foreground mt-2 text-xs">CTR moyen: {(stats.avgCTR * 100).toFixed(2)}%</p>
-            </CardContent>
-          </Card>
-
-          <Card className="transition-shadow hover:shadow-md">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Impressions totales</CardTitle>
-              <Eye className="text-muted-foreground h-4 w-4" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold">{stats.totalImpressions.toLocaleString('fr-FR')}</div>
-              <p className="text-muted-foreground mt-2 text-xs">{stats.newKeywords} nouveaux mots-clés</p>
-            </CardContent>
-          </Card>
-
-          <Card className="transition-shadow hover:shadow-md">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Position moyenne</CardTitle>
-              <Target className="text-muted-foreground h-4 w-4" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold">{stats.avgPosition.toFixed(1)}</div>
-              <p className="text-muted-foreground mt-2 text-xs">{stats.improvingKeywords} en amélioration</p>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Onglets */}
-        <Tabs defaultValue="all" className="space-y-6">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <TabsList>
-              <TabsTrigger value="all">Tous ({data.keywords?.length || 0})</TabsTrigger>
-              <TabsTrigger value="opportunities">Opportunités ({opportunities.length})</TabsTrigger>
-              <TabsTrigger value="improving">En progression ({improving.length})</TabsTrigger>
-              <TabsTrigger value="decreasing">En baisse ({decreasing.length})</TabsTrigger>
-            </TabsList>
-
-            <div className="flex gap-2">
-              <Button onClick={loadData} variant="outline" size="sm">
-                <RefreshCw className="mr-2 h-4 w-4" />
-                Actualiser
-              </Button>
-              <Button onClick={exportToCSV} variant="outline" size="sm">
-                <Download className="mr-2 h-4 w-4" />
-                Exporter
-              </Button>
+            </div>
+            <p className="text-4xl font-bold tracking-tight text-blue-400">{stats.totalKeywords.toLocaleString('fr-FR')}</p>
+            <div className="mt-3 flex items-center gap-4 text-xs">
+              <div className="rounded-lg bg-emerald-500/10 px-2 py-1">
+                <span className="text-muted-foreground">Top 3: </span>
+                <span className="font-bold text-emerald-400">{stats.topPerformers}</span>
+              </div>
+              <div className="rounded-lg bg-blue-500/10 px-2 py-1">
+                <span className="text-muted-foreground">Page 1: </span>
+                <span className="font-bold text-blue-400">{stats.firstPageKeywords}</span>
+              </div>
             </div>
           </div>
-
-          {/* Filtres */}
-          <Card>
-            <CardHeader>
-              <div className="flex items-center gap-2">
-                <Filter className="h-4 w-4" />
-                <CardTitle className="text-base">Filtres et tri</CardTitle>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="grid gap-4 md:grid-cols-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Rechercher</label>
-                  <Input
-                    placeholder="Mot-clé..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Position</label>
-                  <Select value={positionFilter} onValueChange={setPositionFilter}>
-                    <SelectTrigger className="hover:cursor-pointer">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent className="bg-mist-600">
-                      <SelectItem value="all" className="hover:cursor-pointer hover:bg-mist-500">
-                        Toutes positions
-                      </SelectItem>
-                      <SelectItem value="top3" className="hover:cursor-pointer hover:bg-mist-500">
-                        Top 3
-                      </SelectItem>
-                      <SelectItem value="top10" className="hover:cursor-pointer hover:bg-mist-500">
-                        Top 10
-                      </SelectItem>
-                      <SelectItem value="top20" className="hover:cursor-pointer hover:bg-mist-500">
-                        Top 20
-                      </SelectItem>
-                      <SelectItem value="top50" className="hover:cursor-pointer hover:bg-mist-500">
-                        Top 50
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Trier par</label>
-                  <Select
-                    value={sortBy}
-                    onValueChange={(v) => setSortBy(v as 'clicks' | 'impressions' | 'ctr' | 'position')}
-                  >
-                    <SelectTrigger className="hover:cursor-pointer">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent className="bg-mist-600">
-                      <SelectItem value="clicks" className="hover:cursor-pointer hover:bg-mist-500">
-                        Clics
-                      </SelectItem>
-                      <SelectItem value="impressions" className="hover:cursor-pointer hover:bg-mist-500">
-                        Impressions
-                      </SelectItem>
-                      <SelectItem value="ctr" className="hover:cursor-pointer hover:bg-mist-500">
-                        CTR
-                      </SelectItem>
-                      <SelectItem value="position" className="hover:cursor-pointer hover:bg-mist-500">
-                        Position
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Ordre</label>
-                  <Select value={sortOrder} onValueChange={(v) => setSortOrder(v as 'asc' | 'desc')}>
-                    <SelectTrigger className="hover:cursor-pointer">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent className="bg-mist-600">
-                      <SelectItem value="desc" className="hover:cursor-pointer hover:bg-mist-500">
-                        Décroissant
-                      </SelectItem>
-                      <SelectItem value="asc" className="hover:cursor-pointer hover:bg-mist-500">
-                        Croissant
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-
-              {(searchQuery || positionFilter !== 'all') && (
-                <div className="mt-4 flex items-center gap-2">
-                  <Badge color="zinc">
-                    {filteredKeywords.length} résultat
-                    {filteredKeywords.length > 1 ? 's' : ''}
-                  </Badge>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => {
-                      setSearchQuery('')
-                      setPositionFilter('all')
-                    }}
-                  >
-                    Réinitialiser
-                  </Button>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Onglet Tous */}
-          <TabsContent value="all" className="space-y-6">
-            <KeywordsTable keywords={filteredKeywords} />
-          </TabsContent>
-
-          {/* Onglet Opportunités */}
-          <TabsContent value="opportunities" className="space-y-6">
-            <Card className="border-blue-200 bg-blue-50 dark:border-blue-900 dark:bg-blue-950">
-              <CardHeader>
-                <div className="flex items-center gap-2">
-                  <Sparkles className="h-5 w-5 text-blue-600" />
-                  <CardTitle className="text-blue-900 dark:text-blue-100">Opportunités d&apos;amélioration</CardTitle>
-                </div>
-                <CardDescription>
-                  Mots-clés avec fort potentiel de progression (positions 4-20 avec bonnes impressions)
-                </CardDescription>
-              </CardHeader>
-            </Card>
-            <KeywordsTable keywords={opportunities} showOpportunity />
-          </TabsContent>
-
-          {/* Onglet En progression */}
-          <TabsContent value="improving" className="space-y-6">
-            <Card className="border-green-200 bg-green-50 dark:border-green-900 dark:bg-green-950">
-              <CardHeader>
-                <div className="flex items-center gap-2">
-                  <TrendingUp className="h-5 w-5 text-green-600" />
-                  <CardTitle className="text-green-900 dark:text-green-100">Mots-clés en progression</CardTitle>
-                </div>
-                <CardDescription>Mots-clés avec amélioration significative de position ou clics</CardDescription>
-              </CardHeader>
-            </Card>
-            <KeywordsTable keywords={improving} />
-          </TabsContent>
-
-          {/* Onglet En baisse */}
-          <TabsContent value="decreasing" className="space-y-6">
-            <Card className="border-red-200 bg-red-50 dark:border-red-900 dark:bg-red-950">
-              <CardHeader>
-                <div className="flex items-center gap-2">
-                  <TrendingDown className="h-5 w-5 text-red-600" />
-                  <CardTitle className="text-red-900 dark:text-red-100">Mots-clés en baisse</CardTitle>
-                </div>
-                <CardDescription>Mots-clés nécessitant une attention immédiate</CardDescription>
-              </CardHeader>
-            </Card>
-            <KeywordsTable keywords={decreasing} />
-          </TabsContent>
-        </Tabs>
-      </div>
-    </TooltipProvider>
-  )
-}
-
-// Composant Tableau
-function KeywordsTable({ keywords, showOpportunity = false }: { keywords: KeywordData[]; showOpportunity?: boolean }) {
-  if (keywords.length === 0) {
-    return (
-      <Card>
-        <CardContent className="py-12 text-center">
-          <Search className="text-muted-foreground/50 mx-auto h-12 w-12" />
-          <p className="text-muted-foreground mt-4 text-sm font-medium">Aucun mot-clé dans cette catégorie</p>
-        </CardContent>
-      </Card>
-    )
-  }
-
-  return (
-    <Card>
-      <CardContent className="p-0">
-        <div className="overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-12">#</TableHead>
-                <TableHead className="min-w-[250px]">Mot-clé</TableHead>
-                <TableHead className="text-right">Clics</TableHead>
-                <TableHead className="text-right">Impressions</TableHead>
-                <TableHead className="text-right">CTR</TableHead>
-                <TableHead className="text-right">Position</TableHead>
-                <TableHead className="text-center">Évolution</TableHead>
-                {showOpportunity && <TableHead>Opportunité</TableHead>}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {keywords.map((keyword, index) => (
-                <TableRow key={keyword.query} className="group">
-                  <TableCell className="text-muted-foreground font-medium">{index + 1}</TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium">{keyword.query}</span>
-                      {keyword.isNew && (
-                        <Badge color="zinc" className="text-xs">
-                          Nouveau
-                        </Badge>
-                      )}
-                      {keyword.isImproving && (
-                        <Badge color="green" className="text-xs">
-                          ↑
-                        </Badge>
-                      )}
-                      {keyword.isDecreasing && (
-                        <Badge color="red" className="text-xs">
-                          ↓
-                        </Badge>
-                      )}
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-right font-semibold">{keyword.clicks.toLocaleString('fr-FR')}</TableCell>
-                  <TableCell className="text-muted-foreground text-right">
-                    {keyword.impressions.toLocaleString('fr-FR')}
-                  </TableCell>
-                  <TableCell className="text-right">{(keyword.ctr * 100).toFixed(2)}%</TableCell>
-                  <TableCell className="text-right">
-                    <Badge color={keyword.position <= 3 ? 'green' : keyword.position <= 10 ? 'blue' : 'zinc'}>
-                      {keyword.position.toFixed(1)}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center justify-center gap-3">
-                      {/* Changement clics */}
-                      {Math.abs(keyword.clicksChange) > 5 && (
-                        <Tooltip>
-                          <TooltipTrigger>
-                            <div
-                              className={`flex items-center gap-1 text-xs font-medium ${
-                                keyword.clicksChange > 0 ? 'text-green-600' : 'text-red-600'
-                              }`}
-                            >
-                              {keyword.clicksChange > 0 ? (
-                                <ArrowUp className="h-3 w-3" />
-                              ) : (
-                                <ArrowDown className="h-3 w-3" />
-                              )}
-                              {Math.abs(keyword.clicksChange).toFixed(0)}%
-                            </div>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>Évolution des clics</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      )}
-
-                      {/* Changement position */}
-                      {Math.abs(keyword.positionChange) > 0.5 && (
-                        <Tooltip>
-                          <TooltipTrigger>
-                            <div
-                              className={`flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ${
-                                keyword.positionChange > 0
-                                  ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300'
-                                  : 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300'
-                              }`}
-                            >
-                              {keyword.positionChange > 0 ? (
-                                <ArrowUp className="h-3 w-3" />
-                              ) : (
-                                <ArrowDown className="h-3 w-3" />
-                              )}
-                              {Math.abs(keyword.positionChange).toFixed(1)}
-                            </div>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>Évolution de position</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      )}
-                    </div>
-                  </TableCell>
-                  {showOpportunity && (
-                    <TableCell>
-                      <Badge
-                        color={
-                          keyword.opportunity === 'high'
-                            ? 'orange'
-                            : keyword.opportunity === 'medium'
-                              ? 'yellow'
-                              : 'zinc'
-                        }
-                      >
-                        {keyword.opportunity === 'high'
-                          ? 'Haute'
-                          : keyword.opportunity === 'medium'
-                            ? 'Moyenne'
-                            : 'Faible'}
-                      </Badge>
-                    </TableCell>
-                  )}
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
         </div>
-      </CardContent>
-    </Card>
+
+        {/* Total Clicks */}
+        <div className="group relative overflow-hidden rounded-2xl border-2 border-emerald-500/20 bg-linear-to-br from-emerald-500/10 via-mist-800/90 to-mist-900/90 p-6 shadow-xl backdrop-blur-sm transition-all duration-300 hover:border-emerald-500/30 hover:shadow-2xl hover:shadow-emerald-500/10">
+          <div className="absolute -right-6 -top-6 h-32 w-32 rounded-full bg-emerald-500/20 blur-3xl transition-all duration-500 group-hover:bg-emerald-500/30" />
+          <div className="relative">
+            <div className="mb-4 flex items-center justify-between border-b border-emerald-500/10 pb-3">
+              <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Clics totaux</span>
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/20 ring-2 ring-emerald-500/10">
+                <MousePointerClick className="h-5 w-5 text-emerald-400" />
+              </div>
+            </div>
+            <p className="text-4xl font-bold tracking-tight text-emerald-400">{stats.totalClicks.toLocaleString('fr-FR')}</p>
+            <p className="mt-3 text-sm font-medium text-muted-foreground">
+              CTR moyen: <span className="font-bold text-emerald-400">{(stats.avgCTR * 100).toFixed(2)}%</span>
+            </p>
+          </div>
+        </div>
+
+        {/* Total Impressions */}
+        <div className="group relative overflow-hidden rounded-2xl border-2 border-purple-500/20 bg-linear-to-br from-purple-500/10 via-mist-800/90 to-mist-900/90 p-6 shadow-xl backdrop-blur-sm transition-all duration-300 hover:border-purple-500/30 hover:shadow-2xl hover:shadow-purple-500/10">
+          <div className="absolute -right-6 -top-6 h-32 w-32 rounded-full bg-purple-500/20 blur-3xl transition-all duration-500 group-hover:bg-purple-500/30" />
+          <div className="relative">
+            <div className="mb-4 flex items-center justify-between border-b border-purple-500/10 pb-3">
+              <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Impressions</span>
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-500/20 ring-2 ring-purple-500/10">
+                <Eye className="h-5 w-5 text-purple-400" />
+              </div>
+            </div>
+            <p className="text-4xl font-bold tracking-tight text-purple-400">{stats.totalImpressions.toLocaleString('fr-FR')}</p>
+            <p className="mt-3 text-sm font-medium text-muted-foreground">
+              <span className="font-bold text-blue-400">{stats.newKeywords}</span> nouveaux mots-clés
+            </p>
+          </div>
+        </div>
+
+        {/* Average Position */}
+        <div className="group relative overflow-hidden rounded-2xl border-2 border-orange-500/20 bg-linear-to-br from-orange-500/10 via-mist-800/90 to-mist-900/90 p-6 shadow-xl backdrop-blur-sm transition-all duration-300 hover:border-orange-500/30 hover:shadow-2xl hover:shadow-orange-500/10">
+          <div className="absolute -right-6 -top-6 h-32 w-32 rounded-full bg-orange-500/20 blur-3xl transition-all duration-500 group-hover:bg-orange-500/30" />
+          <div className="relative">
+            <div className="mb-4 flex items-center justify-between border-b border-orange-500/10 pb-3">
+              <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Position moyenne</span>
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-orange-500/20 ring-2 ring-orange-500/10">
+                <Target className="h-5 w-5 text-orange-400" />
+              </div>
+            </div>
+            <p className="text-4xl font-bold tracking-tight text-orange-400">{stats.avgPosition.toFixed(1)}</p>
+            <p className="mt-3 text-sm font-medium text-muted-foreground">
+              <span className="font-bold text-emerald-400">{stats.improvingKeywords}</span> en amélioration
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Tabs with DataTable */}
+      <Tabs defaultValue="all" className="space-y-6">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <TabsList className="bg-mist-900/50">
+            <TabsTrigger value="all" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              Tous ({data.keywords?.length || 0})
+            </TabsTrigger>
+            <TabsTrigger value="opportunities" className="data-[state=active]:bg-blue-500 data-[state=active]:text-white">
+              Opportunités ({opportunities.length})
+            </TabsTrigger>
+            <TabsTrigger value="improving" className="data-[state=active]:bg-emerald-500 data-[state=active]:text-white">
+              En progression ({improving.length})
+            </TabsTrigger>
+            <TabsTrigger value="decreasing" className="data-[state=active]:bg-red-500 data-[state=active]:text-white">
+              En baisse ({decreasing.length})
+            </TabsTrigger>
+          </TabsList>
+
+          <Button onClick={loadData} variant="outline" size="sm" className="border-white/10 bg-white/5 hover:bg-white/10">
+            <RefreshCw className="mr-2 h-4 w-4" />
+            Actualiser
+          </Button>
+        </div>
+
+        {/* All Keywords Tab */}
+        <TabsContent value="all" className="space-y-4">
+          <DataTable
+            columns={columns}
+            data={data.keywords || []}
+            searchKey="query"
+            searchPlaceholder="Rechercher un mot-clé..."
+            exportFilename={`keywords-${new Date().toISOString().split('T')[0]}`}
+            pageSize={25}
+            pageSizeOptions={[10, 25, 50, 100, 250, 500]}
+            showColumnToggle={true}
+            showExport={true}
+            showSearch={true}
+          />
+        </TabsContent>
+
+        {/* Opportunities Tab */}
+        <TabsContent value="opportunities" className="space-y-4">
+          <div className="rounded-xl border border-blue-500/20 bg-linear-to-r from-blue-500/10 to-transparent p-4">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-500/20">
+                <Sparkles className="h-5 w-5 text-blue-400" />
+              </div>
+              <div>
+                <p className="font-semibold text-foreground">Opportunités d&apos;amélioration</p>
+                <p className="text-sm text-muted-foreground">Mots-clés positions 4-20 avec fort potentiel de clics</p>
+              </div>
+            </div>
+          </div>
+          <DataTable
+            columns={columns}
+            data={opportunities}
+            searchKey="query"
+            searchPlaceholder="Rechercher une opportunité..."
+            exportFilename={`opportunities-${new Date().toISOString().split('T')[0]}`}
+            pageSize={25}
+            pageSizeOptions={[10, 25, 50, 100, 250]}
+            emptyMessage="Aucune opportunité détectée"
+            emptyDescription="Les opportunités apparaîtront ici lorsque des mots-clés avec potentiel seront identifiés."
+            showColumnToggle={true}
+            showExport={true}
+            showSearch={true}
+          />
+        </TabsContent>
+
+        {/* Improving Tab */}
+        <TabsContent value="improving" className="space-y-4">
+          <div className="rounded-xl border border-emerald-500/20 bg-linear-to-r from-emerald-500/10 to-transparent p-4">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-500/20">
+                <TrendingUp className="h-5 w-5 text-emerald-400" />
+              </div>
+              <div>
+                <p className="font-semibold text-foreground">Mots-clés en progression</p>
+                <p className="text-sm text-muted-foreground">Amélioration significative de position ou clics</p>
+              </div>
+            </div>
+          </div>
+          <DataTable
+            columns={columns}
+            data={improving}
+            searchKey="query"
+            searchPlaceholder="Rechercher..."
+            exportFilename={`improving-${new Date().toISOString().split('T')[0]}`}
+            pageSize={25}
+            pageSizeOptions={[10, 25, 50, 100, 250]}
+            emptyMessage="Aucun mot-clé en progression"
+            emptyDescription="Les mots-clés en amélioration apparaîtront ici."
+            showColumnToggle={true}
+            showExport={true}
+            showSearch={true}
+          />
+        </TabsContent>
+
+        {/* Decreasing Tab */}
+        <TabsContent value="decreasing" className="space-y-4">
+          <div className="rounded-xl border border-red-500/20 bg-linear-to-r from-red-500/10 to-transparent p-4">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-red-500/20">
+                <TrendingDown className="h-5 w-5 text-red-400" />
+              </div>
+              <div>
+                <p className="font-semibold text-foreground">Mots-clés en baisse</p>
+                <p className="text-sm text-muted-foreground">Nécessitent une attention immédiate</p>
+              </div>
+            </div>
+          </div>
+          <DataTable
+            columns={columns}
+            data={decreasing}
+            searchKey="query"
+            searchPlaceholder="Rechercher..."
+            exportFilename={`decreasing-${new Date().toISOString().split('T')[0]}`}
+            pageSize={25}
+            pageSizeOptions={[10, 25, 50, 100, 250]}
+            emptyMessage="Aucun mot-clé en baisse"
+            emptyDescription="Bonne nouvelle ! Aucun mot-clé n'est en baisse significative."
+            showColumnToggle={true}
+            showExport={true}
+            showSearch={true}
+          />
+        </TabsContent>
+      </Tabs>
+    </div>
   )
 }

@@ -774,7 +774,7 @@ export default function AuditSeoPage() {
               { title: 'Le plus complet', desc: '120 points analysés vs ~40-60 chez les concurrents' },
               { title: 'Résultats en 60s', desc: "Pas d'attente interminable. Rapport instantané." },
               { title: 'Sans inscription', desc: 'Testez immédiatement sans créer de compte' },
-              { title: 'Données fiables', desc: 'Infrastructure DataForSEO (référence mondiale)' },
+              { title: 'Données fiables', desc: 'Infrastructure de référence mondiale' },
               { title: '100% en français', desc: 'Rapport et recommandations en français clair' },
               { title: 'Support gratuit', desc: 'Questions ? Réponse en français sous 24h' },
               { title: 'Tous CMS compatibles', desc: 'WordPress, Shopify, Wix, Prestashop...' },

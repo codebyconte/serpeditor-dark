@@ -1,7 +1,9 @@
 'use client'
 
 import { Button as DashboardButton } from '@/components/dashboard/button'
+import { DataTable } from '@/components/dashboard/data-table'
 import { Dialog, DialogActions, DialogBody, DialogDescription, DialogTitle } from '@/components/dashboard/dialog'
+import { EmptyState } from '@/components/dashboard/empty-state'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -10,8 +12,23 @@ import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { ArrowDown, ArrowUp, Eye, Loader2, Plus, RefreshCw, Search, Trash2, TrendingUp } from 'lucide-react'
-import { useCallback, useEffect, useState } from 'react'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import type { ColumnDef } from '@tanstack/react-table'
+import {
+  ArrowDown,
+  ArrowUp,
+  Eye,
+  Globe,
+  Loader2,
+  Plus,
+  RefreshCw,
+  Search,
+  Target,
+  Trash2,
+  TrendingUp,
+  Zap,
+} from 'lucide-react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { toast } from 'sonner'
 import {
   addKeyword,
@@ -408,57 +425,306 @@ export default function RankOverviewContent() {
     }).format(num)
   }
 
+  // Colonnes pour la DataTable des mots-clés suivis
+  const keywordColumns = useMemo<ColumnDef<TrackedKeyword>[]>(
+    () => [
+      {
+        accessorKey: 'keyword',
+        header: 'Mot-clé',
+        cell: ({ row }) => {
+          const kw = row.original
+          const isLoading = loadingKeywordData[kw.id]
+          return (
+            <div className="flex items-center gap-2">
+              <span className="font-medium">{kw.keyword}</span>
+              {(!kw.searchVolume || !kw.cpc) && !isLoading && (
+                <Button
+                  variant="outline"
+                  className="h-6 w-6 p-0"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    loadKeywordData(kw)
+                  }}
+                  title="Charger les métriques manquantes"
+                >
+                  <Search className="h-3 w-3" />
+                </Button>
+              )}
+            </div>
+          )
+        },
+      },
+      {
+        accessorKey: 'rankGroup',
+        header: 'Position',
+        cell: ({ row }) => {
+          const kw = row.original
+          return (
+            <div className="flex flex-col gap-1">
+              <div className="flex items-center gap-2">
+                {kw.rankGroup !== null ? (
+                  <Badge
+                    className={
+                      kw.rankGroup <= 3
+                        ? 'bg-emerald-500 text-white'
+                        : kw.rankGroup <= 10
+                          ? 'bg-blue-500 text-white'
+                          : kw.rankGroup <= 20
+                            ? 'bg-amber-500 text-white'
+                            : 'bg-zinc-500 text-white'
+                    }
+                  >
+                    #{kw.rankGroup}
+                  </Badge>
+                ) : (
+                  <span className="text-muted-foreground text-sm">Non classé</span>
+                )}
+              </div>
+              {kw.previousRank !== null && kw.rankGroup !== null && (
+                <div className="flex items-center gap-1 text-xs">
+                  {kw.rankGroup < kw.previousRank ? (
+                    <span className="flex items-center text-emerald-500">
+                      <ArrowUp className="h-3 w-3" />+{kw.previousRank - kw.rankGroup}
+                    </span>
+                  ) : kw.rankGroup > kw.previousRank ? (
+                    <span className="flex items-center text-red-500">
+                      <ArrowDown className="h-3 w-3" />-{kw.rankGroup - kw.previousRank}
+                    </span>
+                  ) : (
+                    <span className="text-muted-foreground">=</span>
+                  )}
+                </div>
+              )}
+            </div>
+          )
+        },
+      },
+      {
+        accessorKey: 'searchVolume',
+        header: 'Volume',
+        cell: ({ row }) => {
+          const kw = row.original
+          const isLoading = loadingKeywordData[kw.id]
+          if (isLoading) return <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+          return kw.searchVolume ? (
+            <span className="font-medium">{formatNumber(kw.searchVolume)}</span>
+          ) : (
+            <span className="text-muted-foreground">-</span>
+          )
+        },
+      },
+      {
+        accessorKey: 'cpc',
+        header: 'CPC',
+        cell: ({ row }) => {
+          const kw = row.original
+          const isLoading = loadingKeywordData[kw.id]
+          if (isLoading) return <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+          return kw.cpc ? (
+            <span className="font-medium">{formatCurrency(kw.cpc)}</span>
+          ) : (
+            <span className="text-muted-foreground">-</span>
+          )
+        },
+      },
+      {
+        accessorKey: 'competition',
+        header: () => (
+          <div className="flex items-center gap-1.5">
+            Concurrence
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  type="button"
+                  className="text-muted-foreground hover:text-foreground inline-flex h-4 w-4 items-center justify-center rounded-full border border-current"
+                  aria-label="Info concurrence"
+                >
+                  <span className="text-[10px] font-bold">?</span>
+                </button>
+              </TooltipTrigger>
+              <TooltipContent className="max-w-xs bg-mist-800 border border-mist-700 p-3 text-sm shadow-xl">
+                <p className="font-semibold mb-1">Concurrence (Google Ads)</p>
+                <p className="text-muted-foreground">
+                  Cette métrique vient de Google Ads et mesure la concurrence entre annonceurs pour un mot-clé dans
+                  Google Ads. Ce n&apos;est <strong>PAS</strong> une mesure directe de la difficulté SEO organique.
+                </p>
+              </TooltipContent>
+            </Tooltip>
+          </div>
+        ),
+        cell: ({ row }) => {
+          const kw = row.original
+          const isLoading = loadingKeywordData[kw.id]
+          if (isLoading) return <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+          if (kw.competition !== null && kw.competition !== undefined) {
+            const comp = Math.round(kw.competition * 100)
+            return (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="flex cursor-help items-center gap-2">
+                    <div className="h-2 w-16 overflow-hidden rounded-full bg-white/10">
+                      <div
+                        className={`h-full transition-all ${comp < 33 ? 'bg-emerald-500' : comp < 66 ? 'bg-amber-500' : 'bg-red-500'}`}
+                        style={{ width: `${comp}%` }}
+                      />
+                    </div>
+                    <span className="text-xs text-muted-foreground">{comp}%</span>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent className="max-w-xs bg-mist-800 border border-mist-700 p-3 text-sm shadow-xl">
+                  <p className="font-semibold mb-1">Concurrence (Google Ads)</p>
+                  <p className="text-muted-foreground">
+                    Cette métrique vient de Google Ads et mesure la concurrence entre annonceurs pour un mot-clé dans
+                    Google Ads. Ce n&apos;est <strong>PAS</strong> une mesure directe de la difficulté SEO organique.
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            )
+          }
+          if (kw.competitionLevel) {
+            return (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="inline-block cursor-help">
+                    <Badge color="zinc">{kw.competitionLevel}</Badge>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent className="max-w-xs bg-mist-800 border border-mist-700 p-3 text-sm shadow-xl">
+                  <p className="font-semibold mb-1">Concurrence (Google Ads)</p>
+                  <p className="text-muted-foreground">
+                    Cette métrique vient de Google Ads et mesure la concurrence entre annonceurs pour un mot-clé dans
+                    Google Ads. Ce n&apos;est <strong>PAS</strong> une mesure directe de la difficulté SEO organique.
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            )
+          }
+          return <span className="text-muted-foreground">-</span>
+        },
+      },
+      {
+        accessorKey: 'lastCheckedAt',
+        header: 'Dernière vérif.',
+        cell: ({ row }) => {
+          const kw = row.original
+          return kw.lastCheckedAt ? (
+            <span className="text-sm text-muted-foreground">
+              {new Date(kw.lastCheckedAt).toLocaleDateString('fr-FR', {
+                day: '2-digit',
+                month: 'short',
+              })}
+            </span>
+          ) : (
+            <span className="text-muted-foreground">Jamais</span>
+          )
+        },
+      },
+      {
+        id: 'actions',
+        header: '',
+        cell: ({ row }) => {
+          const kw = row.original
+          const isDeleting = deletingKeywords.has(kw.id)
+          return (
+            <div className="flex items-center justify-end gap-1">
+              <Button
+                variant="ghost"
+                className="h-8 w-8 p-0 hover:bg-white/10"
+                onClick={() => handleViewDetails(kw)}
+                title="Voir les détails"
+              >
+                <Eye className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                className="h-8 w-8 p-0 hover:bg-white/10"
+                onClick={() => handleUpdateKeywordPosition(kw.id)}
+                disabled={updatingKeywordId === kw.id}
+                title="Actualiser la position"
+              >
+                {updatingKeywordId === kw.id ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <RefreshCw className="h-4 w-4" />
+                )}
+              </Button>
+              <Button
+                variant="ghost"
+                className="h-8 w-8 p-0 text-red-400 hover:bg-red-500/10 hover:text-red-300"
+                onClick={() => handleDeleteClick(kw)}
+                disabled={isDeleting}
+                title="Supprimer"
+              >
+                {isDeleting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
+              </Button>
+            </div>
+          )
+        },
+      },
+    ],
+    [loadingKeywordData, deletingKeywords, updatingKeywordId]
+  )
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* En-tête avec sélection du domaine */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Vue d&apos;ensemble des positions</h1>
-          <p className="text-muted-foreground mt-1">Suivez les performances de vos domaines sur Google</p>
+          <h1 className="bg-linear-to-r from-foreground to-foreground/70 bg-clip-text text-2xl font-bold tracking-tight text-transparent sm:text-3xl">
+            Vue d&apos;ensemble des positions
+          </h1>
+          <p className="mt-1 text-muted-foreground">Suivez les performances de vos domaines sur Google</p>
         </div>
-        <div className="flex items-center gap-4">
-          <Select
-            value={selectedDomain}
-            onValueChange={(url) => {
-              setSelectedDomain(url)
-              const domain = domains.find((d) => d.url === url)
-              if (domain) {
-                setSelectedProjectId(domain.id)
-              }
-            }}
-          >
-            <SelectTrigger className="w-[300px]">
-              <SelectValue placeholder="Sélectionner un domaine" />
-            </SelectTrigger>
-            <SelectContent className="bg-mist-600">
-              {domains.map((domain) => (
-                <SelectItem key={domain.id} value={domain.url}>
-                  {domain.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+        <Select
+          value={selectedDomain}
+          onValueChange={(url) => {
+            setSelectedDomain(url)
+            const domain = domains.find((d) => d.url === url)
+            if (domain) {
+              setSelectedProjectId(domain.id)
+            }
+          }}
+        >
+          <SelectTrigger className="w-full border-white/10 bg-white/5 sm:w-[300px]">
+            <SelectValue placeholder="Sélectionner un domaine" />
+          </SelectTrigger>
+          <SelectContent className="border-white/10 bg-mist-700">
+            {domains.map((domain) => (
+              <SelectItem key={domain.id} value={domain.url}>
+                {domain.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       {/* Métriques globales - Organique */}
       {overviewData && (
         <>
           <div className="flex items-center justify-between">
-            <h2 className="text-xl font-semibold">Métriques organiques</h2>
-            <Button variant="outline" className="h-9" onClick={() => setShowPaidMetrics(!showPaidMetrics)}>
+            <h2 className="text-lg font-semibold">Métriques organiques</h2>
+            <Button
+              variant="outline"
+              size="sm"
+              className="border-white/10 bg-white/5 hover:bg-white/10"
+              onClick={() => setShowPaidMetrics(!showPaidMetrics)}
+            >
               {showPaidMetrics ? 'Masquer' : 'Afficher'} les métriques payantes
             </Button>
           </div>
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            <Card>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {/* Mots-clés positionnés */}
+            <Card className="group relative overflow-hidden border-white/5 bg-linear-to-br from-mist-800/60 to-mist-900/60 backdrop-blur-sm transition-all hover:border-white/10">
+              <div className="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-emerald-500/10 blur-2xl transition-all group-hover:bg-emerald-500/20" />
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Mots-clés positionnés</CardTitle>
-                <TrendingUp className="text-muted-foreground h-4 w-4" />
+                <CardTitle className="text-sm font-medium text-muted-foreground">Mots-clés positionnés</CardTitle>
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500/10">
+                  <TrendingUp className="h-4 w-4 text-emerald-400" />
+                </div>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{formatNumber(overviewData.organic.count)}</div>
-                <div className="mt-2 flex flex-wrap gap-2">
+                <div className="text-3xl font-bold">{formatNumber(overviewData.organic.count)}</div>
+                <div className="mt-3 flex flex-wrap gap-1.5">
                   <Badge color="green" className="text-xs">
                     <ArrowUp className="mr-1 h-3 w-3" />
                     {overviewData.organic.is_up}
@@ -469,54 +735,61 @@ export default function RankOverviewContent() {
                   </Badge>
                   {overviewData.organic.is_new > 0 && (
                     <Badge color="blue" className="text-xs">
-                      +{overviewData.organic.is_new} nouveau
-                    </Badge>
-                  )}
-                  {overviewData.organic.is_lost > 0 && (
-                    <Badge color="zinc" className="text-xs">
-                      -{overviewData.organic.is_lost} perdu
+                      +{overviewData.organic.is_new}
                     </Badge>
                   )}
                 </div>
               </CardContent>
             </Card>
 
-            <Card>
+            {/* Top 3 */}
+            <Card className="group relative overflow-hidden border-white/5 bg-linear-to-br from-mist-800/60 to-mist-900/60 backdrop-blur-sm transition-all hover:border-white/10">
+              <div className="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-blue-500/10 blur-2xl transition-all group-hover:bg-blue-500/20" />
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Top 3</CardTitle>
+                <CardTitle className="text-sm font-medium text-muted-foreground">Top 3</CardTitle>
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-500/10">
+                  <Target className="h-4 w-4 text-blue-400" />
+                </div>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">
+                <div className="text-3xl font-bold">
                   {formatNumber(overviewData.organic.pos_1 + overviewData.organic.pos_2_3)}
                 </div>
-                <p className="text-muted-foreground mt-1 text-xs">{overviewData.organic.pos_1} en position 1</p>
+                <p className="mt-1 text-sm text-emerald-400">
+                  {overviewData.organic.pos_1} en position 1
+                </p>
               </CardContent>
             </Card>
 
-            <Card>
+            {/* Top 10 */}
+            <Card className="group relative overflow-hidden border-white/5 bg-linear-to-br from-mist-800/60 to-mist-900/60 backdrop-blur-sm transition-all hover:border-white/10">
+              <div className="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-purple-500/10 blur-2xl transition-all group-hover:bg-purple-500/20" />
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Top 10</CardTitle>
+                <CardTitle className="text-sm font-medium text-muted-foreground">Top 10</CardTitle>
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-purple-500/10">
+                  <Globe className="h-4 w-4 text-purple-400" />
+                </div>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{formatNumber(overviewData.organic.pos_4_10)}</div>
-                <p className="text-muted-foreground mt-1 text-xs">Positions 4-10</p>
+                <div className="text-3xl font-bold">{formatNumber(overviewData.organic.pos_4_10)}</div>
+                <p className="mt-1 text-sm text-muted-foreground">Positions 4-10</p>
               </CardContent>
             </Card>
 
-            <Card>
+            {/* Trafic estimé */}
+            <Card className="group relative overflow-hidden border-white/5 bg-linear-to-br from-mist-800/60 to-mist-900/60 backdrop-blur-sm transition-all hover:border-white/10">
+              <div className="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-amber-500/10 blur-2xl transition-all group-hover:bg-amber-500/20" />
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Trafic estimé (ETV)</CardTitle>
+                <CardTitle className="text-sm font-medium text-muted-foreground">Trafic estimé</CardTitle>
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-500/10">
+                  <Zap className="h-4 w-4 text-amber-400" />
+                </div>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{formatNumber(Math.round(overviewData.organic.etv))}</div>
-                <p className="text-muted-foreground mt-1 text-xs">
+                <div className="text-3xl font-bold">{formatNumber(Math.round(overviewData.organic.etv))}</div>
+                <p className="mt-1 text-sm text-muted-foreground">
                   Valeur: {formatCurrency(overviewData.organic.estimated_paid_traffic_cost)}
                 </p>
-                {overviewData.organic.clickstream_etv && (
-                  <p className="text-muted-foreground mt-1 text-xs">
-                    Clickstream ETV: {formatNumber(Math.round(overviewData.organic.clickstream_etv))}
-                  </p>
-                )}
               </CardContent>
             </Card>
           </div>
@@ -688,12 +961,23 @@ export default function RankOverviewContent() {
       )}
 
       {/* Mots-clés suivis */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle>Mots-clés suivis</CardTitle>
-              <CardDescription>Gérez les mots-clés que vous souhaitez suivre pour ce projet</CardDescription>
+      <Card className="relative overflow-hidden border-white/5 bg-linear-to-br from-mist-800/60 to-mist-900/60 backdrop-blur-sm">
+        <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-primary/30 to-transparent" />
+        <CardHeader className="border-b border-white/5 pb-6">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-4">
+              <div className="relative">
+                <div className="absolute -inset-1 rounded-xl bg-primary/20 opacity-50 blur-md" />
+                <div className="relative flex h-12 w-12 items-center justify-center rounded-xl border border-white/10 bg-linear-to-br from-primary/20 to-primary/5">
+                  <Target className="h-6 w-6 text-primary" />
+                </div>
+              </div>
+              <div>
+                <CardTitle className="text-lg">Mots-clés suivis</CardTitle>
+                <CardDescription>
+                  {trackedKeywords.length} mot{trackedKeywords.length > 1 ? 's' : ''}-clé{trackedKeywords.length > 1 ? 's' : ''} pour ce projet
+                </CardDescription>
+              </div>
             </div>
             <div className="flex items-center gap-2">
               {trackedKeywords.length > 0 && (
@@ -701,6 +985,8 @@ export default function RankOverviewContent() {
                   onClick={handleUpdateAllPositions}
                   disabled={!selectedProjectId || updatingPositions}
                   variant="outline"
+                  size="sm"
+                  className="border-white/10 bg-white/5 hover:bg-white/10"
                 >
                   {updatingPositions ? (
                     <>
@@ -710,216 +996,62 @@ export default function RankOverviewContent() {
                   ) : (
                     <>
                       <RefreshCw className="mr-2 h-4 w-4" />
-                      Mettre à jour les positions
+                      Actualiser tout
                     </>
                   )}
                 </Button>
               )}
-              <Button onClick={() => setIsAddDialogOpen(true)} disabled={!selectedProjectId}>
+              <Button
+                onClick={() => setIsAddDialogOpen(true)}
+                disabled={!selectedProjectId}
+                size="sm"
+                className="bg-primary text-primary-foreground hover:bg-primary/90"
+              >
                 <Plus className="mr-2 h-4 w-4" />
-                Ajouter un mot-clé
+                Ajouter
               </Button>
             </div>
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-0">
           {loadingKeywords ? (
-            <div className="flex items-center justify-center py-8">
-              <Loader2 className="h-6 w-6 animate-spin" />
+            <div className="flex flex-col items-center justify-center py-16">
+              <div className="relative">
+                <div className="absolute inset-0 rounded-full bg-primary/20 blur-xl" />
+                <div className="relative flex h-12 w-12 items-center justify-center">
+                  <div className="absolute h-12 w-12 animate-spin rounded-full border-2 border-transparent border-t-primary" />
+                  <div className="absolute h-8 w-8 animate-spin rounded-full border-2 border-transparent border-t-primary/50 [animation-direction:reverse] [animation-duration:1.5s]" />
+                </div>
+              </div>
+              <p className="mt-4 text-sm text-muted-foreground">Chargement des mots-clés...</p>
             </div>
           ) : trackedKeywords.length === 0 ? (
-            <div className="py-12 text-center">
-              <p className="text-muted-foreground mb-4">Aucun mot-clé n&apos;est suivi pour ce projet.</p>
-              <Button onClick={() => setIsAddDialogOpen(true)} disabled={!selectedProjectId}>
-                <Plus className="mr-2 h-4 w-4" />
-                Ajouter votre premier mot-clé
-              </Button>
+            <div className="p-6">
+              <EmptyState
+                icon={Target}
+                title="Aucun mot-clé suivi"
+                description="Commencez à suivre les positions de vos mots-clés pour ce projet."
+                variant="minimal"
+              >
+                <Button
+                  onClick={() => setIsAddDialogOpen(true)}
+                  disabled={!selectedProjectId}
+                  className="bg-primary text-primary-foreground hover:bg-primary/90"
+                >
+                  <Plus className="mr-2 h-4 w-4" />
+                  Ajouter votre premier mot-clé
+                </Button>
+              </EmptyState>
             </div>
           ) : (
-            <div className="space-y-4">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Mot-clé</TableHead>
-                    <TableHead>Position</TableHead>
-                    <TableHead>Volume</TableHead>
-                    <TableHead>CPC</TableHead>
-                    <TableHead>Difficulté</TableHead>
-                    <TableHead>Localisation</TableHead>
-                    <TableHead>Dernière vérification</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {trackedKeywords.map((kw) => {
-                    const isLoading = loadingKeywordData[kw.id]
-                    const isDeleting = deletingKeywords.has(kw.id)
-
-                    return (
-                      <TableRow key={kw.id}>
-                        <TableCell className="font-medium">
-                          <div className="flex items-center gap-2">
-                            <span>{kw.keyword}</span>
-                            {(!kw.searchVolume || !kw.cpc) && !isLoading && (
-                              <Button
-                                variant="outline"
-                                className="h-6 w-6 p-0"
-                                onClick={() => loadKeywordData(kw)}
-                                title="Charger les métriques manquantes (Volume, CPC, Difficulté)"
-                              >
-                                <Search className="h-3 w-3" />
-                              </Button>
-                            )}
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex flex-col gap-2">
-                            {/* Position actuelle */}
-                            <div className="flex items-center gap-2">
-                              {kw.rankGroup !== null ? (
-                                <>
-                                  <Badge
-                                    className={
-                                      kw.rankGroup <= 3
-                                        ? 'bg-green-500'
-                                        : kw.rankGroup <= 10
-                                          ? 'bg-blue-500'
-                                          : kw.rankGroup <= 20
-                                            ? 'bg-yellow-500'
-                                            : 'bg-gray-500'
-                                    }
-                                  >
-                                    #{kw.rankGroup}
-                                  </Badge>
-                                  {kw.rankAbsolute && (
-                                    <span className="text-muted-foreground text-xs">(abs: {kw.rankAbsolute})</span>
-                                  )}
-                                </>
-                              ) : (
-                                <span className="text-muted-foreground">Non classé</span>
-                              )}
-                            </div>
-                            {/* Ancienne position et évolution */}
-                            {kw.previousRank !== null && (
-                              <div className="flex items-center gap-2 text-xs">
-                                <span className="text-muted-foreground">Précédent: #{kw.previousRank}</span>
-                                {kw.rankGroup !== null && (
-                                  <>
-                                    {kw.rankGroup < kw.previousRank ? (
-                                      <Badge color="green" className="flex items-center gap-1 text-xs">
-                                        <ArrowUp className="h-3 w-3" />+{kw.previousRank - kw.rankGroup}
-                                      </Badge>
-                                    ) : kw.rankGroup > kw.previousRank ? (
-                                      <Badge color="red" className="flex items-center gap-1 text-xs">
-                                        <ArrowDown className="h-3 w-3" />-{kw.rankGroup - kw.previousRank}
-                                      </Badge>
-                                    ) : (
-                                      <Badge color="zinc" className="text-xs">
-                                        =
-                                      </Badge>
-                                    )}
-                                  </>
-                                )}
-                              </div>
-                            )}
-                            {kw.previousRank === null && kw.rankGroup !== null && (
-                              <span className="text-xs text-blue-600">Nouvelle position</span>
-                            )}
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          {kw.searchVolume ? (
-                            formatNumber(kw.searchVolume)
-                          ) : isLoading ? (
-                            <Loader2 className="h-4 w-4 animate-spin" />
-                          ) : (
-                            <span className="text-muted-foreground">-</span>
-                          )}
-                        </TableCell>
-                        <TableCell>
-                          {kw.cpc ? (
-                            formatCurrency(kw.cpc)
-                          ) : kw.cpc === null ? (
-                            '-'
-                          ) : isLoading ? (
-                            <Loader2 className="h-4 w-4 animate-spin" />
-                          ) : (
-                            <span className="text-muted-foreground">-</span>
-                          )}
-                        </TableCell>
-                        <TableCell>
-                          {kw.competition !== null && kw.competition !== undefined ? (
-                            `${Math.round(kw.competition * 100)}%`
-                          ) : kw.competitionLevel ? (
-                            <Badge color="zinc">{kw.competitionLevel}</Badge>
-                          ) : isLoading ? (
-                            <Loader2 className="h-4 w-4 animate-spin" />
-                          ) : (
-                            <span className="text-muted-foreground">-</span>
-                          )}
-                        </TableCell>
-                        <TableCell>
-                          <span className="text-sm">
-                            {kw.locationCode} ({kw.languageCode})
-                          </span>
-                        </TableCell>
-                        <TableCell>
-                          {kw.lastCheckedAt ? (
-                            <span className="text-muted-foreground text-sm">
-                              {new Date(kw.lastCheckedAt).toLocaleDateString('fr-FR', {
-                                day: '2-digit',
-                                month: 'short',
-                                year: 'numeric',
-                              })}
-                            </span>
-                          ) : (
-                            <span className="text-muted-foreground">Jamais</span>
-                          )}
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex items-center justify-end gap-2">
-                            <Button
-                              variant="outline"
-                              className="h-8 w-8 p-0"
-                              onClick={() => handleViewDetails(kw)}
-                              title="Voir les détails"
-                            >
-                              <Eye className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              variant="outline"
-                              className="h-8 w-8 p-0"
-                              onClick={() => handleUpdateKeywordPosition(kw.id)}
-                              disabled={updatingKeywordId === kw.id}
-                              title="Vérifier la position"
-                            >
-                              {updatingKeywordId === kw.id ? (
-                                <Loader2 className="h-4 w-4 animate-spin" />
-                              ) : (
-                                <RefreshCw className="h-4 w-4" />
-                              )}
-                            </Button>
-                            <Button
-                              variant="outline"
-                              className="h-8 w-8 p-0"
-                              onClick={() => handleDeleteClick(kw)}
-                              disabled={isDeleting}
-                              title="Supprimer"
-                            >
-                              {isDeleting ? (
-                                <Loader2 className="h-4 w-4 animate-spin" />
-                              ) : (
-                                <Trash2 className="h-4 w-4 text-red-500" />
-                              )}
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    )
-                  })}
-                </TableBody>
-              </Table>
-            </div>
+            <DataTable
+              columns={keywordColumns}
+              data={trackedKeywords}
+              searchKey="keyword"
+              exportFilename={`mots-cles-${selectedDomain}`}
+              pageSize={10}
+              pageSizeOptions={[10, 25, 50]}
+            />
           )}
         </CardContent>
       </Card>

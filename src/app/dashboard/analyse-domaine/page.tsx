@@ -92,7 +92,7 @@ export default function DomainWhoisAnalyzerPage() {
       let orderBy: string[] = []
       const limit = values.limit || 100
 
-      // Fonction helper pour formater les dates au format DataForSEO
+      // Fonction helper pour formater les dates au format API
       // Format attendu: "YYYY-MM-DD HH:mm:ss +00:00"
       const formatDateForAPI = (date: Date): string => {
         const year = date.getUTCFullYear()
