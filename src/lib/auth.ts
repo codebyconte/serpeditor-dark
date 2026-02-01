@@ -295,12 +295,13 @@ export const auth = betterAuth({
     },
   },
 
-  // Rate limiting
+  // Rate limiting (modèle Prisma : rateLimit)
   rateLimit: {
     enabled: true,
     window: 60, // 1 minute
     max: 10, // 10 requests per window
-    storage: 'database', // Use database for rate limiting
+    storage: 'database',
+    modelName: 'rateLimit',
   },
 
   // Trusted origins for CSRF protection

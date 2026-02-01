@@ -335,6 +335,14 @@ model verification {
   updatedAt  DateTime @default(now())
 }
 
+// Better Auth - Rate limiting (requis quand rateLimit.storage = "database")
+model rateLimit {
+  id          String @id @default(cuid())
+  key         String @unique
+  count       Int
+  lastRequest BigInt
+}
+
 enum CrawlStatus {
   PENDING
   READY
