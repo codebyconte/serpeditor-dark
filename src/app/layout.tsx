@@ -151,7 +151,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="fr" className={`${inter.variable} ${instrumentSerif.variable}`}>
+    <html lang="fr" className={`${inter.variable} ${instrumentSerif.variable}`} suppressHydrationWarning>
       <head>
         {/* JSON-LD inline pour une indexation immédiate par les robots */}
         <script

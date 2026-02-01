@@ -3,16 +3,14 @@
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { DataTable, columnHelper } from '@/components/dashboard/data-table'
+import { DataTable } from '@/components/dashboard/data-table'
 import type { ColumnDef } from '@tanstack/react-table'
 import {
   AlertTriangle,
   ArrowDown,
   ArrowUp,
   Eye,
-  Loader2,
   MousePointerClick,
   RefreshCw,
   Search,
@@ -20,8 +18,6 @@ import {
   Target,
   TrendingDown,
   TrendingUp,
-  BarChart3,
-  Zap,
 } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { fetchOrganicKeywords, type KeywordData } from './action'
@@ -52,11 +48,13 @@ export function OrganicKeywordsContent({ projectId }: Props) {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  // Filtres
+  // Filtres (état réservé pour future UI de filtre/tri ; setters non utilisés pour l'instant)
+  /* eslint-disable @typescript-eslint/no-unused-vars -- setters réservés pour future UI */
   const [searchQuery, setSearchQuery] = useState('')
   const [positionFilter, setPositionFilter] = useState('all')
   const [sortBy, setSortBy] = useState<'clicks' | 'impressions' | 'ctr' | 'position'>('clicks')
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
+  /* eslint-enable @typescript-eslint/no-unused-vars */
 
   const loadData = useCallback(async () => {
     if (!projectId) {
@@ -92,7 +90,8 @@ export function OrganicKeywordsContent({ projectId }: Props) {
     loadData()
   }, [loadData])
 
-  // Filtrage et tri
+  // Filtrage et tri (filteredKeywords réservé pour future utilisation dans la DataTable)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- réservé pour filtre/tri UI
   const filteredKeywords =
     data?.keywords
       ?.filter((k: KeywordData) => {
@@ -219,7 +218,8 @@ export function OrganicKeywordsContent({ projectId }: Props) {
     []
   )
 
-  // Export CSV
+  // Export CSV (réservé pour bouton d'export futur)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- réservé pour UI d'export
   const exportToCSV = () => {
     if (!data?.keywords) return
 

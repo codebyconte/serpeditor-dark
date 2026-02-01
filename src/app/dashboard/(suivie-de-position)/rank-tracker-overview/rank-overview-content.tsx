@@ -217,17 +217,15 @@ export default function RankOverviewContent() {
     }
   }, [selectedProjectId])
 
-  const loadKeywordData = async (keyword: TrackedKeyword) => {
+  const loadKeywordData = useCallback(async (keyword: TrackedKeyword) => {
     if (loadingKeywordData[keyword.id]) return
 
     setLoadingKeywordData((prev) => ({ ...prev, [keyword.id]: true }))
     const toastId = toast.loading('Chargement des métriques...')
     try {
-      // Utiliser la nouvelle fonction qui sauvegarde en base
       const result = await updateKeywordMetrics(keyword.id)
       if (result.success) {
         toast.success('Métriques mises à jour avec succès', { id: toastId })
-        // Recharger les mots-clés pour afficher les nouvelles données
         await loadTrackedKeywords()
       } else {
         toast.error(result.error || 'Erreur lors du chargement des métriques', { id: toastId })
@@ -238,7 +236,7 @@ export default function RankOverviewContent() {
     } finally {
       setLoadingKeywordData((prev) => ({ ...prev, [keyword.id]: false }))
     }
-  }
+  }, [loadingKeywordData, loadTrackedKeywords])
 
   const handleUpdateAllPositions = async () => {
     if (!selectedProjectId) return
@@ -261,7 +259,7 @@ export default function RankOverviewContent() {
     }
   }
 
-  const handleUpdateKeywordPosition = async (keywordId: string) => {
+  const handleUpdateKeywordPosition = useCallback(async (keywordId: string) => {
     setUpdatingKeywordId(keywordId)
     try {
       const result = await updateKeywordPosition(keywordId)
@@ -277,7 +275,7 @@ export default function RankOverviewContent() {
     } finally {
       setUpdatingKeywordId(null)
     }
-  }
+  }, [loadTrackedKeywords])
 
   const handleViewDetails = async (keyword: TrackedKeyword) => {
     setSelectedKeywordForDetails(keyword)
@@ -662,7 +660,7 @@ export default function RankOverviewContent() {
         },
       },
     ],
-    [loadingKeywordData, deletingKeywords, updatingKeywordId]
+    [loadingKeywordData, deletingKeywords, updatingKeywordId, handleUpdateKeywordPosition, loadKeywordData]
   )
 
   return (

@@ -71,12 +71,17 @@ export default function Loading() {
                   <Skeleton className="h-4 w-48" />
                 </div>
 
-                {/* Metrics grid */}
+                {/* Metrics grid - explicit Tailwind classes for purge (no dynamic class names) */}
                 <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-                  {['blue', 'purple', 'emerald', 'orange'].map((color, i) => (
+                  {[
+                    'from-blue-500/10 via-blue-500/5',
+                    'from-purple-500/10 via-purple-500/5',
+                    'from-emerald-500/10 via-emerald-500/5',
+                    'from-orange-500/10 via-orange-500/5',
+                  ].map((gradient, i) => (
                     <div
                       key={i}
-                      className={`relative overflow-hidden rounded-xl border border-white/5 bg-linear-to-br from-${color}-500/10 via-${color}-500/5 to-transparent p-4`}
+                      className={`relative overflow-hidden rounded-xl border border-white/5 bg-linear-to-br ${gradient} to-transparent p-4`}
                     >
                       <div className="mb-2 flex items-center justify-between">
                         <Skeleton className="h-3 w-16" />

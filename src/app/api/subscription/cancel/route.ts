@@ -60,11 +60,12 @@ export async function POST() {
           message: 'Votre abonnement sera annulé à la fin de la période en cours',
           cancelAtPeriodEnd: true,
         })
-      } catch (stripeError: any) {
+      } catch (stripeError: unknown) {
         console.error('Error canceling Stripe subscription:', stripeError)
-        
+
         // Si l'abonnement Stripe n'existe plus, mettre à jour localement
-        if (stripeError.code === 'resource_missing') {
+        const err = stripeError as { code?: string }
+        if (err.code === 'resource_missing') {
           await prisma.subscription.update({
             where: { userId: userId },
             data: {

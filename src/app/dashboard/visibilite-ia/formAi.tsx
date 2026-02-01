@@ -1,6 +1,7 @@
 'use client'
 
 import { Divider } from '@/components/dashboard/divider'
+import Image from 'next/image'
 import { Button } from '@/components/elements/button'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -693,11 +694,14 @@ export default function FormAi() {
                                 >
                                   <div className="flex w-full min-w-0 gap-3 overflow-x-hidden">
                                     {source.thumbnail && (
-                                      <div className="shrink-0">
-                                        <img
+                                      <div className="relative h-16 w-16 shrink-0">
+                                        <Image
                                           src={source.thumbnail}
                                           alt={source.title || 'Source'}
+                                          width={64}
+                                          height={64}
                                           className="h-16 w-16 rounded object-cover"
+                                          unoptimized
                                           onError={(e) => {
                                             e.currentTarget.style.display = 'none'
                                           }}
