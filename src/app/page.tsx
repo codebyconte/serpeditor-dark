@@ -58,14 +58,15 @@ export const metadata: Metadata = {
     'alternative semrush',
     'recherche mots clés',
     'analyse backlinks',
-    'outil seo français'
+    'outil seo français',
   ],
   alternates: {
     canonical: 'https://www.serpeditor.fr',
   },
   openGraph: {
     title: "SerpEditor | L'Outil SEO Français Tout-en-un",
-    description: "L'alternative française aux géants du SEO. +213M mots-clés, audit technique, backlinks. Dès 39€/mois.",
+    description:
+      "L'alternative française aux géants du SEO. +213M mots-clés, audit technique, backlinks. Dès 39€/mois.",
     url: 'https://www.serpeditor.fr',
     siteName: 'SerpEditor',
     type: 'website',
@@ -92,110 +93,109 @@ export const metadata: Metadata = {
  * Inclut : SoftwareApplication, FAQPage, BreadcrumbList
  */
 const jsonLd = {
-  "@context": "https://schema.org",
-  "@graph": [
+  '@context': 'https://schema.org',
+  '@graph': [
     {
-      "@type": "WebPage",
-      "@id": "https://www.serpeditor.fr/#webpage",
-      "url": "https://www.serpeditor.fr",
-      "name": "SerpEditor | L'Outil SEO Français Tout-en-un",
-      "isPartOf": {
-        "@id": "https://www.serpeditor.fr/#website"
+      '@type': 'WebPage',
+      '@id': 'https://www.serpeditor.fr/#webpage',
+      url: 'https://www.serpeditor.fr',
+      name: "SerpEditor | L'Outil SEO Français Tout-en-un",
+      isPartOf: {
+        '@id': 'https://www.serpeditor.fr/#website',
       },
-      "about": {
-        "@id": "https://www.serpeditor.fr/#software"
+      about: {
+        '@id': 'https://www.serpeditor.fr/#software',
       },
-      "description": "Outil SEO complet pour dominer Google : recherche de mots-clés, audit technique, analyse backlinks et suivi de positions.",
-      "inLanguage": "fr-FR",
-      "primaryImageOfPage": {
-        "@type": "ImageObject",
-        "url": "https://www.serpeditor.fr/og-image.jpg"
-      }
+      description:
+        'Outil SEO complet pour dominer Google : recherche de mots-clés, audit technique, analyse backlinks et suivi de positions.',
+      inLanguage: 'fr-FR',
+      primaryImageOfPage: {
+        '@type': 'ImageObject',
+        url: 'https://www.serpeditor.fr/og-image.jpg',
+      },
     },
     {
-      "@type": "SoftwareApplication",
-      "@id": "https://www.serpeditor.fr/#software",
-      "name": "SerpEditor",
-      "operatingSystem": "Web",
-      "applicationCategory": "BusinessApplication",
-      "applicationSubCategory": "SEO Software",
-      "description": "Outil SEO tout-en-un pour la recherche de mots-clés, l'analyse de backlinks, l'audit technique et le suivi de positions Google.",
-      "publisher": {
-        "@id": "https://www.serpeditor.fr/#organization"
+      '@type': 'SoftwareApplication',
+      '@id': 'https://www.serpeditor.fr/#software',
+      name: 'SerpEditor',
+      operatingSystem: 'Web',
+      applicationCategory: 'BusinessApplication',
+      applicationSubCategory: 'SEO Software',
+      description:
+        "Outil SEO tout-en-un pour la recherche de mots-clés, l'analyse de backlinks, l'audit technique et le suivi de positions Google.",
+      publisher: {
+        '@id': 'https://www.serpeditor.fr/#organization',
       },
-      "offers": {
-        "@type": "AggregateOffer",
-        "lowPrice": "0",
-        "highPrice": "99",
-        "priceCurrency": "EUR",
-        "offerCount": 3
+      offers: {
+        '@type': 'AggregateOffer',
+        lowPrice: '0',
+        highPrice: '99',
+        priceCurrency: 'EUR',
+        offerCount: 3,
       },
-      "featureList": [
-        "213M+ mots-clés français",
-        "Suivi de positions quotidien",
-        "2,8 trillions de backlinks analysés",
-        "Audit technique SEO",
-        "Analyse de la concurrence"
+      featureList: [
+        '213M+ mots-clés français',
+        'Suivi de positions quotidien',
+        '2,8 trillions de backlinks analysés',
+        'Audit technique SEO',
+        'Analyse de la concurrence',
       ],
-      "screenshot": "https://www.serpeditor.fr/serpeditor.webp"
+      screenshot: 'https://www.serpeditor.fr/serpeditor.webp',
     },
     {
-      "@type": "FAQPage",
-      "@id": "https://www.serpeditor.fr/#faq",
-      "mainEntity": [
+      '@type': 'FAQPage',
+      '@id': 'https://www.serpeditor.fr/#faq',
+      mainEntity: [
         {
-          "@type": "Question",
-          "name": "Qu'est-ce qu'un outil SEO tout-en-un ?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Un outil SEO tout-en-un comme SerpEditor permet de centraliser toutes les tâches nécessaires au référencement naturel : audit technique du site, recherche de mots-clés, analyse des backlinks concurrents et suivi du positionnement sur Google. Cela évite de payer plusieurs abonnements différents."
-          }
+          '@type': 'Question',
+          name: "Qu'est-ce qu'un outil SEO tout-en-un ?",
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Un outil SEO tout-en-un comme SerpEditor permet de centraliser toutes les tâches nécessaires au référencement naturel : audit technique du site, recherche de mots-clés, analyse des backlinks concurrents et suivi du positionnement sur Google. Cela évite de payer plusieurs abonnements différents.',
+          },
         },
         {
-          "@type": "Question",
-          "name": "Pourquoi SerpEditor est-il moins cher que Semrush ?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Semrush est une suite marketing globale (réseaux sociaux, publicité, content marketing, etc.). SerpEditor se concentre uniquement sur le SEO pur (les fonctionnalités que vous utilisez vraiment). En supprimant le superflu, nous réduisons drastiquement les coûts."
-          }
+          '@type': 'Question',
+          name: 'Pourquoi SerpEditor est-il moins cher que Semrush ?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Semrush est une suite marketing globale (réseaux sociaux, publicité, content marketing, etc.). SerpEditor se concentre uniquement sur le SEO pur (les fonctionnalités que vous utilisez vraiment). En supprimant le superflu, nous réduisons drastiquement les coûts.',
+          },
         },
         {
-          "@type": "Question",
-          "name": "Est-ce un bon outil SEO pour débutant ?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Oui, c'est l'outil idéal pour débuter. Contrairement aux usines à gaz du marché, notre interface guide l'utilisateur : scores de difficulté clairs, suggestions automatiques et rapports d'audit priorisés par importance."
-          }
+          '@type': 'Question',
+          name: 'Est-ce un bon outil SEO pour débutant ?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: "Oui, c'est l'outil idéal pour débuter. Contrairement aux usines à gaz du marché, notre interface guide l'utilisateur : scores de difficulté clairs, suggestions automatiques et rapports d'audit priorisés par importance.",
+          },
         },
         {
-          "@type": "Question",
-          "name": "Les données sont-elles fiables pour le marché français ?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Oui. SerpEditor s'appuie sur une base de données SEO optimisée pour le marché français, avec plus de 200 millions de mots-clés et des millions de pages analysées en continu."
-          }
+          '@type': 'Question',
+          name: 'Les données sont-elles fiables pour le marché français ?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: "Oui. SerpEditor s'appuie sur une base de données SEO optimisée pour le marché français, avec plus de 200 millions de mots-clés et des millions de pages analysées en continu.",
+          },
         },
         {
-          "@type": "Question",
-          "name": "Puis-je tester l'outil gratuitement ?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Oui, nous offrons un plan gratuit sans limitation de temps et sans carte bancaire. Vous pouvez lancer vos premières analyses avec des quotas limités pour tester l'outil."
-          }
-        }
-      ]
-    }
-  ]
+          '@type': 'Question',
+          name: "Puis-je tester l'outil gratuitement ?",
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: "Oui, nous offrons un plan gratuit sans limitation de temps et sans carte bancaire. Vous pouvez lancer vos premières analyses avec des quotas limités pour tester l'outil.",
+          },
+        },
+      ],
+    },
+  ],
 }
 
 export default function Page() {
   return (
     <>
       {/* JSON-LD pour le SEO structuré */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <NavbarWithLinksActionsAndCenteredLogo
         id="navbar"
         links={
@@ -214,9 +214,9 @@ export default function Page() {
             <Image
               src="/serpeditor-white.svg"
               alt="SerpEditor Outil SEO"
-              className="not-dark:hidden"
+              className="object-contain not-dark:hidden"
               width={85}
-              height={28}
+              height={33}
             />
           </NavbarLogo>
         }
